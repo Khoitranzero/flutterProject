@@ -8,6 +8,7 @@ import 'package:flutter_doan/component/userItem.dart';
 import 'package:flutter_doan/model/class.dart';
 import 'package:flutter_doan/screens/Class/classAdd.dart';
 import 'package:flutter_doan/utils/services.dart';
+import 'package:flutter_doan/utils/tokenService.dart';
 import 'package:http/http.dart';
 
 class ClassList extends StatefulWidget {
@@ -18,10 +19,12 @@ class ClassList extends StatefulWidget {
 }
 
 class _ClassListState extends State<ClassList> {
+  bool isGv = false;
   Future<Map<String, dynamic>> _classListFuture = AppUtils.getClassList();
   Future<void> refreshData() async {
     await Future.delayed(const Duration(seconds: 1));
     setState(() {
+      _getRole();
       _classListFuture = AppUtils.getClassList();
     });
   }
@@ -31,7 +34,19 @@ class _ClassListState extends State<ClassList> {
     super.didChangeDependencies();
     refreshData();
   }
-
+Future<void> _getRole() async {
+    final tokenAndRole = await TokenService.getTokenAndRole();
+    String? _role = tokenAndRole['role'] ?? '';
+    if (_role.contains("gv")) {
+      setState(() {
+        isGv = true;
+      });
+    } else {
+      setState(() {
+        isGv = false;
+      });
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,6 +81,7 @@ class _ClassListState extends State<ClassList> {
                                     builder: (context) => ListUserInClass(
                                           listUser: classInfoItem.users,
                                           classId: classInfoItem.id,
+                                          isGv:isGv
                                         ))).then((value) => refreshData());
                           },
                           onLongPressed: () async {
@@ -83,7 +99,7 @@ class _ClassListState extends State<ClassList> {
             }
           },
         ),
-        floatingActionButton: Container(
+        floatingActionButton:isGv ?null: Container(
           width: 60,
           height: 60,
           child: FloatingActionButton.small(

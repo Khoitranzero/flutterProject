@@ -52,11 +52,13 @@ class _UserPointPageState extends State<UserPointPage> {
     });
   }
  void myLongPressFunction(String subjectId) async {
+   String checkUser = _role!.substring(0, 2);
+  if(checkUser != 'gv'){
     final deleteAction = await _confirmDeleteTablePoint(context, subjectId);
     if (deleteAction) {
       refreshData(_selectedSemester);
     }
-  }
+  }}
   @override
   Widget build(BuildContext context) {
     String _userId = widget.userId;

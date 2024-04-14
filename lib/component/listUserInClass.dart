@@ -12,8 +12,9 @@ import 'package:flutter_doan/utils/services.dart';
 class ListUserInClass extends StatefulWidget {
   final List<User> listUser;
   final int classId;
+  final bool isGv;
   const ListUserInClass(
-      {super.key, required this.listUser, required this.classId});
+      {super.key, required this.listUser, required this.classId,required this.isGv});
 
   @override
   State<ListUserInClass> createState() => _ListUserInClassState();
@@ -84,7 +85,7 @@ class _ListUserInClassState extends State<ListUserInClass> {
                     ],
                   );
                 }),
-        floatingActionButton: Row(
+        floatingActionButton: widget.isGv ? null : Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
             widget.listUser.isEmpty

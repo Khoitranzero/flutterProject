@@ -4,6 +4,7 @@ import 'package:flutter_doan/component/dialog.dart';
 import 'package:flutter_doan/component/textfield.dart';
 import 'package:flutter_doan/model/user.dart';
 import 'package:flutter_doan/utils/services.dart';
+import 'package:flutter_doan/utils/tokenService.dart';
 
 class UserDetail extends StatefulWidget {
   final String userId;
@@ -15,6 +16,7 @@ class UserDetail extends StatefulWidget {
 }
 
 class _UserDetailState extends State<UserDetail> {
+   bool? isGv;
   User user = User(
     userId: "",
     username: "",
@@ -34,6 +36,7 @@ class _UserDetailState extends State<UserDetail> {
   @override
   void initState() {
     super.initState();
+    _getRole();
     _getClassList;
     _getClassList
         .then((data) => {
@@ -45,8 +48,21 @@ class _UserDetailState extends State<UserDetail> {
       print("Lỗi gán dữ liệu!!");
     });
     _getUserById();
+     
   }
-
+ Future<void> _getRole() async {
+    final tokenAndRole = await TokenService.getTokenAndRole();
+    String? _role = tokenAndRole['role'] ?? '';
+    if (_role.contains("gv")) {
+      setState(() {
+        isGv = true;
+      });
+    } else {
+      setState(() {
+        isGv = false;
+      });
+    }
+  }
   Future<Map<String, dynamic>> _getClassList = AppUtils.getClassInfo();
   Future<void> _getUserById() async {
     final response = await AppUtils.getUserByID(widget.userId);
@@ -155,8 +171,12 @@ class _UserDetailState extends State<UserDetail> {
             hintText: "Lớp",
             controller: _classController,
           ),
-          const SizedBox(height: 10),
-          BottomAppBar(
+          const SizedBox(height: 10),        
+        ],       
+      ),
+      bottomNavigationBar: isGv == true
+          ? null
+           : BottomAppBar(
             surfaceTintColor: Colors.white,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -211,8 +231,6 @@ class _UserDetailState extends State<UserDetail> {
               ],
             ),
           ),
-        ],
-      ),
     );
   }
 }

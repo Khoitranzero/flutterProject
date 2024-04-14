@@ -4,6 +4,7 @@ import 'package:flutter_doan/model/subject.dart';
 import 'package:flutter_doan/screens/Subject/subjectAdd_page.dart';
 import 'package:flutter_doan/screens/Subject/subjectUpdate_page.dart';
 import 'package:flutter_doan/utils/services.dart';
+import 'package:flutter_doan/utils/tokenService.dart';
 
 class SubjectList extends StatefulWidget {
   const SubjectList({super.key});
@@ -13,10 +14,12 @@ class SubjectList extends StatefulWidget {
 }
 
 class _SubjectListState extends State<SubjectList> {
+   bool isGv = false;
   Future<Map<String, dynamic>> _subjectListFuture = AppUtils.getSubjectList();
   Future<void> refreshData() async {
     await Future.delayed(const Duration(seconds: 1));
     setState(() {
+      _getRole();
       _subjectListFuture = AppUtils.getSubjectList();
     });
   }
@@ -26,7 +29,19 @@ class _SubjectListState extends State<SubjectList> {
     super.didChangeDependencies();
     refreshData();
   }
-
+Future<void> _getRole() async {
+    final tokenAndRole = await TokenService.getTokenAndRole();
+    String? _role = tokenAndRole['role'] ?? '';
+    if (_role.contains("gv")) {
+      setState(() {
+        isGv = true;
+      });
+    } else {
+      setState(() {
+        isGv = false;
+      });
+    }
+  }
   List<DataRow> convertToDataRows(List<dynamic>? subjectDataList) {
     if (subjectDataList == null) {
       return [];
@@ -41,10 +56,12 @@ class _SubjectListState extends State<SubjectList> {
     }).toList();
   }
 
-  void myLongPressFunction(String subjectId) async {
-    final deleteAction = await _confirmDeleteSubject(context, subjectId);
-    if (deleteAction) {
-      refreshData();
+ void myLongPressFunction(String subjectId) async {
+    if (!isGv) {
+      final deleteAction = await _confirmDeleteSubject(context, subjectId);
+      if (deleteAction) {
+        refreshData();
+      }
     }
   }
 
@@ -65,7 +82,7 @@ class _SubjectListState extends State<SubjectList> {
                 final subjectList = subjectDataList!
                     .map<DataRow>((item) => DataRow(cells: [
                           DataCell(
-                              onTap: () => {
+                              onTap:isGv ? null : () => {
                                     Navigator.push(context,
                                         MaterialPageRoute(builder: (context) {
                                       return UdapteSubjectInfo(
@@ -97,7 +114,7 @@ class _SubjectListState extends State<SubjectList> {
                                 ),
                               )),
                           DataCell(
-                            onTap: () => {
+                            onTap:isGv ? null : () => {
                               Navigator.push(context,
                                   MaterialPageRoute(builder: (context) {
                                 return UdapteSubjectInfo(
@@ -165,7 +182,7 @@ class _SubjectListState extends State<SubjectList> {
                 );
               }
             })),
-        floatingActionButton: Container(
+        floatingActionButton:isGv ? null : Container(
           width: 60,
           height: 60,
           child: FloatingActionButton.small(

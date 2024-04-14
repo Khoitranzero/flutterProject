@@ -97,7 +97,7 @@ class _LoginFormState extends State<LoginForm> {
                                 await TokenService.saveToken(token, role);
 
                                 String checkUser = role.substring(0, 2);
-                                print(checkUser);
+                  
                                 if (role == 'admin') {
                                   Navigator.push(
                                       context,
@@ -109,7 +109,7 @@ class _LoginFormState extends State<LoginForm> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
-                                              const LecturerHome()));
+                                              const LecturerHomePage()));
                                 } else if (checkUser == 'dh') {
                                   Navigator.push(
                                       context,

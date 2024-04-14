@@ -3,7 +3,7 @@ import "dart:convert";
 import "package:http/http.dart" as http;
 
 class AppUtils {
-  static const String baseApi = "http://192.168.216.1:8080/api/v1";
+  static const String baseApi = "http://localhost:8080/api/v1";
 
   static Future<Map<String, dynamic>> registerUser(
       String username, String phoneNumber, String password, String role) async {
