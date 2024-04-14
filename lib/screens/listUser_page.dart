@@ -55,7 +55,8 @@ class _ListUserState extends State<ListUser> {
                   itemCount: userList.length,
                   itemBuilder: (context, index) {
                     final user = userList[index];
-                    if (user.userId.contains('admin')) {
+                    if (user.userId.contains('admin') ||
+                        user.userId.contains("gv")) {
                       return const SizedBox();
                     } else {
                       return UserItem(
@@ -139,6 +140,6 @@ class _ListUserState extends State<ListUser> {
         print('Lỗi khi xóa người dùng: $e');
       }
     }
-    return false; 
+    return false;
   }
 }
