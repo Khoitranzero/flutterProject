@@ -35,7 +35,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          const SizedBox(height: 100),
+          const SizedBox(height: 50),
           Text(
             "Quản Lý Sinh Viên",
             style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
@@ -89,7 +89,17 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ClassList()))
-                            })
+                            }),
+                    HomeItem(
+                        title: "DS Giáo Viên",
+                        backgroundColor:
+                            const Color.fromARGB(255, 200, 167, 156),
+                        onPress: () => {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ClassList()))
+                            }),
                   ],
                 ),
               ),

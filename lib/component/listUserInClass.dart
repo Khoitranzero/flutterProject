@@ -38,6 +38,34 @@ class _ListUserInClassState extends State<ListUserInClass> {
     return Scaffold(
         appBar: AppBar(
           title: Text('Danh sách sinh viên trong lớp ${widget.classId}'),
+          actions: [
+            PopupMenuButton<String>(
+              itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
+                PopupMenuItem<String>(
+                  value: 'addTeacher',
+                  child: Text('Thêm giáo viên phụ trách'),
+                ),
+                PopupMenuItem<String>(
+                  value: 'addStudents',
+                  child: Text('Thêm sinh viên vào lớp'),
+                ),
+              ],
+              onSelected: (String value) async {
+                switch (value) {
+                  case 'addTeacher':
+                    // Xử lý khi chọn 'Thêm giáo viên phụ trách'
+                    break;
+                  case 'addStudents':
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                ListUserNoClass(classId: widget.classId)));
+                    break;
+                }
+              },
+            ),
+          ],
         ),
         body: widget.listUser.isEmpty
             ? const Center(
@@ -88,7 +116,7 @@ class _ListUserInClassState extends State<ListUserInClass> {
         floatingActionButton: widget.isGv ? null : Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: <Widget>[
-            widget.listUser.isEmpty
+            widget.listUser.isEmpty || selectedUser.isEmpty
                 ? const SizedBox()
                 : Container(
                     width: 180,
@@ -119,21 +147,6 @@ class _ListUserInClassState extends State<ListUserInClass> {
                       child: const Text("Xóa sinh viên ra khỏi lớp"),
                     ),
                   ),
-            Container(
-              margin: const EdgeInsets.only(left: 10),
-              width: 180,
-              height: 60,
-              child: FloatingActionButton.small(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            ListUserNoClass(classId: widget.classId))),
-                child: const Text("Thêm sinh viên vào lớp"),
-              ),
-            )
           ],
         ));
   }
