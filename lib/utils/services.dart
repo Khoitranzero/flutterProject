@@ -3,18 +3,19 @@ import "dart:convert";
 import "package:http/http.dart" as http;
 
 class AppUtils {
-  static const String baseApi = "http://192.168.1.8:8080/api/v1";
+  static const String baseApi = "http://192.168.216.1:8080/api/v1";
 
   static Future<Map<String, dynamic>> registerUser(
-      String username, String phoneNumber, String password) async {
+      String username, String phoneNumber, String password, String role) async {
     final response = await http
         .post(Uri.parse("$baseApi/register"), headers: <String, String>{
-      'ContentType': 'application/json',
+      'ContentType': 'application/json'
     }, body: <String, String>{
       'userId': username,
       'username': username,
       'phone': phoneNumber,
-      'password': password
+      'password': password,
+      'role': role
     });
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
@@ -187,17 +188,14 @@ class AppUtils {
         headers: <String, String>{
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: {
-          'subjectId': subjectId,
-          'point': point
-        }, 
+        body: {'subjectId': subjectId, 'point': point},
       );
 
       if (responsePoint.statusCode == 200 &&
           responseSubject.statusCode == 200) {
         print(responsePoint.body);
         print(responseSubject.body);
-   
+
         return {'EM': 'Cập nhật thành công dữ liệu', 'EC': 0};
       } else {
         throw Exception('Cập nhật thất bại');

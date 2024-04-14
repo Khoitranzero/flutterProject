@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_doan/component/button.dart';
 import 'package:flutter_doan/component/dialog.dart';
 import 'package:flutter_doan/component/textfield.dart';
+import 'package:flutter_doan/screens/Lecturer/LecturerHome_screen.dart';
 import 'package:flutter_doan/screens/adminHome_page.dart';
 import 'package:flutter_doan/screens/userHome_screen.dart';
 import 'package:flutter_doan/screens/user_page.dart';
@@ -87,7 +88,6 @@ class _LoginFormState extends State<LoginForm> {
                             try {
                               final response = await AppUtils.hanldeLogin(
                                   valueLogin, password);
-                              // print(response);
                               if (response['EM'].toString().isNotEmpty &&
                                   response['DT'].toString().isNotEmpty) {
                                 String? token =
@@ -95,13 +95,22 @@ class _LoginFormState extends State<LoginForm> {
                                 String? role =
                                     response['DT']['userId'] as String;
                                 await TokenService.saveToken(token, role);
+
+                                String checkUser = role.substring(0, 2);
+                                print(checkUser);
                                 if (role == 'admin') {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               const AdminHomePage()));
-                                } else {
+                                } else if (checkUser == 'gv') {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LecturerHome()));
+                                } else if (checkUser == 'dh') {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(

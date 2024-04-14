@@ -33,8 +33,14 @@ const checkPhoneExist = async (userPhone) => {
 };
 
 const registerNewUser = async (rawUserData) => {
+  
   try {
-    const prefix = "dh";
+    let prefix;
+    if(rawUserData.role === "Giảng viên") {
+      prefix = "gv";
+    } else if (rawUserData.role === "Sinh viên") {
+      prefix = "dh";
+    }
     const randomNumber = Math.floor(10000000 + Math.random() * 90000000);
     const generatedUserId = `${prefix}${randomNumber}`;
 
