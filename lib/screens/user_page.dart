@@ -15,6 +15,7 @@ class UserPage extends StatefulWidget {
 class _UserPageState extends State<UserPage> {
   Future<Map<String, dynamic>>? _userData;
   String? _role;
+  String? isGV;
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _userIdController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
@@ -29,7 +30,8 @@ class _UserPageState extends State<UserPage> {
 
   Future<void> _getUserData() async {
     final tokenAndRole = await TokenService.getTokenAndRole();
-    _role = tokenAndRole['role'] ?? '';
+    _role = (tokenAndRole['role'] ?? '');
+      isGV=_role?.substring(0, 2);
     setState(() {
       _userData = AppUtils.fetchUser();
       // print(_userData);
@@ -180,7 +182,7 @@ class _UserPageState extends State<UserPage> {
                             Container(
                               width: 150,
                               height: 50,
-                              child: ElevatedButton(
+                              child: (isGV == 'gv' || isGV == 'dh') ? null:  ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                     shape: RoundedRectangleBorder(
                                         borderRadius:

@@ -53,7 +53,7 @@ class _UserPointPageState extends State<UserPointPage> {
   }
  void myLongPressFunction(String subjectId) async {
    String checkUser = _role!.substring(0, 2);
-  if(checkUser != 'gv'){
+  if(checkUser != 'gv' && checkUser !='dh'){
     final deleteAction = await _confirmDeleteTablePoint(context, subjectId);
     if (deleteAction) {
       refreshData(_selectedSemester);
