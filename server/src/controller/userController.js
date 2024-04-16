@@ -196,6 +196,24 @@ const getUserByID = async (req, res) => {
     });
   }
 };
+const getListLecturer = async (req,res) => {
+  try {
+    let data = await userApiService.getListAllLecturer();
+    if (data) {
+      return res.status(200).json({
+        EM: data.EM,
+        EC: data.EC,
+        DT: data.DT,
+      });
+    }
+  } catch (e) {
+    return res.status(500).json({
+      EM: "error from server",
+      EC: "-1",
+      DT: "",
+    });
+  }
+}
 module.exports = {
   readFunc,
   createFunc,
@@ -207,5 +225,6 @@ module.exports = {
   getUserNotInClass,
   updateClassForMultipleUsers,
   moveUserFromClassController,
-  getUserByID
+  getUserByID,
+  getListLecturer
 };

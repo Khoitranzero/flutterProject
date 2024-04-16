@@ -17,8 +17,8 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-        userId: json['userId'],
-        username: json['username'],
+        userId: json['userId'] ?? 'Null',
+        username: json['username'] ?? 'Chưa có',
         address: json['address'] != null ? json['address'] : 'Chưa cập nhật',
         sex: json['sex'] != null ? json['sex'] : 'Chưa cập nhật',
         phone: json['phone'] != null ? json['phone'] : 'Chưa cập nhật',
@@ -40,7 +40,9 @@ class User {
 
   @override
   String toString() {
-    return "MSSV       : " +
+    String idLabel = userId.contains("gv") ? "MSGV" : "MSSV";
+    return idLabel +
+        "       : " +
         this.userId +
         "\nHọ và tên : " +
         this.username +

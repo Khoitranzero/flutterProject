@@ -1,5 +1,6 @@
 //src/service/userApiService.js
 import { where } from "sequelize";
+const { Op } = require('sequelize');
 import db from "../models";
 import {
   checkUserIdExist,
@@ -49,6 +50,40 @@ const getAllUser = async () => {
         EM: "get data success",
         EC: 0,
         DT: users,
+      };
+    } else {
+      return {
+        EM: "get data success",
+        EC: 0,
+        DT: [],
+      };
+    }
+  } catch (e) {
+    console.log(e);
+    return {
+      EM: "error from server",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+const getListAllLecturer = async () => {
+  try {
+    const lecturers = await db.User.findAll({
+      attributes: ["userId", "username", "address", "phone", "sex", "classId"],
+      include: { model: db.Class, attributes: ["className"] },
+      where: {
+        userId: {
+          [Op.like]: "%gv%",
+        },
+      },
+    });
+    // console.log( users);
+    if (lecturers) {
+      return {
+        EM: "get data success",
+        EC: 0,
+        DT: lecturers,
       };
     } else {
       return {
@@ -140,15 +175,12 @@ const updateUser = async (data) => {
   console.log("update1", data);
   let transaction;
   try {
-  
     transaction = await db.sequelize.transaction();
 
- 
     let classInfo = await db.Class.findOne({
       where: { className: data.className },
       transaction,
     });
-
 
     if (!classInfo) {
       classInfo = await db.Class.create(
@@ -157,23 +189,20 @@ const updateUser = async (data) => {
       );
     }
 
-
     const updatedUser = await db.User.update(
       {
         username: data.username,
         address: data.address,
         sex: data.sex,
-        classId: classInfo.id, 
+        classId: classInfo.id,
       },
       { where: { userId: data.userId }, transaction }
     );
 
-   
     if (updatedUser[0] === 0) {
       throw new Error("User not found");
     }
 
-   
     await transaction.commit();
     return {
       EM: "Cập nhật thông tin của sinh viên thành công !!!",
@@ -181,7 +210,6 @@ const updateUser = async (data) => {
       DT: updatedUser,
     };
   } catch (error) {
-    
     if (transaction) await transaction.rollback();
 
     console.error(error);
@@ -380,5 +408,6 @@ module.exports = {
   filterStudentNotInClass,
   updateClassForUser,
   MoveUserFromClass,
-  getOneUserByID
+  getOneUserByID,
+  getListAllLecturer,
 };

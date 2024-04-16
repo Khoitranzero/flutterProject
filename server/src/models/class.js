@@ -16,6 +16,7 @@ module.exports = (sequelize, DataTypes) => {
   }
   Class.init({
     className: DataTypes.STRING,
+    teacherID: DataTypes.STRING
    
   }, {
     sequelize,

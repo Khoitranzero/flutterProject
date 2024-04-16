@@ -16,7 +16,8 @@ class UserDetail extends StatefulWidget {
 }
 
 class _UserDetailState extends State<UserDetail> {
-   bool? isGv;
+  bool? isGv;
+  bool? isLecturerUser;
   User user = User(
     userId: "",
     username: "",
@@ -48,9 +49,9 @@ class _UserDetailState extends State<UserDetail> {
       print("Lỗi gán dữ liệu!!");
     });
     _getUserById();
-     
   }
- Future<void> _getRole() async {
+
+  Future<void> _getRole() async {
     final tokenAndRole = await TokenService.getTokenAndRole();
     String? _role = tokenAndRole['role'] ?? '';
     if (_role.contains("gv")) {
@@ -63,11 +64,15 @@ class _UserDetailState extends State<UserDetail> {
       });
     }
   }
+
   Future<Map<String, dynamic>> _getClassList = AppUtils.getClassInfo();
   Future<void> _getUserById() async {
     final response = await AppUtils.getUserByID(widget.userId);
     setState(() {
       user = User.fromJson(response['DT']);
+      if (user.userId.contains("gv")) {
+        isLecturerUser = true;
+      }
       _usernameController.text = user.username;
       _userIdController.text = user.userId;
       _phoneController.text = user.phone;
@@ -82,12 +87,14 @@ class _UserDetailState extends State<UserDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Thông tin của sinh viên"),
+        title: Text(isLecturerUser == true
+            ? "Thông tin của giáo viên"
+            : "Thông tin của sinh viên"),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
-          Text("MSSV",
+          Text(isLecturerUser == true ? "MSGV" : "MSSV",
               style: TextStyle(
                   fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
           CustomTextField(
@@ -137,9 +144,14 @@ class _UserDetailState extends State<UserDetail> {
             controller: _sexController,
           ),
           const SizedBox(height: 10),
-          Text("Lớp",
-              style: TextStyle(
-                  fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
+          isLecturerUser == true
+              ? Text("Lớp phụ trách",
+                  style: TextStyle(
+                      fontStyle: FontStyle.italic, fontWeight: FontWeight.bold))
+              : Text("Lớp học",
+                  style: TextStyle(
+                      fontStyle: FontStyle.italic,
+                      fontWeight: FontWeight.bold)),
           Container(
             padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
@@ -150,7 +162,9 @@ class _UserDetailState extends State<UserDetail> {
             child: DropdownButton<String>(
                 value: _selectedClassName,
                 icon: const Icon(Icons.keyboard_arrow_down),
-                hint: Text('Chọn lớp học'),
+                hint: Text(isLecturerUser == true
+                    ? "Chọn lớp phụ trách"
+                    : "Chọn lớp học"),
                 onChanged: (String? newValue) {
                   setState(() {
                     _selectedClassName = newValue;
@@ -171,66 +185,66 @@ class _UserDetailState extends State<UserDetail> {
             hintText: "Lớp",
             controller: _classController,
           ),
-          const SizedBox(height: 10),        
-        ],       
+          const SizedBox(height: 10),
+        ],
       ),
       bottomNavigationBar: isGv == true
           ? null
-           : BottomAppBar(
-            surfaceTintColor: Colors.white,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                CustomButton(
-                  buttonText: "Cập nhật lại thông tin",
-                  onPressed: () async {
-                    String userId = _userIdController.text.trim();
-                    String username = _usernameController.text.trim();
-                    String address = _addressController.text.trim();
-                    String gender = _sexController.text.trim();
-                    String className = _classController.text.trim();
-                    if (username.isEmpty ||
-                        address.isEmpty ||
-                        gender.isEmpty ||
-                        className.isEmpty) {
-                      showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return CustomDialogAlert(
-                            title: "Thông báo",
-                            message: "Vui lòng nhập đầy đủ thông tin",
-                            closeButtonText: "Đóng",
-                            onPressed: () => Navigator.of(context).pop(),
-                          );
-                        },
-                      );
-                    } else {
-                      try {
-                        final response = await AppUtils.HandleUpdate(
-                            userId, username, address, gender, className);
+          : BottomAppBar(
+              surfaceTintColor: Colors.white,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  CustomButton(
+                    buttonText: "Cập nhật lại thông tin",
+                    onPressed: () async {
+                      String userId = _userIdController.text.trim();
+                      String username = _usernameController.text.trim();
+                      String address = _addressController.text.trim();
+                      String gender = _sexController.text.trim();
+                      String className = _classController.text.trim();
+                      if (username.isEmpty ||
+                          address.isEmpty ||
+                          gender.isEmpty ||
+                          className.isEmpty) {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return CustomDialogAlert(
                               title: "Thông báo",
-                              message: response['EM'],
+                              message: "Vui lòng nhập đầy đủ thông tin",
                               closeButtonText: "Đóng",
-                              onPressed: () => {
-                                Navigator.of(context).pop(),
-                                Navigator.of(context).pop()
-                              },
+                              onPressed: () => Navigator.of(context).pop(),
                             );
                           },
                         );
-                      } catch (e) {
-                        print("Lỗi: $e");
+                      } else {
+                        try {
+                          final response = await AppUtils.HandleUpdate(
+                              userId, username, address, gender, className);
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return CustomDialogAlert(
+                                title: "Thông báo",
+                                message: response['EM'],
+                                closeButtonText: "Đóng",
+                                onPressed: () => {
+                                  Navigator.of(context).pop(),
+                                  Navigator.of(context).pop()
+                                },
+                              );
+                            },
+                          );
+                        } catch (e) {
+                          print("Lỗi: $e");
+                        }
                       }
-                    }
-                  },
-                )
-              ],
+                    },
+                  )
+                ],
+              ),
             ),
-          ),
     );
   }
 }

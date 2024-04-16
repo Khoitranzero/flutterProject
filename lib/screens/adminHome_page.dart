@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_doan/component/button.dart';
 import 'package:flutter_doan/component/homeItem.dart';
+import 'package:flutter_doan/screens/Lecturer/listLecturer_screen.dart';
 import 'package:flutter_doan/screens/Subject/subjectList_page.dart';
 import 'package:flutter_doan/screens/action_page.dart';
 import 'package:flutter_doan/screens/classList_page.dart';
@@ -98,7 +99,7 @@ class _AdminHomePageState extends State<AdminHomePage> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ClassList()))
+                                      builder: (context) => ListLecturerPage()))
                             }),
                   ],
                 ),

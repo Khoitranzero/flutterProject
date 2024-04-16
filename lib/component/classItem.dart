@@ -57,6 +57,14 @@ class ClassItem extends StatelessWidget {
               ),
               SizedBox(height: 8.0),
               Text(
+                'Giáo viên phụ trách: \n${classInfoItem.teacherInfo}',
+                style: TextStyle(
+                  fontSize: 14.0,
+                  color: Colors.black,
+                ),
+              ),
+              SizedBox(height: 8.0),
+              Text(
                 'Tổng số lượng sinh viên: ${classInfoItem.count}',
                 style: TextStyle(
                   fontSize: 14.0,

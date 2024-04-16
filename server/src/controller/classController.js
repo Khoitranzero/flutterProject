@@ -70,8 +70,8 @@ const getClassListAndStudent = async (req, res) => {
   try {
     let data = await classService.countStudentInClass();
     let newDataWithCount = data.DT.map((classItem) => {
-      let updatedClassItem = { classItem, count: classItem.Users.length };
-      return updatedClassItem;
+      let count = classItem.Users.length;
+      return { ...classItem, count: count };
     });
     return res.status(200).json({
       EM: data.EM,

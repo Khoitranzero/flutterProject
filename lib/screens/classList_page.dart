@@ -34,7 +34,8 @@ class _ClassListState extends State<ClassList> {
     super.didChangeDependencies();
     refreshData();
   }
-Future<void> _getRole() async {
+
+  Future<void> _getRole() async {
     final tokenAndRole = await TokenService.getTokenAndRole();
     String? _role = tokenAndRole['role'] ?? '';
     if (_role.contains("gv")) {
@@ -47,6 +48,7 @@ Future<void> _getRole() async {
       });
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,13 +78,13 @@ Future<void> _getRole() async {
                           classInfoItem: classInfoItem,
                           onPressed: () {
                             Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ListUserInClass(
-                                          listUser: classInfoItem.users,
-                                          classId: classInfoItem.id,
-                                          isGv:isGv
-                                        ))).then((value) => refreshData());
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ListUserInClass(
+                                            listUser: classInfoItem.users,
+                                            classId: classInfoItem.id,
+                                            isGv: isGv)))
+                                .then((value) => refreshData());
                           },
                           onLongPressed: () async {
                             final deleteAction = await _confirmDeleteClass(
@@ -99,18 +101,22 @@ Future<void> _getRole() async {
             }
           },
         ),
-        floatingActionButton:isGv ?null: Container(
-          width: 60,
-          height: 60,
-          child: FloatingActionButton.small(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const classAdd()))
-                .then((value) => refreshData()),
-            child: const Icon(Icons.add),
-          ),
-        ));
+        floatingActionButton: isGv
+            ? null
+            : Container(
+                width: 60,
+                height: 60,
+                child: FloatingActionButton.small(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const classAdd()))
+                      .then((value) => refreshData()),
+                  child: const Icon(Icons.add),
+                ),
+              ));
   }
 
   Future<bool> _confirmDeleteClass(BuildContext context, int classId) async {

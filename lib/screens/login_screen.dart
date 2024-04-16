@@ -97,7 +97,7 @@ class _LoginFormState extends State<LoginForm> {
                                 await TokenService.saveToken(token, role);
 
                                 String checkUser = role.substring(0, 2);
-                  
+
                                 if (role == 'admin') {
                                   Navigator.push(
                                       context,
