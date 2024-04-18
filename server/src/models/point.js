@@ -18,7 +18,9 @@ module.exports = (sequelize, DataTypes) => {
   Point.init({
     userId: DataTypes.STRING,
     subjectId:DataTypes.STRING,
-    point: DataTypes.INTEGER,
+    point_qt: DataTypes.INTEGER,
+    point_gk: DataTypes.INTEGER,
+    point_ck: DataTypes.INTEGER,
     hocky:DataTypes.STRING,
   }, {
     sequelize,

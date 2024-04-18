@@ -21,9 +21,13 @@ class _AddTablePointPageState extends State<AddTablePointPage> {
   List<dynamic> _subjectList = [];
   final TextEditingController _subjectId = TextEditingController();
   final TextEditingController _subjectName = TextEditingController();
-  final TextEditingController _point = TextEditingController();
+  final TextEditingController _point_qt = TextEditingController();
+  final TextEditingController _point_gk = TextEditingController();
+  final TextEditingController _point_ck = TextEditingController();
   void clearTextField() {
-    _point.text = "";
+    _point_qt.text = "";
+     _point_gk.text = "";
+      _point_ck.text = "";
   }
 
   String _selectedSubjectName = '';
@@ -99,8 +103,22 @@ class _AddTablePointPageState extends State<AddTablePointPage> {
           CustomTextField(
             isReadOnly: false,
             isPassword: false,
-            hintText: "Điểm",
-            controller: _point,
+            hintText: "Điểm Quá Trình",
+            controller: _point_qt,
+          ),
+          const SizedBox(height: 10),
+            CustomTextField(
+            isReadOnly: false,
+            isPassword: false,
+            hintText: "Điểm Giữa Kỳ",
+            controller: _point_gk,
+          ),
+          const SizedBox(height: 10),
+            CustomTextField(
+            isReadOnly: false,
+            isPassword: false,
+            hintText: "Điểm Cuối Kỳ",
+            controller: _point_ck,
           ),
           const SizedBox(height: 10),
           BottomAppBar(
@@ -110,8 +128,10 @@ class _AddTablePointPageState extends State<AddTablePointPage> {
               onPressed: () async {
                 String subjectId = _subjectId.text.trim();
                 String subjectName = _subjectName.text.trim();
-                String point = _point.text.trim();
-                if (point.isEmpty) {
+                String point_qt = _point_qt.text.trim();
+                String point_gk = _point_gk.text.trim();
+                String point_ck = _point_ck.text.trim();
+                if (point_qt.isEmpty || point_gk.isEmpty || point_ck.isEmpty) {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -124,7 +144,12 @@ class _AddTablePointPageState extends State<AddTablePointPage> {
                               });
                     },
                   );
-                } else if (int.parse(point) < 0 || int.parse(point) > 10) {
+                } else if (
+                  int.parse(point_qt) < 0 || int.parse(point_qt) > 10 ||
+                   int.parse(point_gk) < 0 || int.parse(point_gk) > 10 ||
+                    int.parse(point_ck) < 0 || int.parse(point_ck) > 10
+                
+                ) {
                   showDialog(
                     context: context,
                     builder: (BuildContext context) {
@@ -140,7 +165,7 @@ class _AddTablePointPageState extends State<AddTablePointPage> {
                   try {
                     final hk = widget.hocky == 'Học kỳ 1' ? '1' : '2';
                     final response = await AppUtils.addTablePoint(
-                        widget.userId, subjectId, point, hk);
+                        widget.userId, subjectId, point_qt,point_gk,point_ck, hk);
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {

@@ -51,21 +51,25 @@ class _UserPointPageState extends State<UserPointPage> {
           .toList());
     });
   }
- void myLongPressFunction(String subjectId) async {
-   String checkUser = _role!.substring(0, 2);
-  if(checkUser != 'gv' && checkUser !='dh'){
-    final deleteAction = await _confirmDeleteTablePoint(context, subjectId);
-    if (deleteAction) {
-      refreshData(_selectedSemester);
+
+  void myLongPressFunction(String subjectId) async {
+    String checkUser = _role!.substring(0, 2);
+    if (checkUser != 'gv' && checkUser != 'dh') {
+      final deleteAction =
+          await _confirmDeleteTablePoint(context, subjectId);
+      if (deleteAction) {
+        refreshData(_selectedSemester);
+      }
     }
-  }}
+  }
+
   @override
   Widget build(BuildContext context) {
     String _userId = widget.userId;
     return Scaffold(
       appBar: AppBar(
-              title: Text("Điểm của sinh viên"),
-            ),
+        title: Text("Điểm của sinh viên"),
+      ),
       body: FutureBuilder<List<dynamic>>(
         future: _pointData,
         builder: (context, snapshot) {
@@ -108,145 +112,283 @@ class _UserPointPageState extends State<UserPointPage> {
                     selectedSemester: _selectedSemester,
                   ),
                   SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black),
-                        ),
-                        child: DataTable(
-                          columnSpacing: MediaQuery.of(context).size.width * 0,
-                          columns: [
-                            DataColumn(
-                              label: Container(
-                                width: MediaQuery.of(context).size.width * 0.1,
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                      right: BorderSide(color: Colors.black)),
-                                ),
-                                child: Center(child: Text('ID')),
+                    scrollDirection: Axis.horizontal,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.black),
+                      ),
+                      child: DataTable(
+                        columnSpacing: MediaQuery.of(context).size.width * 0,
+                        columns: [
+                          DataColumn(
+                            label: Container(
+                              width: MediaQuery.of(context).size.width * 0.1,
+                              decoration: BoxDecoration(
+                                border: Border(
+                                    right: BorderSide(color: Colors.black)),
                               ),
+                              child: Center(child: Text('ID')),
                             ),
-                            DataColumn(
-                              label: Container(
-                                width: MediaQuery.of(context).size.width * 0.5,
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                      right: BorderSide(
-                                          color: const Color.fromARGB(
-                                              255, 248, 204, 204))),
-                                ),
-                                child: Center(child: Text('Môn học')),
+                          ),
+                          DataColumn(
+                            label: Container(
+                              width: MediaQuery.of(context).size.width * 0.3,
+                              decoration: BoxDecoration(
+                                border: Border(
+                                    right: BorderSide(color: Colors.black)),
                               ),
+                              child: Center(child: Text('Môn học')),
                             ),
-                            DataColumn(
-                              label: Container(
-                                width: MediaQuery.of(context).size.width * 0.2,
-                                decoration: BoxDecoration(
-                                  border: Border(
-                                      left: BorderSide(color: Colors.black)),
-                                ),
-                                child: Center(child: Text('Điểm')),
+                          ),
+                          DataColumn(
+                            label: Container(
+                              width: MediaQuery.of(context).size.width * 0.1,
+                              decoration: BoxDecoration(
+                                border: Border(
+                                    right: BorderSide(color: Colors.black)),
                               ),
+                              child: Center(child: Text('QT')),
                             ),
-                          ],
-                          rows: points.map<DataRow>((point) {
-                            return DataRow(
-                              cells: [
-                                DataCell(
-                                  Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.1,
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                          right:
-                                              BorderSide(color: Colors.black)),
+                          ),
+                          DataColumn(
+                            label: Container(
+                              width: MediaQuery.of(context).size.width * 0.1,
+                              decoration: BoxDecoration(
+                                border: Border(
+                                    right: BorderSide(color: Colors.black)),
+                              ),
+                              child: Center(child: Text('GK')),
+                            ),
+                          ),
+                          DataColumn(
+                            label: Container(
+                              width: MediaQuery.of(context).size.width * 0.1,
+                              decoration: BoxDecoration(
+                                border: Border(
+                                    right: BorderSide(color: Colors.black)),
+                              ),
+                              child: Center(child: Text('CK')),
+                            ),
+                          ),
+                           DataColumn(
+                            label: Container(
+                              width: MediaQuery.of(context).size.width * 0.1,
+                              decoration: BoxDecoration(
+                                border: Border(
+                                    // right: BorderSide(color: Colors.black)
                                     ),
+                              ),
+                              child: Center(child: Text('TK')),
+                            ),
+                          ),
+                        ],
+                        rows: points.map<DataRow>((point) {
+                     double diemTongKetFormatted = (double.parse(point['point_qt'].toString()) * 0.1 +
+                      double.parse(point['point_gk'].toString()) * 0.3 +
+                      double.parse(point['point_ck'].toString()) * 0.6);
+String diemTongKet = diemTongKetFormatted.toStringAsFixed(2);
+
+                          return DataRow(
+                            cells: [
+                              DataCell(
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                        right: BorderSide(color: Colors.black)),
+                                  ),
+                                  child: Text(
+                                      point['subjectId'].toString() ?? ''),
+                                ),
+                              ),
+                              DataCell(
+                                onTap: () {
+                                  _role == 'admin'
+                                      ? Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  UpdateSubjectAndPoint(
+                                                    subjectId:
+                                                        point['subjectId']
+                                                            .toString(),
+                                                    subject: point['subjectName']
+                                                        .toString(),
+                                                    point_qt: point['point_qt']
+                                                        .toString(),
+                                                    point_gk: point['point_gk']
+                                                        .toString(),
+                                                    point_ck: point['point_ck']
+                                                        .toString(),
+                                                    hocky: _selectedSemester
+                                                        .toString(),
+                                                  ))).then((value) =>
+                                          refreshData(_selectedSemester))
+                                      : null;
+                                },
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.3,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                        right:
+                                            BorderSide(color: Colors.black)),
+                                  ),
+                                  child: Center(
                                     child: Text(
-                                        point['subjectId'].toString() ?? ''),
+                                        point['subjectName'].toString() ?? ''),
                                   ),
                                 ),
-                                DataCell(
-                                  onTap: () {
-                                    _role == 'admin'
-                                        ? Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    UpdateSubjectAndPoint(
-                                                      subjectId:
-                                                          point['subjectId']
-                                                              .toString(),
-                                                      subject:
-                                                          point['subjectName']
-                                                              .toString(),
-                                                      point: point['point']
-                                                          .toString(),
-                                                      hocky: _selectedSemester
-                                                          .toString(),
-                                                    ))).then((value) =>
-                                            refreshData(_selectedSemester))
-                                        : null;
-                                  },
-                                  Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.5,
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                          right:
-                                              BorderSide(color: Colors.black)),
-                                    ),
-                                    child: Center(
+                                onLongPress: () {
+                                  myLongPressFunction(
+                                      point['subjectId'].toString());
+                                },
+                              ),
+                              DataCell(
+                                onTap: () {
+                                  _role == 'admin'
+                                      ? Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  UpdateSubjectAndPoint(
+                                                    subjectId:
+                                                        point['subjectId']
+                                                            .toString(),
+                                                    subject: point['subjectName']
+                                                        .toString(),
+                                                    point_qt: point['point_qt']
+                                                        .toString(),
+                                                    point_gk: point['point_gk']
+                                                        .toString(),
+                                                    point_ck: point['point_ck']
+                                                        .toString(),
+                                                    hocky: _selectedSemester
+                                                        .toString(),
+                                                  ))).then((value) =>
+                                          refreshData(_selectedSemester))
+                                      : null;
+                                },
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                        right:
+                                            BorderSide(color: Colors.black)),
+                                  ),
+                                  child: Center(
                                       child: Text(
-                                          point['subjectName'].toString() ??
-                                              ''),
-                                    ),
-                                  ),
-                                 onLongPress: () {
-                                  myLongPressFunction(point['subjectId'].toString());   },
+                                          point['point_qt'].toString() ?? '')),
                                 ),
-                                DataCell(
-                                  onTap: () {
-                                    _role == 'admin'
-                                        ? Navigator.push(
-                                            context,
-                                            MaterialPageRoute(
-                                                builder: (context) =>
-                                                    UpdateSubjectAndPoint(
-                                                      subjectId:
-                                                          point['subjectId']
-                                                              .toString(),
-                                                      subject:
-                                                          point['subjectName']
-                                                              .toString(),
-                                                      point: point['point']
-                                                          .toString(),
-                                                      hocky: _selectedSemester
-                                                          .toString(),
-                                                    ))).then((value) =>
-                                            refreshData(_selectedSemester))
-                                        : null;
-                                  },
-                                  Container(
-                                    width:
-                                        MediaQuery.of(context).size.width * 0.2,
-                                    child: Center(
-                                        child: Text(
-                                            point['point'].toString() ?? '')),
-                                    decoration: BoxDecoration(
-                                      border: Border(
-                                          left:
-                                              BorderSide(color: Colors.black)),
-                                    ),
+                                onLongPress: () {
+                                  myLongPressFunction(
+                                      point['subjectId'].toString());
+                                },
+                              ),
+                              DataCell(
+                                onTap: () {
+                                  _role == 'admin'
+                                      ? Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  UpdateSubjectAndPoint(
+                                                    subjectId:
+                                                        point['subjectId']
+                                                            .toString(),
+                                                    subject: point['subjectName']
+                                                        .toString(),
+                                                    point_qt: point['point_qt']
+                                                        .toString(),
+                                                    point_gk: point['point_gk']
+                                                        .toString(),
+                                                    point_ck: point['point_ck']
+                                                        .toString(),
+                                                    hocky: _selectedSemester
+                                                        .toString(),
+                                                  ))).then((value) =>
+                                          refreshData(_selectedSemester))
+                                      : null;
+                                },
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                        right:
+                                            BorderSide(color: Colors.black)),
                                   ),
-                                   onLongPress: () {
-                                  myLongPressFunction(point['subjectId'].toString());
-                            },
+                                  child: Center(
+                                      child: Text(
+                                          point['point_gk'].toString() ?? '')),
                                 ),
-                              ],
-                            );
-                          }).toList(),
-                        ),
-                      )),
+                                onLongPress: () {
+                                  myLongPressFunction(
+                                      point['subjectId'].toString());
+                                },
+                              ),
+                              DataCell(
+                                onTap: () {
+                                  _role == 'admin'
+                                      ? Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  UpdateSubjectAndPoint(
+                                                    subjectId:
+                                                        point['subjectId']
+                                                            .toString(),
+                                                    subject: point['subjectName']
+                                                        .toString(),
+                                                    point_qt: point['point_qt']
+                                                        .toString(),
+                                                    point_gk: point['point_gk']
+                                                        .toString(),
+                                                    point_ck: point['point_ck']
+                                                        .toString(),
+                                                    hocky: _selectedSemester
+                                                        .toString(),
+                                                  ))).then((value) =>
+                                          refreshData(_selectedSemester))
+                                      : null;
+                                },
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                        right:
+                                            BorderSide(color: Colors.black)),
+                                  ),
+                                  child: Center(
+                                      child: Text(
+                                          point['point_ck'].toString() ?? '')),
+                                ),
+                                onLongPress: () {
+                                  myLongPressFunction(
+                                      point['subjectId'].toString());
+                                },
+                              ),
+                                  DataCell(
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                        // right:BorderSide(color: Colors.black)
+                                            ),
+                                  ),
+                                  child: Center(child: Text(diemTongKet.toString())),
+                                ),
+                              ),
+                            ],
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             );
@@ -274,7 +416,8 @@ class _UserPointPageState extends State<UserPointPage> {
           : null,
     );
   }
-    Future<bool> _confirmDeleteTablePoint(
+
+  Future<bool> _confirmDeleteTablePoint(
       BuildContext context, String subjectId) async {
     final shouldDelete = await showDialog<bool>(
       context: context,
@@ -298,7 +441,10 @@ class _UserPointPageState extends State<UserPointPage> {
 
     if (shouldDelete != null && shouldDelete) {
       try {
-        final response = await AppUtils.deleteTablePoint(widget.userId,subjectId,_selectedSemester== 'Học kỳ 1' ? '1' : '2');
+        final response = await AppUtils.deleteTablePoint(
+            widget.userId,
+            subjectId,
+            _selectedSemester == 'Học kỳ 1' ? '1' : '2');
         showDialog(
           context: context,
           builder: (BuildContext context) {

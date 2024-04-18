@@ -1,4 +1,5 @@
 import db from "../models";
+import point from "../models/point";
 const checkSubjectIdExist = async (data) => {
     let subject = await db.Point.findOne({
       where: { 
@@ -61,7 +62,11 @@ const createNewPoint = async (data) => {
 // api updatePoint
 const updatePoint = async (data) => {
     try {
-        const updatedPoint = await db.Point.update({point: data.point}, {
+        const updatedPoint = await db.Point.update(
+            {
+                point_qt: data.point_qt,
+                point_gk: data.point_gk, 
+                point_ck: data.point_ck}, {
             where: {subjectId: data.subjectId}
         });
         return {

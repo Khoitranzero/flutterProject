@@ -8,13 +8,17 @@ import 'package:http/http.dart';
 class UpdateSubjectAndPoint extends StatefulWidget {
   final String subjectId;
   final String subject;
-  final String point;
+  final String point_qt;
+  final String point_gk;
+  final String point_ck;
   final String hocky;
   const UpdateSubjectAndPoint(
       {super.key,
       required this.subjectId,
       required this.subject,
-      required this.point,
+      required this.point_qt,
+      required this.point_gk,
+      required this.point_ck,
       required this.hocky});
 
   @override
@@ -23,10 +27,14 @@ class UpdateSubjectAndPoint extends StatefulWidget {
 
 final TextEditingController _subjectIdController = TextEditingController();
 final TextEditingController _subjectNameController = TextEditingController();
-final TextEditingController _subjectPointController = TextEditingController();
+final TextEditingController _subjectPointQtController = TextEditingController();
+final TextEditingController _subjectPointGkController = TextEditingController();
+final TextEditingController _subjectPointCkController = TextEditingController();
 final TextEditingController _subjectHocKyController = TextEditingController();
 void clearTextField() {
-  _subjectPointController.text = "";
+  _subjectPointQtController.text = "";
+  _subjectPointGkController.text = "";
+  _subjectPointCkController.text = "";
 }
 
 class _UpdateSubjectAndPointState extends State<UpdateSubjectAndPoint> {
@@ -37,7 +45,9 @@ class _UpdateSubjectAndPointState extends State<UpdateSubjectAndPoint> {
     _subjectIdController.text = widget.subjectId;
     _subjectHocKyController.text = widget.hocky;
     _subjectNameController.text = widget.subject;
-    _subjectPointController.text = widget.point;
+    _subjectPointQtController.text = widget.point_qt;
+    _subjectPointGkController.text = widget.point_gk;
+    _subjectPointCkController.text = widget.point_ck;
   }
 
   @override
@@ -79,8 +89,24 @@ class _UpdateSubjectAndPointState extends State<UpdateSubjectAndPoint> {
                   ),
                   CustomTextField(
                       isPassword: false,
-                      hintText: "Điểm",
-                      controller: _subjectPointController,
+                      hintText: "Điểm Quá Trình",
+                      controller: _subjectPointQtController,
+                      isReadOnly: false),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                   CustomTextField(
+                      isPassword: false,
+                      hintText: "Điểm Giữa Kỳ",
+                      controller: _subjectPointGkController,
+                      isReadOnly: false),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                   CustomTextField(
+                      isPassword: false,
+                      hintText: "Điểm Cuối Kỳ",
+                      controller: _subjectPointCkController,
                       isReadOnly: false),
                   const SizedBox(
                     height: 20,
@@ -90,10 +116,13 @@ class _UpdateSubjectAndPointState extends State<UpdateSubjectAndPoint> {
                       onPressed: () async {
                         String subjectId = _subjectIdController.text.trim();
                         String subjectName = _subjectNameController.text.trim();
-                        String subjectPoint =
-                            _subjectPointController.text.trim();
+                        String subjectPointQt =_subjectPointQtController.text.trim();
+                        String subjectPointGk =_subjectPointGkController.text.trim();
+                        String subjectPointCk =_subjectPointCkController.text.trim();
                         if (subjectName.isEmpty ||
-                            subjectPoint.isEmpty ||
+                            subjectPointQt.isEmpty ||
+                            subjectPointGk.isEmpty ||
+                            subjectPointCk.isEmpty ||
                             _subjectIdController.text.isEmpty ||
                             _subjectHocKyController.text.isEmpty) {
                           showDialog(
@@ -107,8 +136,14 @@ class _UpdateSubjectAndPointState extends State<UpdateSubjectAndPoint> {
                               );
                             },
                           );
-                        } else if (int.parse(subjectPoint) < 0 ||
-                            int.parse(subjectPoint) > 10) {
+                        } else if (int.parse(subjectPointQt) < 0 ||
+                            int.parse(subjectPointQt) > 10 ||
+                            int.parse(subjectPointGk) < 0 ||
+                            int.parse(subjectPointGk) > 10 ||
+                            int.parse(subjectPointCk) < 0 ||
+                            int.parse(subjectPointCk) > 10
+                            
+                            ) {
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -125,7 +160,7 @@ class _UpdateSubjectAndPointState extends State<UpdateSubjectAndPoint> {
                         } else {
                           try {
                             final response = await AppUtils.updateTablePoint(
-                                subjectName, subjectId, subjectPoint);
+                                subjectName, subjectId, subjectPointQt,subjectPointGk,subjectPointCk);
                             showDialog(
                               context: context,
                               builder: (BuildContext context) {

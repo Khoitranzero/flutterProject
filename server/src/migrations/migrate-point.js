@@ -15,7 +15,13 @@ module.exports = {
       subjectId: {
         type: Sequelize.STRING
       },
-      point: {
+      point_qt: {
+        type: Sequelize.INTEGER
+      },
+      point_gk: {
+        type: Sequelize.INTEGER
+      },
+      point_ck: {
         type: Sequelize.INTEGER
       },
       hocky: {
