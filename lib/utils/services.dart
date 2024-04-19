@@ -129,49 +129,62 @@ class AppUtils {
     }
   }
 
-  static Future<Map<String, dynamic>> getTablePoint(String userId) async {
-    try {
-      final responsePoint = await http.get(
-        Uri.parse("$baseApi/point/read"),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-        },
-      );
-      final responseSubject = await http.get(
-        Uri.parse("$baseApi/subject/read"),
-        headers: <String, String>{
-          'Content-Type': 'application/json',
-        },
-      );
+ static Future<Map<String, dynamic>> getTablePoint(String userId) async {
+  try {
+    final responsePoint = await http.get(
+      Uri.parse("$baseApi/point/read"),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+    );
+    final responseSubject = await http.get(
+      Uri.parse("$baseApi/subject/read"),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+    );
 
-      if (responsePoint.statusCode == 200 &&
-          responseSubject.statusCode == 200) {
-        final List<dynamic> pointData = jsonDecode(responsePoint.body)['DT'];
-        final List<dynamic> subjectData =
-            jsonDecode(responseSubject.body)['DT'];
+    if (responsePoint.statusCode == 200 &&
+        responseSubject.statusCode == 200) {
+      final List<dynamic> pointData = jsonDecode(responsePoint.body)['DT'];
+      final List<dynamic> subjectData = jsonDecode(responseSubject.body)['DT'];
 
-        final List<Map<String, dynamic>> userPoints = [];
-        final Map<String, String> subjectMap = {};
+      final List<Map<String, dynamic>> userPoints = [];
+      final Map<String, Map<String, dynamic>?> subjectMap = {}; // Use nullable maps
 
-        subjectData.forEach((subject) {
-          subjectMap[subject['subjectId']] = subject['subjectName'];
-        });
+      // Populate subjectMap with subjectId as key and subject details as value
+      subjectData.forEach((subject) {
+        subjectMap[subject['subjectId']] = {
+          'subjectName': subject['subjectName'],
+          'credits': subject['credits'],
+        };
+      });
 
-        pointData.forEach((point) {
+        // Iterate through pointData and match subjectId with subjectMap to add subject details to points
+      pointData.forEach((point) {
           if (point['userId'] == userId) {
-            point['subjectName'] = subjectMap[point['subjectId']];
-            userPoints.add(point);
-          }
+            final subjectId = point['subjectId'];
+          // Check if subjectMap contains the subjectId and it is not null
+          if (subjectMap.containsKey(subjectId) && subjectMap[subjectId] != null) {
+            // Include subjectName and credits from subjectMap
+            point['subjectName'] = subjectMap[subjectId]!['subjectName'] ?? ''; // Use null-aware operator
+            point['credits'] = subjectMap[subjectId]!['credits'] ?? ''; // Use null-aware operator
+              userPoints.add(point);
+            }
+        }
         });
 
-        return {'points': userPoints};
-      } else {
-        throw Exception('Thất bại khi gọi API!');
-      }
-    } catch (e) {
-      throw Exception('Lỗi: $e');
+      return {'points': userPoints};
+    } else {
+      throw Exception('Thất bại khi gọi API!');
     }
+  } catch (e) {
+    throw Exception('Lỗi: $e');
   }
+}
+
+
+
 
   static Future<Map<String, dynamic>> deleteUser(String userId) async {
     final response = await http
@@ -297,13 +310,13 @@ class AppUtils {
   }
 
   static Future<Map<String, dynamic>> addSubject(
-      String subjectId, String subjectName) async {
+      String subjectId, String subjectName, String credits) async {
     final responsePoint = await http.post(
       Uri.parse("$baseApi/subject/create"),
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: {'subjectId': subjectId, 'subjectName': subjectName},
+      body: {'subjectId': subjectId, 'subjectName': subjectName, 'credits': credits},
     );
     if (responsePoint.statusCode == 200) {
       return jsonDecode(responsePoint.body);
@@ -381,13 +394,14 @@ class AppUtils {
   }
 
   static Future<Map<String, dynamic>> updateSubject(
-      String subjectId, String subjectName) async {
+      String subjectId, String subjectName, String credits) async {
     final responseSubject = await http
         .put(Uri.parse("$baseApi/subject/update"), headers: <String, String>{
       'ContentType': 'application/json',
     }, body: <String, String>{
       'subjectId': subjectId,
       'subjectName': subjectName,
+      'credits' : credits
     });
 
     if (responseSubject.statusCode == 200) {

@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
   Subject.init({
     subjectId: DataTypes.STRING,
     subjectName: DataTypes.STRING,
+    credits :DataTypes.INTEGER
   }, {
     sequelize,
     modelName: 'Subject',

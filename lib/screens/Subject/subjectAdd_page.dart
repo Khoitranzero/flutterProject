@@ -15,6 +15,7 @@ class subjectAdd extends StatefulWidget {
 class _subjectAddState extends State<subjectAdd> {
   TextEditingController _subjectId = TextEditingController();
   TextEditingController _subjectName = TextEditingController();
+    TextEditingController _credits = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -37,12 +38,19 @@ class _subjectAddState extends State<subjectAdd> {
                 controller: _subjectName,
                 isReadOnly: false),
             const SizedBox(height: 10),
+             CustomTextField(
+                isPassword: false,
+                hintText: "Số tín chỉ",
+                controller: _credits,
+                isReadOnly: false),
+            const SizedBox(height: 10),
             CustomButton(
                 buttonText: "Thêm môn",
                 onPressed: () async {
                   String subjectId = _subjectId.text.trim();
                   String subjectName = _subjectName.text.trim();
-                  if (subjectName.isEmpty || subjectId.isEmpty) {
+                   String credits = _credits.text.trim();
+                  if (subjectName.isEmpty || subjectId.isEmpty || credits.isEmpty) {
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {
@@ -57,7 +65,7 @@ class _subjectAddState extends State<subjectAdd> {
                     );
                   } else {
                     final response =
-                        await AppUtils.addSubject(subjectId, subjectName);
+                        await AppUtils.addSubject(subjectId, subjectName, credits);
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {

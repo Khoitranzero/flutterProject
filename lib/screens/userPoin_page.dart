@@ -98,29 +98,37 @@ class _UserPointPageState extends State<UserPointPage> {
                 ),
               );
             }
-
-            return Center(
-              child: Column(
-                children: [
-                  CustomDropdownButton(
-                    onChanged: (semester) {
-                      setState(() {
-                        _selectedSemester = semester;
-                      });
-                      _getTablePoint(semester);
-                    },
-                    selectedSemester: _selectedSemester,
-                  ),
-                  SingleChildScrollView(
-                    scrollDirection: Axis.horizontal,
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        border: Border.all(color: Colors.black),
-                      ),
-                      child: DataTable(
-                        columnSpacing: MediaQuery.of(context).size.width * 0,
-                        columns: [
-                          DataColumn(
+return Center(
+  child: Column(
+    children: [
+      CustomDropdownButton(
+        onChanged: (semester) {
+          setState(() {
+            _selectedSemester = semester;
+          });
+          _getTablePoint(semester);
+        },
+        selectedSemester: _selectedSemester,
+      ),
+      SizedBox(height: 10), // Thêm khoảng cách giữa DropdownButton và DataTable
+      Container(
+        margin: EdgeInsets.symmetric(horizontal: 10), // Điều chỉnh margin cho Container
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.black),
+        ),
+        child: SingleChildScrollView(
+          padding: EdgeInsets.zero, // Loại bỏ padding của SingleChildScrollView
+          scrollDirection: Axis.horizontal,
+          child: SizedBox(
+            width: MediaQuery.of(context).size.width, // Đảm bảo DataTable có chiều rộng bằng SingleChildScrollView
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.transparent), // Loại bỏ biên của DecoratedBox
+              ),
+              child: DataTable(
+                columnSpacing: MediaQuery.of(context).size.width * 0,
+                columns: [
+                  DataColumn(
                             label: Container(
                               width: MediaQuery.of(context).size.width * 0.1,
                               decoration: BoxDecoration(
@@ -138,6 +146,16 @@ class _UserPointPageState extends State<UserPointPage> {
                                     right: BorderSide(color: Colors.black)),
                               ),
                               child: Center(child: Text('Môn học')),
+                            ),
+                          ),
+                           DataColumn(
+                            label: Container(
+                              width: MediaQuery.of(context).size.width * 0.1,
+                              decoration: BoxDecoration(
+                                border: Border(
+                                    right: BorderSide(color: Colors.black)),
+                              ),
+                              child: Center(child: Text('TC')),
                             ),
                           ),
                           DataColumn(
@@ -181,26 +199,30 @@ class _UserPointPageState extends State<UserPointPage> {
                               child: Center(child: Text('TK')),
                             ),
                           ),
-                        ],
-                        rows: points.map<DataRow>((point) {
-                     double diemTongKetFormatted = (double.parse(point['point_qt'].toString()) * 0.1 +
+                ],
+                rows: points.map<DataRow>((point) {
+                  double diemTongKetFormatted = (double.parse(point['point_qt'].toString()) * 0.1 +
                       double.parse(point['point_gk'].toString()) * 0.3 +
                       double.parse(point['point_ck'].toString()) * 0.6);
-String diemTongKet = diemTongKetFormatted.toStringAsFixed(2);
+                  String diemTongKet = diemTongKetFormatted.toStringAsFixed(1);
 
-                          return DataRow(
-                            cells: [
-                              DataCell(
-                                Container(
-                                  width:
-                                      MediaQuery.of(context).size.width * 0.1,
-                                  decoration: BoxDecoration(
-                                    border: Border(
-                                        right: BorderSide(color: Colors.black)),
-                                  ),
-                                  child: Text(
-                                      point['subjectId'].toString() ?? ''),
-                                ),
+                  return DataRow(
+                    cells: [
+                      DataCell(
+                               Container(
+                                      width: MediaQuery.of(context).size.width * 0.1,
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          right: BorderSide(color: Colors.black),
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          point['subjectId'].toString() ?? '',
+                                          //textAlign: TextAlign.left, 
+                                        ),
+                                      ),
+                                    ),
                               ),
                               DataCell(
                                 onTap: () {
@@ -239,6 +261,48 @@ String diemTongKet = diemTongKetFormatted.toStringAsFixed(2);
                                     child: Text(
                                         point['subjectName'].toString() ?? ''),
                                   ),
+                                ),
+                                onLongPress: () {
+                                  myLongPressFunction(
+                                      point['subjectId'].toString());
+                                },
+                              ),
+                               DataCell(
+                                onTap: () {
+                                  _role == 'admin'
+                                      ? Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  UpdateSubjectAndPoint(
+                                                    subjectId:
+                                                        point['subjectId']
+                                                            .toString(),
+                                                    subject: point['subjectName']
+                                                        .toString(),
+                                                    point_qt: point['point_qt']
+                                                        .toString(),
+                                                    point_gk: point['point_gk']
+                                                        .toString(),
+                                                    point_ck: point['point_ck']
+                                                        .toString(),
+                                                    hocky: _selectedSemester
+                                                        .toString(),
+                                                  ))).then((value) =>
+                                          refreshData(_selectedSemester))
+                                      : null;
+                                },
+                                Container(
+                                  width:
+                                      MediaQuery.of(context).size.width * 0.1,
+                                  decoration: BoxDecoration(
+                                    border: Border(
+                                        right:
+                                            BorderSide(color: Colors.black)),
+                                  ),
+                                  child: Center(
+                                      child: Text(
+                                          point['credits'].toString() ?? '')),
                                 ),
                                 onLongPress: () {
                                   myLongPressFunction(
@@ -371,6 +435,7 @@ String diemTongKet = diemTongKetFormatted.toStringAsFixed(2);
                                       point['subjectId'].toString());
                                 },
                               ),
+                             
                                   DataCell(
                                 Container(
                                   width:
@@ -383,15 +448,17 @@ String diemTongKet = diemTongKetFormatted.toStringAsFixed(2);
                                   child: Center(child: Text(diemTongKet.toString())),
                                 ),
                               ),
-                            ],
-                          );
-                        }).toList(),
-                      ),
-                    ),
-                  ),
-                ],
+                    ],
+                  );
+                }).toList(),
               ),
-            );
+            ),
+          ),
+        ),
+      ),
+    ],
+  ),
+);
           }
         },
       ),
