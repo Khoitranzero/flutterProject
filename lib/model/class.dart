@@ -19,7 +19,7 @@ class ClassInfo {
           .map((userData) => User.fromJson(userData))
           .toList();
       return ClassInfo(
-        id: json['id'],
+        id: json['id'] ?? 'Chưa cập nhật',
         className: json['className'] ?? 'Chưa cập nhật',
         teacherInfo: User.fromJson(json['teacherInfo'] ?? {}),
         users: users,

@@ -143,6 +143,22 @@ const getUserNotInClass = async (req, res) => {
     });
   }
 };
+const removeTeacerOutClass = async (req, res) => {
+  try {
+    let data = await userApiService.removeTeacherOutOfClass(req.body);
+    return res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      EM: "error from server",
+      EC: "-1",
+      DT: "",
+    });
+  }
+};
 const updateClassForMultipleUsers = async (req, res) => {
   try {
     const { listUserId, classId } = req.body;
@@ -214,6 +230,24 @@ const getListLecturer = async (req,res) => {
     });
   }
 }
+const getTeacherNotInClass = async (req,res) => {
+  try {
+    let data = await userApiService.filterTeacherNotInClass();
+    if (data) {
+      return res.status(200).json({
+        EM: data.EM,
+        EC: data.EC,
+        DT: data.DT,
+      });
+    }
+  } catch (e) {
+    return res.status(500).json({
+      EM: "error from server",
+      EC: "-1",
+      DT: "",
+    });
+  }
+}
 module.exports = {
   readFunc,
   createFunc,
@@ -226,5 +260,7 @@ module.exports = {
   updateClassForMultipleUsers,
   moveUserFromClassController,
   getUserByID,
-  getListLecturer
+  getListLecturer,
+  getTeacherNotInClass,
+  removeTeacerOutClass
 };

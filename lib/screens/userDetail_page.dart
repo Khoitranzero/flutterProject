@@ -152,33 +152,35 @@ class _UserDetailState extends State<UserDetail> {
                   style: TextStyle(
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.bold)),
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                border: Border.all(color: Colors.black)),
-            height: 50,
-            margin: const EdgeInsets.only(bottom: 15),
-            child: DropdownButton<String>(
-                value: _selectedClassName,
-                icon: const Icon(Icons.keyboard_arrow_down),
-                hint: Text(isLecturerUser == true
-                    ? "Chọn lớp phụ trách"
-                    : "Chọn lớp học"),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedClassName = newValue;
-                    _classController.text = _selectedClassName!;
-                  });
-                },
-                items: _classList.map<DropdownMenuItem<String>>((dynamic item) {
-                  String className = item['className'];
-                  return DropdownMenuItem<String>(
-                    value: className,
-                    child: Text(className),
-                  );
-                }).toList()),
-          ),
+          isLecturerUser == true
+              ? const SizedBox()
+              : Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(color: Colors.black)),
+                  height: 50,
+                  margin: const EdgeInsets.only(bottom: 15),
+                  child: DropdownButton<String>(
+                    value: _selectedClassName,
+                    icon: const Icon(Icons.keyboard_arrow_down),
+                    hint: const Text("Chọn lớp học"),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        _selectedClassName = newValue;
+                        _classController.text = _selectedClassName!;
+                      });
+                    },
+                    items: _classList
+                        .map<DropdownMenuItem<String>>((dynamic item) {
+                      String className = item['className'];
+                      return DropdownMenuItem<String>(
+                        value: className,
+                        child: Text(className),
+                      );
+                    }).toList(),
+                  ),
+                ),
           CustomTextField(
             isReadOnly: true,
             isPassword: false,

@@ -35,8 +35,7 @@ class _UserItemState extends State<UserItem> {
     final tokenAndRole = await TokenService.getTokenAndRole();
     _role = tokenAndRole['role'] ?? '';
     setState(() {
-      isGv = _role!.contains("gv") ? 'gv' : null; // Set isGv based on the role
-      print(isGv);
+      isGv = _role!.contains("gv") ? 'gv' : null;
     });
   }
 
@@ -92,20 +91,21 @@ class _UserItemState extends State<UserItem> {
                     ),
                   ),
                   SizedBox(width: 20),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: widget.onPressedButton2,
-                      child: Icon(Icons.scoreboard),
-                      style: ElevatedButton.styleFrom(
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                  if (widget.user.userId.contains("dh"))
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: widget.onPressedButton2,
+                        child: Icon(Icons.scoreboard),
+                        style: ElevatedButton.styleFrom(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
                         ),
                       ),
                     ),
-                  ),
                   SizedBox(width: 20),
                   // Hide Button 3 if isGv is true
-                  if (isGv == null) // Check for null before accessing
+                  if (isGv == null)
                     Expanded(
                       child: ElevatedButton(
                         onPressed: widget.onPressedButton3,

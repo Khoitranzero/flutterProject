@@ -68,15 +68,7 @@ class _ListLecturerPageState extends State<ListLecturerPage> {
                             ),
                           );
                         },
-                        onPressedButton2: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  UserPointPage(userId: user.userId),
-                            ),
-                          );
-                        },
+                        onPressedButton2: () {},
                         onPressedButton3: () async {
                           final shouldDelete =
                               await _confirmDeleteUser(context, user);

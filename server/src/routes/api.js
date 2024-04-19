@@ -37,6 +37,8 @@ router.put("/user/update", userController.updateFunc);
 router.put("/user/updateMultiClass", userController.updateClassForMultipleUsers);
 router.put("/user/moveUserFromClass", userController.moveUserFromClassController);
 router.delete("/user/delete", userController.deleteFunc);
+router.get("/user/getTeacherNotInClass", userController.getTeacherNotInClass);
+router.put("/user/removeTeacherOutOfClass", userController.removeTeacerOutClass);
 
 router.get("/user/getLecturer", userController.getListLecturer);
 
@@ -51,6 +53,7 @@ router.delete("/point/delete", pointController.deleteFunc);
 router.post("/class/create", classController.createFunc);
 router.put("/class/update", classController.updateFunc);
 router.delete("/class/delete", classController.deleteFunc);
+router.put("/class/addTeacher", classController.addTeacherIntoClass);
 
  router.get("/subject/read", subjectController.readFunc);
 router.post("/subject/create", subjectController.createFunc);

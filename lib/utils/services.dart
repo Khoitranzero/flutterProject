@@ -3,7 +3,7 @@ import "dart:convert";
 import "package:http/http.dart" as http;
 
 class AppUtils {
-  static const String baseApi = "http://localhost:8080/api/v1";
+  static const String baseApi = "http://192.168.238.1:8080/api/v1";
 
   static Future<Map<String, dynamic>> registerUser(
       String username, String phoneNumber, String password, String role) async {
@@ -47,8 +47,6 @@ class AppUtils {
       'userId': userId!,
     });
     if (response.statusCode == 200) {
-      print("response['DT']");
-      print(response.body);
       return jsonDecode(response.body);
     } else {
       throw Exception('Tìm người thất bại');
@@ -112,49 +110,68 @@ class AppUtils {
     }
   }
 
-  static Future<Map<String, dynamic>> getTablePoint(String userId) async {
-  try {
-    final responsePoint = await http.get(
-      Uri.parse("$baseApi/point/read"),
+  static Future<Map<String, dynamic>> removeTeacher(
+      int id, String userId) async {
+    final response = await http.put(
+      Uri.parse("$baseApi/user/removeTeacherOutOfClass"),
       headers: <String, String>{
-        'Content-Type': 'application/json',
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: {
+        'id': id.toString(),
+        'userId': userId,
       },
     );
-    final responseSubject = await http.get(
-      Uri.parse("$baseApi/subject/read"),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-      },
-    );
-
-    if (responsePoint.statusCode == 200 &&
-        responseSubject.statusCode == 200) {
-      final List<dynamic> pointData = jsonDecode(responsePoint.body)['DT'];
-      final List<dynamic> subjectData = jsonDecode(responseSubject.body)['DT'];
-
-      final List<Map<String, dynamic>> userPoints = [];
-      final Map<String, String> subjectMap = {};
-
- 
-      subjectData.forEach((subject) {
-        subjectMap[subject['subjectId']] = subject['subjectName'];
-      });
-
-      pointData.forEach((point) {
-        if (point['userId'] == userId) {
-          point['subjectName'] = subjectMap[point['subjectId']];
-          userPoints.add(point);
-        }
-      });
-
-      return {'points': userPoints};
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
     } else {
-      throw Exception('Thất bại khi gọi API!');
+      throw Exception('Cập nhật thất bại');
     }
-  } catch (e) {
-    throw Exception('Lỗi: $e');
   }
-}
+
+  static Future<Map<String, dynamic>> getTablePoint(String userId) async {
+    try {
+      final responsePoint = await http.get(
+        Uri.parse("$baseApi/point/read"),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+      );
+      final responseSubject = await http.get(
+        Uri.parse("$baseApi/subject/read"),
+        headers: <String, String>{
+          'Content-Type': 'application/json',
+        },
+      );
+
+      if (responsePoint.statusCode == 200 &&
+          responseSubject.statusCode == 200) {
+        final List<dynamic> pointData = jsonDecode(responsePoint.body)['DT'];
+        final List<dynamic> subjectData =
+            jsonDecode(responseSubject.body)['DT'];
+
+        final List<Map<String, dynamic>> userPoints = [];
+        final Map<String, String> subjectMap = {};
+
+        subjectData.forEach((subject) {
+          subjectMap[subject['subjectId']] = subject['subjectName'];
+        });
+
+        pointData.forEach((point) {
+          if (point['userId'] == userId) {
+            point['subjectName'] = subjectMap[point['subjectId']];
+            userPoints.add(point);
+          }
+        });
+
+        return {'points': userPoints};
+      } else {
+        throw Exception('Thất bại khi gọi API!');
+      }
+    } catch (e) {
+      throw Exception('Lỗi: $e');
+    }
+  }
 
   static Future<Map<String, dynamic>> deleteUser(String userId) async {
     final response = await http
@@ -171,7 +188,11 @@ class AppUtils {
   }
 
   static Future<Map<String, dynamic>> updateTablePoint(
-      String subjectName, String subjectId, String point_qt,String point_gk,String point_ck) async {
+      String subjectName,
+      String subjectId,
+      String point_qt,
+      String point_gk,
+      String point_ck) async {
     final Map<String, dynamic> data = {
       'subjectId': subjectId,
       'subjectName': subjectName,
@@ -189,14 +210,16 @@ class AppUtils {
         headers: <String, String>{
           'Content-Type': 'application/x-www-form-urlencoded'
         },
-        body: {'subjectId': subjectId, 'point_qt': point_qt,'point_gk': point_gk,'point_ck': point_ck},
+        body: {
+          'subjectId': subjectId,
+          'point_qt': point_qt,
+          'point_gk': point_gk,
+          'point_ck': point_ck
+        },
       );
 
       if (responsePoint.statusCode == 200 &&
           responseSubject.statusCode == 200) {
-        print(responsePoint.body);
-        print(responseSubject.body);
-
         return {'EM': 'Cập nhật thành công dữ liệu', 'EC': 0};
       } else {
         throw Exception('Cập nhật thất bại');
@@ -207,7 +230,12 @@ class AppUtils {
   }
 
   static Future<Map<String, dynamic>> addTablePoint(
-      String userId, String subjectId, String point_qt,String point_gk,String point_ck, String hocky) async {
+      String userId,
+      String subjectId,
+      String point_qt,
+      String point_gk,
+      String point_ck,
+      String hocky) async {
     // final responseSubject = await http.post(
     //   Uri.parse("$baseApi/subject/create"),
     //   headers: <String, String>{
@@ -277,6 +305,23 @@ class AppUtils {
       },
       body: {'subjectId': subjectId, 'subjectName': subjectName},
     );
+    if (responsePoint.statusCode == 200) {
+      return jsonDecode(responsePoint.body);
+    } else {
+      throw Exception('Thêm thất bại');
+    }
+  }
+
+  static Future<Map<String, dynamic>> addTeacherInClass(
+      int classId, String userId) async {
+    final responsePoint = await http.put(
+      Uri.parse("$baseApi/class/addTeacher"),
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: {'id': classId.toString(), 'teacherID': userId},
+    );
+
     if (responsePoint.statusCode == 200) {
       return jsonDecode(responsePoint.body);
     } else {
@@ -370,6 +415,21 @@ class AppUtils {
   static Future<Map<String, dynamic>> getUserNotInClass() async {
     final response = await http.get(
       Uri.parse("$baseApi/user/getUserNotInClass"),
+      headers: <String, String>{
+        'Content-Type': 'application/json',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Thất bại khi gọi API!');
+    }
+  }
+
+  static Future<Map<String, dynamic>> getTeacherNotInClass() async {
+    final response = await http.get(
+      Uri.parse("$baseApi/user/getTeacherNotInClass"),
       headers: <String, String>{
         'Content-Type': 'application/json',
       },

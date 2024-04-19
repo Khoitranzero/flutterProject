@@ -74,6 +74,7 @@ class _ClassListState extends State<ClassList> {
                       itemCount: classList.length,
                       itemBuilder: (context, index) {
                         final classInfoItem = classList[index];
+                        print(classInfoItem.teacherInfo.userId);
                         return ClassItem(
                           classInfoItem: classInfoItem,
                           onPressed: () {
@@ -81,6 +82,13 @@ class _ClassListState extends State<ClassList> {
                                     context,
                                     MaterialPageRoute(
                                         builder: (context) => ListUserInClass(
+                                            haveTeacher: classInfoItem
+                                                        .teacherInfo.userId ==
+                                                    "Chưa cập nhật"
+                                                ? false
+                                                : true,
+                                            teacherID: classInfoItem
+                                                .teacherInfo.userId,
                                             listUser: classInfoItem.users,
                                             classId: classInfoItem.id,
                                             isGv: isGv)))

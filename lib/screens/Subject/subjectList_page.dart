@@ -14,10 +14,10 @@ class SubjectList extends StatefulWidget {
 }
 
 class _SubjectListState extends State<SubjectList> {
-   bool isGv = false;
+  bool isGv = false;
   Future<Map<String, dynamic>> _subjectListFuture = AppUtils.getSubjectList();
   Future<void> refreshData() async {
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(microseconds: 100));
     setState(() {
       _getRole();
       _subjectListFuture = AppUtils.getSubjectList();
@@ -29,7 +29,8 @@ class _SubjectListState extends State<SubjectList> {
     super.didChangeDependencies();
     refreshData();
   }
-Future<void> _getRole() async {
+
+  Future<void> _getRole() async {
     final tokenAndRole = await TokenService.getTokenAndRole();
     String? _role = tokenAndRole['role'] ?? '';
     if (_role.contains("gv")) {
@@ -42,6 +43,7 @@ Future<void> _getRole() async {
       });
     }
   }
+
   List<DataRow> convertToDataRows(List<dynamic>? subjectDataList) {
     if (subjectDataList == null) {
       return [];
@@ -56,7 +58,7 @@ Future<void> _getRole() async {
     }).toList();
   }
 
- void myLongPressFunction(String subjectId) async {
+  void myLongPressFunction(String subjectId) async {
     if (!isGv) {
       final deleteAction = await _confirmDeleteSubject(context, subjectId);
       if (deleteAction) {
@@ -82,20 +84,21 @@ Future<void> _getRole() async {
                 final subjectList = subjectDataList!
                     .map<DataRow>((item) => DataRow(cells: [
                           DataCell(
-                              onTap:isGv ? null : () => {
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return UdapteSubjectInfo(
-                                          subjectId:
-                                              item['subjectId'].toString(),
-                                          subjectName:
-                                              item['subjectName'].toString());
-                                    })).then((value) => refreshData()),
-                                  },
-                              onLongPress: () {
-                                myLongPressFunction(
-                                    item['subjectId'].toString());
-                              },
+                              onTap: isGv
+                                  ? null
+                                  : () => {
+                                        Navigator.push(context,
+                                            MaterialPageRoute(
+                                                builder: (context) {
+                                          return UdapteSubjectInfo(
+                                              subjectId:
+                                                  item['subjectId'].toString(),
+                                              subjectName: item['subjectName']
+                                                  .toString());
+                                        })).then((value) => refreshData()),
+                                      }, onLongPress: () {
+                            myLongPressFunction(item['subjectId'].toString());
+                          },
                               SizedBox.expand(
                                 child: Container(
                                   width:
@@ -114,15 +117,18 @@ Future<void> _getRole() async {
                                 ),
                               )),
                           DataCell(
-                            onTap:isGv ? null : () => {
-                              Navigator.push(context,
-                                  MaterialPageRoute(builder: (context) {
-                                return UdapteSubjectInfo(
-                                    subjectId: item['subjectId'].toString(),
-                                    subjectName:
-                                        item['subjectName'].toString());
-                              })).then((value) => refreshData()),
-                            },
+                            onTap: isGv
+                                ? null
+                                : () => {
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return UdapteSubjectInfo(
+                                            subjectId:
+                                                item['subjectId'].toString(),
+                                            subjectName:
+                                                item['subjectName'].toString());
+                                      })).then((value) => refreshData()),
+                                    },
                             onLongPress: () {
                               myLongPressFunction(item['subjectId'].toString());
                             },
@@ -182,18 +188,22 @@ Future<void> _getRole() async {
                 );
               }
             })),
-        floatingActionButton:isGv ? null : Container(
-          width: 60,
-          height: 60,
-          child: FloatingActionButton.small(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-            onPressed: () => Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => const subjectAdd()))
-                .then((value) => refreshData()),
-            child: const Icon(Icons.add),
-          ),
-        ));
+        floatingActionButton: isGv
+            ? null
+            : Container(
+                width: 60,
+                height: 60,
+                child: FloatingActionButton.small(
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20)),
+                  onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const subjectAdd()))
+                      .then((value) => refreshData()),
+                  child: const Icon(Icons.add),
+                ),
+              ));
   }
 
   Future<bool> _confirmDeleteSubject(

@@ -1,6 +1,6 @@
 //src/service/userApiService.js
 import { where } from "sequelize";
-const { Op } = require('sequelize');
+const { Op } = require("sequelize");
 import db from "../models";
 import {
   checkUserIdExist,
@@ -171,41 +171,114 @@ const createNewUser = async (data) => {
     };
   }
 };
+
 const updateUser = async (data) => {
-  console.log("update1", data);
+  let transaction;
+  try {
+    transaction = await db.sequelize.transaction();
+    if (data.userId.includes("gv")) {
+      //bỏ cái này để không cập nhật bên classId bên user
+      // const updatedUser = await db.User.update(
+      //   {
+      //     username: data.username,
+      //     address: data.address,
+      //     sex: data.sex,
+      //   },
+      //   { where: { userId: data.userId }, transaction }
+      // );
+      const updatedClass = await db.Class.update(
+        {
+          teacherID: data.userId,
+        },
+        {
+          where: { className: data.className },
+          transaction: transaction,
+        }
+      );
+
+      if (!updatedClass) {
+        throw new Error("User not found");
+      }
+
+      await transaction.commit();
+      return {
+        EM: "Cập nhật thông tin của sinh viên và lớp thành công !!!",
+        EC: 0,
+        DT: updatedClass,
+      };
+    } else {
+      let classInfo = await db.Class.findOne({
+        where: { className: data.className },
+        transaction,
+      });
+
+      if (!classInfo) {
+        classInfo = await db.Class.create(
+          { className: data.className },
+          { transaction }
+        );
+      }
+      const updatedUser = await db.User.update(
+        {
+          username: data.username,
+          address: data.address,
+          sex: data.sex,
+          classId: classInfo.id,
+        },
+        { where: { userId: data.userId }, transaction }
+      );
+
+      if (updatedUser[0] === 0) {
+        throw new Error("User not found");
+      }
+
+      await transaction.commit();
+      return {
+        EM: "Cập nhật thông tin của sinh viên thành công !!!",
+        EC: 0,
+        DT: updatedUser,
+      };
+    }
+  } catch (error) {
+    if (transaction) await transaction.rollback();
+
+    console.error(error);
+    return {
+      EM: "Error updating user and class",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+const removeTeacherOutOfClass = async (data) => {
   let transaction;
   try {
     transaction = await db.sequelize.transaction();
 
-    let classInfo = await db.Class.findOne({
-      where: { className: data.className },
-      transaction,
-    });
-
-    if (!classInfo) {
-      classInfo = await db.Class.create(
-        { className: data.className },
-        { transaction }
-      );
-    }
-
     const updatedUser = await db.User.update(
       {
-        username: data.username,
-        address: data.address,
-        sex: data.sex,
-        classId: classInfo.id,
+        classId: null,
       },
       { where: { userId: data.userId }, transaction }
     );
+    const updatedClass = await db.Class.update(
+      {
+        teacherID: null,
+      },
+      {
+        where: { id: data.id },
+        transaction: transaction,
+      }
+    );
 
-    if (updatedUser[0] === 0) {
+    if (updatedUser[0] === 0 || !updatedClass) {
       throw new Error("User not found");
     }
 
     await transaction.commit();
     return {
-      EM: "Cập nhật thông tin của sinh viên thành công !!!",
+      EM: "Cập nhật giáo viên phụ trách thành công !!!",
       EC: 0,
       DT: updatedUser,
     };
@@ -342,10 +415,38 @@ const getListUserFromClass = async () => {
 const filterStudentNotInClass = async () => {
   try {
     const users = await db.User.findAll({
-      where: { classId: null },
+      where: { userId: { [Op.like]: "%dh%" }, classId: null },
       attributes: ["userId", "username", "address", "phone", "sex"],
     });
-    console.log(users);
+    if (users) {
+      return {
+        EM: "get data success",
+        EC: 0,
+        DT: users,
+      };
+    } else {
+      return {
+        EM: "get data failed",
+        EC: 0,
+        DT: [],
+      };
+    }
+  } catch (e) {
+    console.log(e);
+    return {
+      EM: "error from server",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+const filterTeacherNotInClass = async () => {
+  try {
+    const users = await db.User.findAll({
+      where: { userId: { [Op.like]: "%gv%" } },
+      attributes: ["userId", "username", "address", "phone", "sex"],
+    });
     if (users) {
       return {
         EM: "get data success",
@@ -410,4 +511,6 @@ module.exports = {
   MoveUserFromClass,
   getOneUserByID,
   getListAllLecturer,
+  filterTeacherNotInClass,
+  removeTeacherOutOfClass,
 };

@@ -150,7 +150,14 @@ const countStudentInClass = async () => {
       attributes: ["id", "className", "teacherID"],
       include: {
         model: db.User,
-        attributes: ["userId", "username", "address", "sex", "phone", "classId"],
+        attributes: [
+          "userId",
+          "username",
+          "address",
+          "sex",
+          "phone",
+          "classId",
+        ],
       },
     });
 
@@ -161,15 +168,11 @@ const countStudentInClass = async () => {
       const id = classObj.dataValues.id;
       const className = classObj.dataValues.className;
       const teacherID = classObj.dataValues.teacherID;
-
-      // Truy vấn thông tin giáo viên phụ trách
       const teacherInfo = await db.User.findOne({
-        attributes: ["userId","username", "address", "phone", "sex"],
+        attributes: ["userId", "username", "address", "phone", "sex"],
         where: { userId: teacherID },
       });
-
-      // Truy vấn danh sách sinh viên trong lớp học
-      const students = classObj.Users.map(user => ({
+      const students = classObj.Users.map((user) => ({
         userId: user.userId,
         username: user.username,
         address: user.address,
@@ -177,8 +180,6 @@ const countStudentInClass = async () => {
         phone: user.phone,
         classId: user.classId,
       }));
-
-      // Tạo đối tượng lớp học với thông tin của giáo viên phụ trách và danh sách sinh viên
       const classWithTeacher = {
         id: id,
         className: className,
@@ -203,10 +204,78 @@ const countStudentInClass = async () => {
     };
   }
 };
+const checkLecturerExistInclass = async (teacherID) => {
+  let lecturersInclass = await db.Class.findOne({
+    where: {
+      teacherID: teacherID,
+    },
+  });
+
+  if (lecturersInclass) {
+    return true;
+  }
+  return false;
+};
+const addLecturerIntoClass = async (data) => {
+  let transaction;
+  try {
+    transaction = await db.sequelize.transaction();
+
+    // let isTeacherIdExist = await checkLecturerExistInclass(data.teacherID);
+    // if (isTeacherIdExist === true) {
+    //   return {
+    //     EM: "Lớp học này đã có giáo viên phụ trách",
+    //     EC: 2,
+    //     DT: [],
+    //   };
+    // }
+    const updatedClass = await db.Class.update({
+      teacherID: data.teacherID
+    }, {
+      where: { id: data.id },
+      transaction: transaction,
+    });
+    // const updateUser = await db.User.update(
+    //   {
+    //     classId: data.id,
+    //   },
+    //   {
+    //     where: { userId: data.teacherID },
+    //     transaction: transaction,
+    //   }
+    // );
+    await transaction.commit();
+    if (updatedClass) {
+      return {
+        EM: "Thêm giáo viên phụ trách thành công",
+        EC: 0,
+        DT: updatedClass,
+      };
+    } else if (updatedClass) {
+      return {
+        EM: "Lỗi thêm giáo viên phụ trách",
+        EC: 0,
+        DT: updatedClass,
+      };
+    }
+  } catch (error) {
+    // Nếu có lỗi, rollback transaction
+    if (transaction) await transaction.rollback();
+
+    console.log(error);
+    return {
+      EM: "Lỗi thêm giáo viên phụ trách!!",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
 module.exports = {
   getClass,
   createNewClass,
   updateClass,
   deleteClass,
   countStudentInClass,
+  addLecturerIntoClass,
 };
