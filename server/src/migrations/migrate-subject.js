@@ -15,6 +15,9 @@ module.exports = {
       subjectName: {
         type: Sequelize.STRING
       },
+      credits: {
+        type: Sequelize.INTEGER
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

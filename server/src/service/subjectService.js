@@ -13,7 +13,7 @@ const checkSubjectIdExist = async (data) => {
 const getSubject = async () => {
     try {
         const data = await db.Subject.findAll({
-            attributes: ['subjectId', 'subjectName']
+            attributes: ['subjectId', 'subjectName','credits']
         });
         return {
             EM: 'Get Subject success',
@@ -32,8 +32,9 @@ const getSubject = async () => {
 
 const createNewSubject = async (data) => {
     try {
+
         let isSubjectIdExist = await checkSubjectIdExist(data);
-        console.log("check",isSubjectIdExist)
+
         if(isSubjectIdExist===true) {
             return{
                 EM : 'Môn học đã tồn tại!',
@@ -60,7 +61,7 @@ const createNewSubject = async (data) => {
 const updateSubject = async (data) => {
     try {
         const updatedSubject = await db.Subject.update(
-            { subjectName: data.subjectName }, // Dữ liệu cập nhật
+            { subjectName: data.subjectName, credits : data.credits }, // Dữ liệu cập nhật
             { where: { subjectId: data.subjectId }});
         
         return {

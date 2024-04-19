@@ -7,8 +7,9 @@ import 'package:flutter_doan/utils/services.dart';
 class UdapteSubjectInfo extends StatefulWidget {
   final String subjectId;
   final String subjectName;
+  final String credits;
   const UdapteSubjectInfo(
-      {super.key, required this.subjectId, required this.subjectName});
+      {super.key, required this.subjectId, required this.subjectName, required this.credits});
 
   @override
   State<UdapteSubjectInfo> createState() => _UdapteSubjectState();
@@ -17,12 +18,14 @@ class UdapteSubjectInfo extends StatefulWidget {
 class _UdapteSubjectState extends State<UdapteSubjectInfo> {
   TextEditingController _subjectId = TextEditingController();
   TextEditingController _subjectName = TextEditingController();
+    TextEditingController _credits = TextEditingController();
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _subjectId.text = widget.subjectId;
     _subjectName.text = widget.subjectName;
+      _credits.text = widget.credits;
   }
 
   @override
@@ -51,13 +54,22 @@ class _UdapteSubjectState extends State<UdapteSubjectInfo> {
               const SizedBox(
                 height: 20,
               ),
+                CustomTextField(
+                  isPassword: false,
+                  hintText: "Tín chỉ",
+                  controller: _credits,
+                  isReadOnly: false),
+              const SizedBox(
+                height: 20,
+              ),
               CustomButton(
                   buttonText: "Cập nhật thông tin",
                   onPressed: () async {
                     String subjectId = _subjectId.text.trim();
                     String subjectName = _subjectName.text.trim();
+                    String credits = _credits.text.trim();
                     final response =
-                        await AppUtils.updateSubject(subjectId, subjectName);
+                        await AppUtils.updateSubject(subjectId, subjectName, credits);
                     if (response.isNotEmpty) {
                       showDialog(
                         context: context,

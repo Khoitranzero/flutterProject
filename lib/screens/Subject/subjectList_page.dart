@@ -21,6 +21,7 @@ class _SubjectListState extends State<SubjectList> {
     setState(() {
       _getRole();
       _subjectListFuture = AppUtils.getSubjectList();
+
     });
   }
 
@@ -30,6 +31,7 @@ class _SubjectListState extends State<SubjectList> {
     refreshData();
   }
 Future<void> _getRole() async {
+  
     final tokenAndRole = await TokenService.getTokenAndRole();
     String? _role = tokenAndRole['role'] ?? '';
     if (_role.contains("gv")) {
@@ -51,13 +53,16 @@ Future<void> _getRole() async {
         cells: [
           DataCell(Text(subject['subjectId'] ?? '')),
           DataCell(Text(subject['subjectName'] ?? '')),
+          DataCell(Text(subject['credits'] ?? '')),
         ],
       );
     }).toList();
+    
   }
 
  void myLongPressFunction(String subjectId) async {
     if (!isGv) {
+        
       final deleteAction = await _confirmDeleteSubject(context, subjectId);
       if (deleteAction) {
         refreshData();
@@ -89,7 +94,10 @@ Future<void> _getRole() async {
                                           subjectId:
                                               item['subjectId'].toString(),
                                           subjectName:
-                                              item['subjectName'].toString());
+                                              item['subjectName'].toString(),
+                                          credits: 
+                                              item['credits'].toString(),
+                                              );
                                     })).then((value) => refreshData()),
                                   },
                               onLongPress: () {
@@ -120,7 +128,8 @@ Future<void> _getRole() async {
                                 return UdapteSubjectInfo(
                                     subjectId: item['subjectId'].toString(),
                                     subjectName:
-                                        item['subjectName'].toString());
+                                        item['subjectName'].toString(),
+                                        credits: item['credits'].toString(),);
                               })).then((value) => refreshData()),
                             },
                             onLongPress: () {
@@ -137,6 +146,38 @@ Future<void> _getRole() async {
                                       const EdgeInsets.symmetric(horizontal: 8),
                                   child:
                                       Text(item['subjectName'].toString() ?? '',
+                                          style: TextStyle(
+                                            fontSize: 15,
+                                            fontWeight: FontWeight.bold,
+                                          )),
+                                )),
+                          ),
+                                 DataCell(
+                            onTap:isGv ? null : () => {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return UdapteSubjectInfo(
+                                    subjectId: item['subjectId'].toString(),
+                                    subjectName:
+                                        item['subjectName'].toString(),
+                                        credits: item['credits'].toString(),);
+                              })).then((value) => refreshData()),
+                            },
+                            onLongPress: () {
+                              myLongPressFunction(item['subjectId'].toString());
+                            },
+                            Container(
+                                width: double.infinity,
+                                decoration: BoxDecoration(
+                                  border: Border(
+                                      // right: BorderSide(color: Colors.black)
+                                      ),
+                                ),
+                                child: Padding(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 8),
+                                  child:
+                                      Text(item['credits'].toString() ?? '',
                                           style: TextStyle(
                                             fontSize: 15,
                                             fontWeight: FontWeight.bold,
@@ -166,13 +207,22 @@ Future<void> _getRole() async {
                           )),
                           DataColumn(
                               label: Container(
-                            width: MediaQuery.of(context).size.width * 0.7,
+                            width: MediaQuery.of(context).size.width * 0.6,
                             decoration: BoxDecoration(
                                 border: Border(
                                     right: BorderSide(color: Colors.black))),
                             child: Center(
                               child: Text('Tên môn học'),
                             ),
+                          )),
+                          DataColumn(
+                              label: Container(
+                            width: MediaQuery.of(context).size.width * 0.1,
+                            decoration: BoxDecoration(
+                                border: Border(
+                                    // right: BorderSide(color: Colors.black)
+                                    )),
+                            child: Center(child: Text("TC")),
                           )),
                         ],
                         rows: subjectList,
