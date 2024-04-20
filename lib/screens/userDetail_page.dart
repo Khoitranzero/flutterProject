@@ -152,7 +152,7 @@ class _UserDetailState extends State<UserDetail> {
                   style: TextStyle(
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.bold)),
-          isLecturerUser == true
+          isLecturerUser == true || isGv == true
               ? const SizedBox()
               : Container(
                   padding: const EdgeInsets.all(10),
