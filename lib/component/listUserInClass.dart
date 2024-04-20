@@ -9,6 +9,7 @@ import 'package:flutter_doan/screens/getUserNotInClass.dart';
 import 'package:flutter_doan/screens/userDetail_page.dart';
 import 'package:flutter_doan/screens/userPoin_page.dart';
 import 'package:flutter_doan/utils/services.dart';
+import 'package:flutter_doan/utils/tokenService.dart';
 
 class ListUserInClass extends StatefulWidget {
   final bool haveTeacher;
@@ -16,6 +17,7 @@ class ListUserInClass extends StatefulWidget {
   final int classId;
   final String teacherID;
   final bool isGv;
+
   const ListUserInClass(
       {super.key,
       required this.haveTeacher,
@@ -31,6 +33,23 @@ class ListUserInClass extends StatefulWidget {
 class _ListUserInClassState extends State<ListUserInClass> {
   List<String> selectedUser = [];
   late List<bool> isCheckedList;
+  String? _role;
+  String? isTeacher;
+  String? isAdmin;
+  @override
+  void initState() {
+    super.initState();
+    _getRole();
+  }
+
+  Future<void> _getRole() async {
+    final tokenAndRole = await TokenService.getTokenAndRole();
+    _role = tokenAndRole['role'] ?? '';
+    setState(() {
+      isTeacher = _role!.contains("gv") ? 'gv' : null;
+    });
+  }
+
   void updateSelectedUsers(User user, bool isChecked) {
     setState(() {
       if (isChecked) {
@@ -50,28 +69,34 @@ class _ListUserInClassState extends State<ListUserInClass> {
             PopupMenuButton<String>(
               itemBuilder: (BuildContext context) {
                 List<PopupMenuEntry<String>> menuItems = [];
-                if (!widget.haveTeacher) {
-                  // Nếu không có giáo viên
+
+                if (isTeacher == null) {
+                  if (!widget.haveTeacher) {
+                    // Nếu không có giáo viên
+                    menuItems.add(
+                      PopupMenuItem<String>(
+                        value: 'addTeacher',
+                        child: Text('Thêm giáo viên phụ trách'),
+                      ),
+                    );
+                  } else {
+                    menuItems.add(
+                      PopupMenuItem<String>(
+                        value: 'removeTeacher',
+                        child: Text('Xóa giáo viên phụ trách'),
+                      ),
+                    );
+                  }
                   menuItems.add(
                     PopupMenuItem<String>(
-                      value: 'addTeacher',
-                      child: Text('Thêm giáo viên phụ trách'),
+                      value: 'addStudents',
+                      child: Text('Thêm sinh viên vào lớp'),
                     ),
                   );
                 } else {
-                  menuItems.add(
-                    PopupMenuItem<String>(
-                      value: 'removeTeacher',
-                      child: Text('Xóa giáo viên phụ trách'),
-                    ),
-                  );
+                  menuItems = [];
                 }
-                menuItems.add(
-                  PopupMenuItem<String>(
-                    value: 'addStudents',
-                    child: Text('Thêm sinh viên vào lớp'),
-                  ),
-                );
+
                 return menuItems;
               },
               onSelected: (String value) async {
@@ -115,6 +140,7 @@ class _ListUserInClassState extends State<ListUserInClass> {
                   if (user.userId.contains("gv")) {
                     return Container();
                   }
+                  print(isTeacher);
                   return Row(
                     children: [
                       Expanded(
@@ -139,13 +165,15 @@ class _ListUserInClassState extends State<ListUserInClass> {
                           },
                         ),
                       ),
-                      MoveUserClassItem(
-                        user: user,
-                        isChecked: isCheckedList[index],
-                        onChanged: (isChecked) {
-                          updateSelectedUsers(user, isChecked);
-                        },
-                      ),
+                      isTeacher == null
+                          ? MoveUserClassItem(
+                              user: user,
+                              isChecked: isCheckedList[index],
+                              onChanged: (isChecked) {
+                                updateSelectedUsers(user, isChecked);
+                              },
+                            )
+                          : const SizedBox()
                     ],
                   );
                 }),

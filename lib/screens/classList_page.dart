@@ -74,7 +74,6 @@ class _ClassListState extends State<ClassList> {
                       itemCount: classList.length,
                       itemBuilder: (context, index) {
                         final classInfoItem = classList[index];
-                        print(classInfoItem.teacherInfo.userId);
                         return ClassItem(
                           classInfoItem: classInfoItem,
                           onPressed: () {

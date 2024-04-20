@@ -7,7 +7,6 @@ class TokenService {
   static Future<void> saveToken(String token, String role) async {
     await _storage.write(key: 'jwt_token', value: token);
     await _storage.write(key: 'role', value: role);
-    print(role);
   }
 
   static Future<Map<String, String?>> getTokenAndRole() async {
