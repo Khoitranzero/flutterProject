@@ -31,7 +31,7 @@ class _UserPageState extends State<UserPage> {
   Future<void> _getUserData() async {
     final tokenAndRole = await TokenService.getTokenAndRole();
     _role = (tokenAndRole['role'] ?? '');
-      isGV=_role?.substring(0, 2);
+    isGV = _role?.substring(0, 2);
     setState(() {
       _userData = AppUtils.fetchUser();
       // print(_userData);
@@ -87,7 +87,6 @@ class _UserPageState extends State<UserPage> {
                             'Không tìm thấy người dùng có username giống với role'));
                   }
 
-                  
                   final user = filteredUsers.first;
                   _usernameController.text = user['username'];
                   _userIdController.text = user['userId'];
@@ -102,14 +101,14 @@ class _UserPageState extends State<UserPage> {
                   return ListView(
                     padding: const EdgeInsets.all(16.0),
                     children: [
-                      Text("MSSV",
+                      Text("Mã số hoạt động",
                           style: TextStyle(
                               fontStyle: FontStyle.italic,
                               fontWeight: FontWeight.bold)),
                       CustomTextField(
                           isReadOnly: true,
                           isPassword: false,
-                          hintText: "MSSV",
+                          hintText: "Mã số hoạt động",
                           controller: _userIdController),
                       const SizedBox(
                         height: 10,
@@ -162,14 +161,14 @@ class _UserPageState extends State<UserPage> {
                       const SizedBox(
                         height: 10,
                       ),
-                      Text("Lớp",
+                      Text("Lớp hoạt động",
                           style: TextStyle(
                               fontStyle: FontStyle.italic,
                               fontWeight: FontWeight.bold)),
                       CustomTextField(
                           isReadOnly: _role == 'admin' ? false : true,
                           isPassword: false,
-                          hintText: "Lớp",
+                          hintText: "Lớp hoạt động",
                           controller: _classController),
                       const SizedBox(
                         height: 10,
@@ -182,67 +181,72 @@ class _UserPageState extends State<UserPage> {
                             Container(
                               width: 150,
                               height: 50,
-                              child: (isGV == 'gv' || isGV == 'dh') ? null:  ElevatedButton(
-                                style: ElevatedButton.styleFrom(
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(10))),
-                                onPressed: () async {
-                                  String userId = _userIdController.text.trim();
-                                  String username =
-                                      _usernameController.text.trim();
-                                  String address =
-                                      _addressController.text.trim();
-                                  String gender = _sexController.text.trim();
-                                  String className =
-                                      _classController.text.trim();
-                                  if (username.isEmpty ||
-                                      address.isEmpty ||
-                                      gender.isEmpty ||
-                                      className.isEmpty) {
-                                    showDialog(
-                                      context: context,
-                                      builder: (BuildContext context) {
-                                        return CustomDialogAlert(
-                                          title: "Thông báo",
-                                          message:
-                                              "Vui lòng nhập đầy đủ thông tin",
-                                          closeButtonText: "Đóng",
-                                          onPressed: () =>
-                                              Navigator.of(context).pop(),
-                                        );
-                                      },
-                                    );
-                                  } else {
-                                    try {
-                                      print(className);
-                                      final response =
-                                          await AppUtils.HandleUpdate(
-                                              userId,
-                                              username,
-                                              address,
-                                              gender,
-                                              className);
-                                      // print(response);
-                                      showDialog(
-                                        context: context,
-                                        builder: (BuildContext context) {
-                                          return CustomDialogAlert(
-                                            title: "Thông báo",
-                                            message: response['EM'],
-                                            closeButtonText: "Đóng",
-                                            onPressed: () =>
-                                                Navigator.of(context).pop(),
+                              child: (isGV == 'gv' || isGV == 'dh')
+                                  ? null
+                                  : ElevatedButton(
+                                      style: ElevatedButton.styleFrom(
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(10))),
+                                      onPressed: () async {
+                                        String userId =
+                                            _userIdController.text.trim();
+                                        String username =
+                                            _usernameController.text.trim();
+                                        String address =
+                                            _addressController.text.trim();
+                                        String gender =
+                                            _sexController.text.trim();
+                                        String className =
+                                            _classController.text.trim();
+                                        if (username.isEmpty ||
+                                            address.isEmpty ||
+                                            gender.isEmpty ||
+                                            className.isEmpty) {
+                                          showDialog(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return CustomDialogAlert(
+                                                title: "Thông báo",
+                                                message:
+                                                    "Vui lòng nhập đầy đủ thông tin",
+                                                closeButtonText: "Đóng",
+                                                onPressed: () =>
+                                                    Navigator.of(context).pop(),
+                                              );
+                                            },
                                           );
-                                        },
-                                      );
-                                    } catch (e) {
-                                      print("Lỗi: $e");
-                                    }
-                                  }
-                                },
-                                child: Text('Cập nhật'),
-                              ),
+                                        } else {
+                                          try {
+                                            print(className);
+                                            final response =
+                                                await AppUtils.HandleUpdate(
+                                                    userId,
+                                                    username,
+                                                    address,
+                                                    gender,
+                                                    className);
+                                            // print(response);
+                                            showDialog(
+                                              context: context,
+                                              builder: (BuildContext context) {
+                                                return CustomDialogAlert(
+                                                  title: "Thông báo",
+                                                  message: response['EM'],
+                                                  closeButtonText: "Đóng",
+                                                  onPressed: () =>
+                                                      Navigator.of(context)
+                                                          .pop(),
+                                                );
+                                              },
+                                            );
+                                          } catch (e) {
+                                            print("Lỗi: $e");
+                                          }
+                                        }
+                                      },
+                                      child: Text('Cập nhật'),
+                                    ),
                             ),
                           ],
                         ),

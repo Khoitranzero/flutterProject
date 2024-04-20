@@ -204,18 +204,7 @@ const countStudentInClass = async () => {
     };
   }
 };
-const checkLecturerExistInclass = async (teacherID) => {
-  let lecturersInclass = await db.Class.findOne({
-    where: {
-      teacherID: teacherID,
-    },
-  });
 
-  if (lecturersInclass) {
-    return true;
-  }
-  return false;
-};
 const addLecturerIntoClass = async (data) => {
   let transaction;
   try {
@@ -271,6 +260,36 @@ const addLecturerIntoClass = async (data) => {
   }
 };
 
+const filterClassByTeacherID = async (data) => {
+  try {
+    const users = await db.Class.findAll({
+      where: { teacherID: data.teacherID},
+      attributes: ["id", "className", "teacherID"],
+    });
+    if (users) {
+      return {
+        EM: "get data success",
+        EC: 0,
+        DT: users,
+      };
+    } else {
+      return {
+        EM: "get data failed",
+        EC: 0,
+        DT: [],
+      };
+    }
+  } catch (e) {
+    console.log(e);
+    return {
+      EM: "error from server",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+
 module.exports = {
   getClass,
   createNewClass,
@@ -278,4 +297,5 @@ module.exports = {
   deleteClass,
   countStudentInClass,
   addLecturerIntoClass,
+  filterClassByTeacherID
 };

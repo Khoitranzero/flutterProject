@@ -6,6 +6,7 @@ import 'package:flutter_doan/screens/action_page.dart';
 import 'package:flutter_doan/screens/classList_page.dart';
 import 'package:flutter_doan/screens/listUser_page.dart';
 import 'package:flutter_doan/screens/projectInfo_page.dart';
+import 'package:flutter_doan/screens/user_page.dart';
 import 'package:flutter_doan/utils/services.dart';
 import 'package:flutter_doan/utils/tokenService.dart';
 
@@ -17,6 +18,24 @@ class LecturerHomePage extends StatefulWidget {
 }
 
 class _LecturerHomePageState extends State<LecturerHomePage> {
+  late String teacherID;
+  bool isGv = false;
+  Future<void> _getRole() async {
+    final tokenAndRole = await TokenService.getTokenAndRole();
+    String? role = tokenAndRole['role'] ?? '';
+    if (role.contains("gv")) {
+      setState(() {
+        isGv = true;
+        teacherID = role;
+      });
+    } else {
+      setState(() {
+        isGv = false;
+        teacherID = '';
+      });
+    }
+  }
+
   void handleLogout() {
     try {
       final response = AppUtils.handleLogout();
@@ -35,7 +54,7 @@ class _LecturerHomePageState extends State<LecturerHomePage> {
     return Scaffold(
       body: Column(
         children: <Widget>[
-          const SizedBox(height: 100),
+          const SizedBox(height: 50),
           Text(
             "Quản Lý Sinh Viên",
             style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
@@ -55,15 +74,15 @@ class _LecturerHomePageState extends State<LecturerHomePage> {
                   spacing: 8.0,
                   runSpacing: 8.0,
                   children: <Widget>[
-                    HomeItem(
-                        title: "DDSV",
-                        backgroundColor: Colors.orange,
-                        onPress: () => {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => const ListUser()))
-                            }),
+                    // HomeItem(
+                    //     title: "DDSV",
+                    //     backgroundColor: Colors.orange,
+                    //     onPress: () => {
+                    //           Navigator.push(
+                    //               context,
+                    //               MaterialPageRoute(
+                    //                   builder: (context) => const ListUser()))
+                    //         }),
                     HomeItem(
                         title: "Thông tin \n    đồ án",
                         backgroundColor: Colors.redAccent,
@@ -89,6 +108,15 @@ class _LecturerHomePageState extends State<LecturerHomePage> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ClassList()))
+                            }),
+                    HomeItem(
+                        title: "Thông tin GV",
+                        backgroundColor: Colors.blueGrey,
+                        onPress: () => {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const UserPage()))
                             })
                   ],
                 ),

@@ -54,6 +54,7 @@ router.post("/class/create", classController.createFunc);
 router.put("/class/update", classController.updateFunc);
 router.delete("/class/delete", classController.deleteFunc);
 router.put("/class/addTeacher", classController.addTeacherIntoClass);
+router.post("/class/getClassByTeacherID", classController.getClassByTeacherID)
 
  router.get("/subject/read", subjectController.readFunc);
 router.post("/subject/create", subjectController.createFunc);

@@ -228,7 +228,7 @@ class __FormContentState extends State<_FormContent> {
                     _selectedRole = newValue!;
                   });
                 },
-                items: <String>['Giảng viên', 'Sinh viên']
+                items: <String>['Sinh viên', 'Giảng viên']
                     .map<DropdownMenuItem<String>>((String value) {
                   return DropdownMenuItem<String>(
                     value: value,
