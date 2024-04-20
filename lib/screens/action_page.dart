@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_doan/component/button.dart';
 import 'package:flutter_doan/screens/login_screen.dart';
+import 'package:flutter_doan/screens/register_page.dart';
 import 'package:flutter_doan/screens/register_screen.dart';
 
 class ActionPage extends StatelessWidget {
@@ -39,7 +40,7 @@ class ActionPage extends StatelessWidget {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => const RegisterScreen()));
+                          builder: (context) => const RegisterPage()));
                 }),
           ],
         ),

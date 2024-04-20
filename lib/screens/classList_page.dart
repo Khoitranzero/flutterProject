@@ -22,7 +22,7 @@ class _ClassListState extends State<ClassList> {
   bool isGv = false;
   Future<Map<String, dynamic>> _classListFuture = AppUtils.getClassList();
   Future<void> refreshData() async {
-    await Future.delayed(const Duration(seconds: 1));
+    await Future.delayed(const Duration(microseconds: 100));
     setState(() {
       _getRole();
       _classListFuture = AppUtils.getClassList();

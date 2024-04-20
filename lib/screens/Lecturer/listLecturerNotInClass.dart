@@ -68,7 +68,7 @@ class _getTeacherNotInClassState extends State<getTeacherNotInClass> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Danh sách giáo viên chưa có lớp"),
+        title: Text("Danh sách giáo viên"),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _userListFuture,

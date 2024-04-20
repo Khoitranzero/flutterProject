@@ -3,19 +3,20 @@ import 'package:flutter_doan/component/button.dart';
 import 'package:flutter_doan/component/dialog.dart';
 import 'package:flutter_doan/component/textfield.dart';
 import 'package:flutter_doan/screens/Lecturer/LecturerHome_screen.dart';
+import 'package:flutter_doan/screens/action_page.dart';
 import 'package:flutter_doan/screens/adminHome_page.dart';
 import 'package:flutter_doan/screens/userHome_screen.dart';
 import 'package:flutter_doan/utils/services.dart';
 import 'package:flutter_doan/utils/tokenService.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class RegisterPage extends StatelessWidget {
+  const RegisterPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Đăng nhập"),
+        title: const Text("Đăng Ký"),
       ),
       body: const LoginForm(),
     );
@@ -30,8 +31,11 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
-  final TextEditingController _valueLoginController = TextEditingController();
+  final TextEditingController _userNameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _userPhoneNumberController =
+      TextEditingController();
+  final String _selectedRole = 'Sinh viên';
 
   @override
   Widget build(BuildContext context) {
@@ -48,8 +52,10 @@ class _LoginFormState extends State<LoginForm> {
                     _Logo(),
                     const SizedBox(height: 20),
                     _FormContent(
-                      valueLoginController: _valueLoginController,
+                      userNameController: _userNameController,
                       passwordController: _passwordController,
+                      userPhoneNumberController: _userPhoneNumberController,
+                      selectedRole: _selectedRole,
                     ),
                   ],
                 )
@@ -59,8 +65,10 @@ class _LoginFormState extends State<LoginForm> {
                     Expanded(child: _Logo()),
                     Expanded(
                       child: _FormContent(
-                        valueLoginController: _valueLoginController,
+                        userNameController: _userNameController,
                         passwordController: _passwordController,
+                        userPhoneNumberController: _userPhoneNumberController,
+                        selectedRole: _selectedRole,
                       ),
                     ),
                   ],
@@ -86,7 +94,7 @@ class _Logo extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            "Đăng nhập vào hệ thống",
+            "Đăng ký vào hệ thống",
             textAlign: TextAlign.center,
             style: isSmallScreen
                 ? Theme.of(context).textTheme.headline5
@@ -102,14 +110,18 @@ class _Logo extends StatelessWidget {
 }
 
 class _FormContent extends StatefulWidget {
-  final TextEditingController valueLoginController;
-  final TextEditingController passwordController;
+  TextEditingController userNameController = TextEditingController();
+  TextEditingController passwordController = TextEditingController();
+  TextEditingController userPhoneNumberController = TextEditingController();
+  String selectedRole = 'Giảng viên';
 
-  const _FormContent({
-    Key? key,
-    required this.valueLoginController,
-    required this.passwordController,
-  }) : super(key: key);
+  _FormContent(
+      {Key? key,
+      required this.userNameController,
+      required this.passwordController,
+      required this.userPhoneNumberController,
+      required this.selectedRole})
+      : super(key: key);
 
   @override
   State<_FormContent> createState() => __FormContentState();
@@ -119,7 +131,7 @@ class __FormContentState extends State<_FormContent> {
   bool _isPasswordVisible = false;
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
+  String _selectedRole = 'Giảng viên';
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
@@ -135,7 +147,23 @@ class __FormContentState extends State<_FormContent> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             TextFormField(
-              controller: widget.valueLoginController,
+              controller: widget.userNameController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Nhập vào ô thông tin!!!';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                labelText: 'Họ Tên',
+                hintText: 'Nhập họ và tên',
+                prefixIcon: const Icon(Icons.person),
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            _gap(),
+            TextFormField(
+              controller: widget.userPhoneNumberController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Nhập vào ô thông tin!!!';
@@ -182,6 +210,34 @@ class __FormContentState extends State<_FormContent> {
               ),
             ),
             _gap(),
+            Container(
+              width: 400,
+              height: 50,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black),
+              ),
+              child: DropdownButton<String>(
+                value: _selectedRole,
+                icon: Icon(Icons.arrow_drop_down),
+                iconSize: 24,
+                elevation: 16,
+                style: const TextStyle(color: Colors.black),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedRole = newValue!;
+                  });
+                },
+                items: <String>['Giảng viên', 'Sinh viên']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ),
+            _gap(),
             SizedBox(
               width: double.infinity,
               child: ElevatedButton(
@@ -192,9 +248,13 @@ class __FormContentState extends State<_FormContent> {
                 ),
                 onPressed: () async {
                   if (_formKey.currentState?.validate() ?? false) {
-                    String valueLogin = widget.valueLoginController.text.trim();
+                    String username = widget.userNameController.text.trim();
+                    String phoneNum =
+                        widget.userPhoneNumberController.text.trim();
                     String password = widget.passwordController.text.trim();
-                    if (valueLogin.isEmpty || password.isEmpty) {
+                    if (username.isEmpty ||
+                        phoneNum.isEmpty ||
+                        password.isEmpty) {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -208,39 +268,14 @@ class __FormContentState extends State<_FormContent> {
                       );
                     } else {
                       try {
-                        final response =
-                            await AppUtils.hanldeLogin(valueLogin, password);
+                        final response = await AppUtils.registerUser(
+                            username, phoneNum, password, _selectedRole);
                         if (response['EM'].toString().isNotEmpty &&
                             response['DT'].toString().isNotEmpty) {
                           String? token =
                               response['DT']['access_token'] as String;
                           String? role = response['DT']['userId'] as String;
                           await TokenService.saveToken(token, role);
-
-                          String checkUser = role.substring(0, 2);
-
-                          if (role == 'admin') {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => const AdminHomePage()),
-                            );
-                          } else if (checkUser == 'gv') {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LecturerHomePage(),
-                              ),
-                            );
-                          } else if (checkUser == 'dh') {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const UserHomeScreen(),
-                              ),
-                            );
-                          }
-
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -248,10 +283,26 @@ class __FormContentState extends State<_FormContent> {
                                 title: "Thông báo",
                                 message: response['EM'],
                                 closeButtonText: "Đóng",
-                                onPressed: () => Navigator.of(context).pop(),
+                                onPressed: () => {
+                                  Navigator.of(context).pop(),
+                                  Navigator.of(context).pop()
+                                },
                               );
                             },
                           );
+                          showDialog(
+                              context: context,
+                              builder: (BuildContext context) {
+                                return CustomDialogAlert(
+                                    title: "Thông báo",
+                                    message: response['EM'],
+                                    closeButtonText: "Đóng",
+                                    onPressed: () => Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) =>
+                                                const ActionPage())));
+                              });
                         } else {
                           showDialog(
                             context: context,
@@ -260,7 +311,10 @@ class __FormContentState extends State<_FormContent> {
                                 title: "Thông báo",
                                 message: response['EM'],
                                 closeButtonText: "Đóng",
-                                onPressed: () => Navigator.of(context).pop(),
+                                onPressed: () => {
+                                  Navigator.of(context).pop(),
+                                  Navigator.of(context).pop()
+                                },
                               );
                             },
                           );
@@ -274,7 +328,7 @@ class __FormContentState extends State<_FormContent> {
                 child: const Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
-                    'Đăng nhập',
+                    'Đăng ký',
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
