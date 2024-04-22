@@ -67,6 +67,78 @@ const getAllUser = async () => {
     };
   }
 };
+const getStudentApprovedList = async () => {
+  try {
+    const users = await db.User.findAll({
+      attributes: ["userId", "username", "address", "phone", "sex", "classId","password"],
+      include: { model: db.Class, attributes: ["className"] },
+      where: {
+        userId: {
+          [Op.like]: '%dh%'
+        },
+        password: {
+          [Op.or]: ['', null] 
+        }
+      }
+    });
+    if (users) {
+      return {
+        EM: "get data success",
+        EC: 0,
+        DT: users,
+      };
+    } else {
+      return {
+        EM: "get data success",
+        EC: 0,
+        DT: [],
+      };
+    }
+  } catch (e) {
+    console.log(e);
+    return {
+      EM: "error from server",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+const getLecturerApprovedList = async () => {
+  try {
+    const users = await db.User.findAll({
+      attributes: ["userId", "username", "address", "phone", "sex", "classId","password"],
+      include: { model: db.Class, attributes: ["className"] },
+      where: {
+        userId: {
+          [Op.like]: '%gv%'
+        },
+        password: {
+          [Op.or]: ['', null]
+        }
+      }
+    });
+    if (users) {
+      return {
+        EM: "get data success",
+        EC: 0,
+        DT: users,
+      };
+    } else {
+      return {
+        EM: "get data success",
+        EC: 0,
+        DT: [],
+      };
+    }
+  } catch (e) {
+    console.log(e);
+    return {
+      EM: "error from server",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
 const getListAllLecturer = async () => {
   try {
     const lecturers = await db.User.findAll({
@@ -513,4 +585,6 @@ module.exports = {
   getListAllLecturer,
   filterTeacherNotInClass,
   removeTeacherOutOfClass,
+  getLecturerApprovedList,
+  getStudentApprovedList
 };

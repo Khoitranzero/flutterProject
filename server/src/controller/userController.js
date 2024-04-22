@@ -248,6 +248,25 @@ const getTeacherNotInClass = async (req,res) => {
     });
   }
 }
+const getStudentApprovedList = async (req,res) => {
+  try {
+    let data = await userApiService.getStudentApprovedList();
+    if (data) {
+      return res.status(200).json({
+        EM: data.EM,
+        EC: data.EC,
+        DT: data.DT,
+      });
+    }
+  } catch (e) {
+    return res.status(500).json({
+      EM: "error from server",
+      EC: "-1",
+      DT: "",
+    });
+  }
+}
+
 module.exports = {
   readFunc,
   createFunc,
@@ -262,5 +281,6 @@ module.exports = {
   getUserByID,
   getListLecturer,
   getTeacherNotInClass,
-  removeTeacerOutClass
+  removeTeacerOutClass,
+  getStudentApprovedList
 };

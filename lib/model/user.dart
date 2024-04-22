@@ -5,6 +5,7 @@ class User {
   final String sex;
   final String phone;
   final String className;
+  final String password;
 
   User({
     required this.userId,
@@ -13,11 +14,13 @@ class User {
     required this.sex,
     required this.phone,
     required this.className,
+        required this.password,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
         userId: json['userId'] ?? 'Chưa cập nhật',
+           password: json['password'] ?? 'Chưa cập nhật',
         username: json['username'] ?? 'Chưa có',
         address: json['address'] != null ? json['address'] : 'Chưa cập nhật',
         sex: json['sex'] != null ? json['sex'] : 'Chưa cập nhật',

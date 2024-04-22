@@ -39,6 +39,7 @@ router.put("/user/moveUserFromClass", userController.moveUserFromClassController
 router.delete("/user/delete", userController.deleteFunc);
 router.get("/user/getTeacherNotInClass", userController.getTeacherNotInClass);
 router.put("/user/removeTeacherOutOfClass", userController.removeTeacerOutClass);
+router.get("/user/getStudentApprovedList", userController.getStudentApprovedList);
 
 router.get("/user/getLecturer", userController.getListLecturer);
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_doan/component/button.dart';
 import 'package:flutter_doan/component/homeItem.dart';
+import 'package:flutter_doan/screens/Admin/listStudentApproved.dart';
 import 'package:flutter_doan/screens/Lecturer/listLecturer_screen.dart';
 import 'package:flutter_doan/screens/Subject/subjectList_page.dart';
 import 'package:flutter_doan/screens/action_page.dart';
@@ -100,6 +101,16 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => ListLecturerPage()))
+                            }),
+                            HomeItem(
+                        title: "DS Duyệt",
+                        backgroundColor:
+                            const Color.fromARGB(255, 200, 167, 156),
+                        onPress: () => {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => ListStudentApproved()))
                             }),
                   ],
                 ),

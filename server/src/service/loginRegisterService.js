@@ -35,6 +35,7 @@ const checkPhoneExist = async (userPhone) => {
 const registerNewUser = async (rawUserData) => {
   
   try {
+    console.log("register",rawUserData)
     let prefix;
     if(rawUserData.role === "Giảng viên") {
       prefix = "gv";
@@ -59,13 +60,14 @@ const registerNewUser = async (rawUserData) => {
       };
     }
 
-    let hashPassword = hashUserPassword(rawUserData.password);
+    // let hashPassword = hashUserPassword(rawUserData.password);
 
     await db.User.create({
       userId: generatedUserId,
       username: rawUserData.username,
-      password: hashPassword,
+      address: rawUserData.address,
       phone: rawUserData.phone,
+      sex: rawUserData.sex,
     });
     return {
       EM: "Đăng ký thành công",

@@ -2,17 +2,25 @@
 import loginRegisterService from "../service/loginRegisterService";
 const handleRegister = async(req, res) => {
     try {
-            if(req.body.password && req.body.password.length < 4) {
-                return res.status(200).json({
-                    EM : 'Missing required parameters',
-                    EC: '1',
-                    DT:''
+            // if(req.body.password && req.body.password.length < 4) {
+            //     return res.status(200).json({
+            //         EM : 'Missing required parameters',
+            //         EC: '1',
+            //         DT:''
                 
-                })
-            }
-            if(!req.body.phone || !req.body.password) {
+            //     })
+            // }
+            // if(!req.body.phone || !req.body.password) {
+            //     return res.status(200).json({
+            //         EM : 'your password must have more than 3 letter',
+            //         EC: '1',
+            //         DT:''
+                
+            //     })
+            // }
+            if(!req.body.phone ) {
                 return res.status(200).json({
-                    EM : 'your password must have more than 3 letter',
+                    EM : 'no phone',
                     EC: '1',
                     DT:''
                 

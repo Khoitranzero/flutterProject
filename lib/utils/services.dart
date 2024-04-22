@@ -3,18 +3,18 @@ import "dart:convert";
 import "package:http/http.dart" as http;
 
 class AppUtils {
-  static const String baseApi = "http://192.168.238.1:8080/api/v1";
+  static const String baseApi = "http://localhost:8080/api/v1";
 
   static Future<Map<String, dynamic>> registerUser(
-      String username, String phoneNumber, String password, String role) async {
+      String username, String phoneNumber, String address,String sex, String role) async {
     final response = await http
         .post(Uri.parse("$baseApi/register"), headers: <String, String>{
       'ContentType': 'application/json'
     }, body: <String, String>{
-      'userId': username,
       'username': username,
       'phone': phoneNumber,
-      'password': password,
+      'address': address,
+      'sex': sex,
       'role': role
     });
     if (response.statusCode == 200) {
@@ -526,6 +526,15 @@ class AppUtils {
       return jsonDecode(response.body);
     } else {
       throw Exception('Thất bại khi gọi API!');
+    }
+  }
+
+    static Future<Map<String, dynamic>> getListStudentApproved() async {
+    final response = await http.get(Uri.parse("$baseApi/user/getStudentApprovedList"));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception("Lấy dữ liệu thất bại!!");
     }
   }
 }

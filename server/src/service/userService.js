@@ -22,6 +22,35 @@ const getUserList = async () => {
   users = await db.User.findAll();
   return users;
 };
+const getStudentApprovedList = async () => {
+  let users = [];
+  users = await db.User.findAll({
+    where: {
+      userId: {
+        [Op.like]: '%dh%' // userId chứa chuỗi 'gv'
+      },
+      password: {
+        [Op.or]: ['', null] // password là khoảng trắng hoặc null
+      }
+    }
+  });
+  return users;
+};
+const getLecturerApprovedList = async () => {
+  let users = [];
+  users = await db.User.findAll({
+    where: {
+      userId: {
+        [Op.like]: '%gv%' // userId chứa chuỗi 'gv'
+      },
+      password: {
+        [Op.or]: ['', null] // password là khoảng trắng hoặc null
+      }
+    }
+  });
+  return users;
+};
+
 const deleteUser = async (userId) => {
   await db.User.destroy({
     where: {
@@ -55,4 +84,6 @@ module.exports = {
   getUserList,
   deleteUser,
   countStudentInClass,
+  getLecturerApprovedList,
+  getStudentApprovedList
 };

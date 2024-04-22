@@ -32,9 +32,9 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   final TextEditingController _userNameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _userPhoneNumberController =
-      TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _userPhoneNumberController =TextEditingController();
+  final TextEditingController _sexController =TextEditingController();
   final String _selectedRole = 'Sinh viên';
 
   @override
@@ -53,7 +53,8 @@ class _LoginFormState extends State<LoginForm> {
                     const SizedBox(height: 20),
                     _FormContent(
                       userNameController: _userNameController,
-                      passwordController: _passwordController,
+                      addressController: _addressController,
+                      sexController: _sexController,
                       userPhoneNumberController: _userPhoneNumberController,
                       selectedRole: _selectedRole,
                     ),
@@ -65,10 +66,11 @@ class _LoginFormState extends State<LoginForm> {
                     Expanded(child: _Logo()),
                     Expanded(
                       child: _FormContent(
-                        userNameController: _userNameController,
-                        passwordController: _passwordController,
-                        userPhoneNumberController: _userPhoneNumberController,
-                        selectedRole: _selectedRole,
+                      userNameController: _userNameController,
+                      addressController: _addressController,
+                      sexController: _sexController,
+                      userPhoneNumberController: _userPhoneNumberController,
+                      selectedRole: _selectedRole,
                       ),
                     ),
                   ],
@@ -111,15 +113,17 @@ class _Logo extends StatelessWidget {
 
 class _FormContent extends StatefulWidget {
   TextEditingController userNameController = TextEditingController();
-  TextEditingController passwordController = TextEditingController();
+  TextEditingController addressController = TextEditingController();
   TextEditingController userPhoneNumberController = TextEditingController();
+  TextEditingController sexController = TextEditingController();
   String selectedRole = 'Giảng viên';
 
   _FormContent(
       {Key? key,
       required this.userNameController,
-      required this.passwordController,
+      required this.addressController,
       required this.userPhoneNumberController,
+      required this.sexController,
       required this.selectedRole})
       : super(key: key);
 
@@ -178,38 +182,70 @@ class __FormContentState extends State<_FormContent> {
               ),
             ),
             _gap(),
-            TextFormField(
-              controller: widget.passwordController,
+                  TextFormField(
+              controller: widget.addressController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Nhập vào ô thông tin!!!';
                 }
-                if (value.length < 5) {
-                  return 'Mật khẩu phải từ 6 ký tự';
-                }
                 return null;
               },
-              obscureText: !_isPasswordVisible,
               decoration: InputDecoration(
-                labelText: 'Mật khẩu',
-                hintText: 'Nhập mật khẩu của bạn',
-                prefixIcon: const Icon(Icons.lock_outline_rounded),
+                labelText: 'Địa chỉ',
+                hintText: 'Nhập địa chỉ',
+                prefixIcon: const Icon(Icons.person),
                 border: const OutlineInputBorder(),
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _isPasswordVisible
-                        ? Icons.visibility_off
-                        : Icons.visibility,
-                  ),
-                  onPressed: () {
-                    setState(() {
-                      _isPasswordVisible = !_isPasswordVisible;
-                    });
-                  },
-                ),
               ),
             ),
             _gap(),
+                  TextFormField(
+              controller: widget.sexController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Nhập vào ô thông tin!!!';
+                }
+                return null;
+              },
+              decoration: InputDecoration(
+                labelText: 'Giới tính',
+                hintText: 'Nhập giới tính',
+                prefixIcon: const Icon(Icons.person),
+                border: const OutlineInputBorder(),
+              ),
+            ),
+            _gap(),
+            // TextFormField(
+            //   controller: widget.passwordController,
+            //   validator: (value) {
+            //     if (value == null || value.isEmpty) {
+            //       return 'Nhập vào ô thông tin!!!';
+            //     }
+            //     if (value.length < 5) {
+            //       return 'Mật khẩu phải từ 6 ký tự';
+            //     }
+            //     return null;
+            //   },
+            //   obscureText: !_isPasswordVisible,
+            //   decoration: InputDecoration(
+            //     labelText: 'Mật khẩu',
+            //     hintText: 'Nhập mật khẩu của bạn',
+            //     prefixIcon: const Icon(Icons.lock_outline_rounded),
+            //     border: const OutlineInputBorder(),
+            //     suffixIcon: IconButton(
+            //       icon: Icon(
+            //         _isPasswordVisible
+            //             ? Icons.visibility_off
+            //             : Icons.visibility,
+            //       ),
+            //       onPressed: () {
+            //         setState(() {
+            //           _isPasswordVisible = !_isPasswordVisible;
+            //         });
+            //       },
+            //     ),
+            //   ),
+            // ),
+            // _gap(),
             Container(
               width: 400,
               height: 50,
@@ -249,12 +285,13 @@ class __FormContentState extends State<_FormContent> {
                 onPressed: () async {
                   if (_formKey.currentState?.validate() ?? false) {
                     String username = widget.userNameController.text.trim();
-                    String phoneNum =
-                        widget.userPhoneNumberController.text.trim();
-                    String password = widget.passwordController.text.trim();
+                    String phoneNum =widget.userPhoneNumberController.text.trim();
+                    String address = widget.addressController.text.trim();
+                    String sex = widget.sexController.text.trim();
                     if (username.isEmpty ||
                         phoneNum.isEmpty ||
-                        password.isEmpty) {
+                        address.isEmpty ||
+                        sex.isEmpty) {
                       showDialog(
                         context: context,
                         builder: (BuildContext context) {
@@ -269,7 +306,7 @@ class __FormContentState extends State<_FormContent> {
                     } else {
                       try {
                         final response = await AppUtils.registerUser(
-                            username, phoneNum, password, _selectedRole);
+                            username, phoneNum, address, sex, _selectedRole);
                         if (response['EM'].toString().isNotEmpty &&
                             response['DT'].toString().isNotEmpty) {
                           String? token =

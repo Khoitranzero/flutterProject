@@ -30,14 +30,15 @@ class RegisterForm extends StatefulWidget {
 
 class _RegisterFormState extends State<RegisterForm> {
   final TextEditingController _userNameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _userPhoneNumberController =
-      TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _userPhoneNumberController =TextEditingController();
+  final TextEditingController _sexController =TextEditingController();
   String _selectedRole = 'Giảng viên';
   void clearTextField() {
     _userNameController.text = "";
-    _passwordController.text = "";
+    _addressController.text = "";
     _userPhoneNumberController.text = "";
+        _sexController.text = "";
   }
 
   @override
@@ -72,9 +73,17 @@ class _RegisterFormState extends State<RegisterForm> {
                     CustomTextField(
                         isReadOnly: false,
                         isPassword: true,
-                        hintText: "Mật khẩu",
-                        controller: _passwordController),
+                        hintText: "Địa chỉ",
+                        controller: _addressController),
                     const SizedBox(height: 10),
+                     CustomTextField(
+                        isReadOnly: false,
+                        isPassword: false,
+                        hintText: "Giới tính",
+                        controller: _sexController),
+                    const SizedBox(
+                      height: 10,
+                    ),
                     Container(
                       width: 250,
                       height: 50,
@@ -108,12 +117,13 @@ class _RegisterFormState extends State<RegisterForm> {
                         buttonText: "Đăng ký",
                         onPressed: () async {
                           String userName = _userNameController.text.trim();
-                          String password = _passwordController.text.trim();
-                          String userPhoneNumber =
-                              _userPhoneNumberController.text.trim();
+                          String address = _addressController.text.trim();
+                          String userPhoneNumber = _userPhoneNumberController.text.trim();
+                          String sex = _sexController.text.trim();
                           if (_userNameController.text.isEmpty ||
                               _userPhoneNumberController.text.isEmpty ||
-                              _passwordController.text.isEmpty) {
+                               _sexController.text.isEmpty ||
+                              _addressController.text.isEmpty) {
                             showDialog(
                                 context: context,
                                 builder: (BuildContext context) {
@@ -129,7 +139,8 @@ class _RegisterFormState extends State<RegisterForm> {
                               final response = await AppUtils.registerUser(
                                   userName,
                                   userPhoneNumber,
-                                  password,
+                                  address,
+                                  sex,
                                   _selectedRole);
                               clearTextField();
                               if (mounted) {
