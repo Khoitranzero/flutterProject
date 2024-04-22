@@ -14,7 +14,7 @@ module.exports = (sequelize, DataTypes) => {
       //relationship
       User.belongsTo(models.Class);
       User.hasMany(models.Point);
-
+      User.hasMany(models.Room, { foreignKey: 'userId' });
     }
   }
   User.init({
