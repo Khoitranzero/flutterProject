@@ -4,6 +4,7 @@ import 'package:flutter_doan/component/dialog.dart';
 import 'package:flutter_doan/component/moveUserFromClassItem.dart';
 import 'package:flutter_doan/component/userItem.dart';
 import 'package:flutter_doan/model/user.dart';
+import 'package:flutter_doan/screens/Lecturer/addSubjectIntoClass.dart';
 import 'package:flutter_doan/screens/Lecturer/listLecturerNotInClass.dart';
 import 'package:flutter_doan/screens/getUserNotInClass.dart';
 import 'package:flutter_doan/screens/userDetail_page.dart';
@@ -89,6 +90,12 @@ class _ListUserInClassState extends State<ListUserInClass> {
                   }
                   menuItems.add(
                     PopupMenuItem<String>(
+                      value: 'addSubject',
+                      child: Text('Thêm môn học cho lớp'),
+                    ),
+                  );
+                  menuItems.add(
+                    PopupMenuItem<String>(
                       value: 'addStudents',
                       child: Text('Thêm sinh viên vào lớp'),
                     ),
@@ -111,6 +118,13 @@ class _ListUserInClassState extends State<ListUserInClass> {
                   case 'removeTeacher':
                     await _confirmRemoveTeacher(
                         context, widget.classId, widget.teacherID);
+                    break;
+                  case 'addSubject':
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                addSubjectIntoClass(classId: widget.classId)));
                     break;
                   case 'addStudents':
                     Navigator.push(
@@ -267,7 +281,7 @@ class _ListUserInClassState extends State<ListUserInClass> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Xác nhận'),
-          content: const Text('Bạn có muốn xóa người dùng này không?'),
+          content: const Text('Bạn có muốn xóa giáo viên này không?'),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(false),

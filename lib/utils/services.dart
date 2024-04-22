@@ -3,10 +3,10 @@ import "dart:convert";
 import "package:http/http.dart" as http;
 
 class AppUtils {
-  static const String baseApi = "http://localhost:8080/api/v1";
+  static const String baseApi = "http://192.168.238.1:8080/api/v1";
 
-  static Future<Map<String, dynamic>> registerUser(
-      String username, String phoneNumber, String address,String sex, String role) async {
+  static Future<Map<String, dynamic>> registerUser(String username,
+      String phoneNumber, String address, String sex, String role) async {
     final response = await http
         .post(Uri.parse("$baseApi/register"), headers: <String, String>{
       'ContentType': 'application/json'
@@ -435,6 +435,23 @@ class AppUtils {
     }
   }
 
+  static Future<Map<String, dynamic>> updateClass(
+      int classId, String subjectId) async {
+    final responseSubject = await http
+        .put(Uri.parse("$baseApi/class/update"), headers: <String, String>{
+      'ContentType': 'application/json',
+    }, body: <String, dynamic>{
+      'id': classId,
+      'subjectID': subjectId,
+    });
+
+    if (responseSubject.statusCode == 200) {
+      return jsonDecode(responseSubject.body);
+    } else {
+      throw Exception('Cập nhật môn học cho lớp thất bại');
+    }
+  }
+
   static Future<Map<String, dynamic>> addClass(String className) async {
     final responsePoint = await http.post(
       Uri.parse("$baseApi/class/create"),
@@ -529,8 +546,9 @@ class AppUtils {
     }
   }
 
-    static Future<Map<String, dynamic>> getListStudentApproved() async {
-    final response = await http.get(Uri.parse("$baseApi/user/getStudentApprovedList"));
+  static Future<Map<String, dynamic>> getListStudentApproved() async {
+    final response =
+        await http.get(Uri.parse("$baseApi/user/getStudentApprovedList"));
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {

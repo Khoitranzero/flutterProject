@@ -27,7 +27,7 @@ const checkUserInClassExist = async (classId) => {
 const getClass = async () => {
   try {
     const classes = await db.Class.findAll({
-      attributes: ["id", "className", "teacherID"],
+      attributes: ["id", "className", "teacherID", "subjectID"],
       include: { model: db.User, attributes: ["username"] },
     });
     const classesWithTeacherInfo = [];
@@ -47,7 +47,7 @@ const getClass = async () => {
         id: id,
         className: className,
         teacherID: teacherID,
-        teacherInfo: teacherInfo, // Thêm thông tin giáo viên vào đối tượng lớp học
+        teacherInfo: teacherInfo,
       };
       classesWithTeacherInfo.push(classWithTeacher);
     }
@@ -95,10 +95,11 @@ const createNewClass = async (data) => {
   }
 };
 
-const updateClass = async (id, data) => {
+const updateClass = async (data) => {
   try {
+    console.log(data);
     const updatedClass = await db.Class.update(data, {
-      where: { id },
+      where: { id: data.id },
     });
     return {
       EM: "Cập nhật thông tin lớp thành công",
@@ -147,7 +148,133 @@ const deleteClass = async (data) => {
 const countStudentInClass = async () => {
   try {
     const classes = await db.Class.findAll({
+      attributes: ["id", "className", "teacherID", "subjectID"],
+      include: {
+        model: db.User,
+        attributes: [
+          "userId",
+          "username",
+          "address",
+          "sex",
+          "phone",
+          "classId",
+        ],
+      },
+    });
+
+    const classesWithTeacherInfo = [];
+
+    for (let i = 0; i < classes.length; i++) {
+      const classObj = classes[i];
+      const id = classObj.dataValues.id;
+      const className = classObj.dataValues.className;
+      const teacherID = classObj.dataValues.teacherID;
+      const subjectID = classObj.dataValues.subjectID;
+
+      const subjectInfo = await db.Subject.findOne({
+        where: { subjectId: subjectID },
+        attributes: ["subjectName"],
+      });
+      const teacherInfo = await db.User.findOne({
+        attributes: ["userId", "username", "address", "phone", "sex"],
+        where: { userId: teacherID },
+      });
+      const students = classObj.Users.map((user) => ({
+        userId: user.userId,
+        username: user.username,
+        address: user.address,
+        sex: user.sex,
+        phone: user.phone,
+        classId: user.classId,
+      }));
+      const classWithTeacher = {
+        id: id,
+        className: className,
+        subjectInfo: subjectInfo ? subjectInfo.toJSON() : null,
+        teacherInfo: teacherInfo ? teacherInfo.toJSON() : null,
+        Users: students,
+      };
+      classesWithTeacherInfo.push(classWithTeacher);
+    }
+
+    return {
+      EM: "Get classes success",
+      EC: 0,
+      DT: classesWithTeacherInfo,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      EM: "Error fetching classes",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+const addLecturerIntoClass = async (data) => {
+  let transaction;
+  try {
+    transaction = await db.sequelize.transaction();
+
+    // let isTeacherIdExist = await checkLecturerExistInclass(data.teacherID);
+    // if (isTeacherIdExist === true) {
+    //   return {
+    //     EM: "Lớp học này đã có giáo viên phụ trách",
+    //     EC: 2,
+    //     DT: [],
+    //   };
+    // }
+    const updatedClass = await db.Class.update(
+      {
+        teacherID: data.teacherID,
+      },
+      {
+        where: { id: data.id },
+        transaction: transaction,
+      }
+    );
+    // const updateUser = await db.User.update(
+    //   {
+    //     classId: data.id,
+    //   },
+    //   {
+    //     where: { userId: data.teacherID },
+    //     transaction: transaction,
+    //   }
+    // );
+    await transaction.commit();
+    if (updatedClass) {
+      return {
+        EM: "Thêm giáo viên phụ trách thành công",
+        EC: 0,
+        DT: updatedClass,
+      };
+    } else if (updatedClass) {
+      return {
+        EM: "Lỗi thêm giáo viên phụ trách",
+        EC: 0,
+        DT: updatedClass,
+      };
+    }
+  } catch (error) {
+    // Nếu có lỗi, rollback transaction
+    if (transaction) await transaction.rollback();
+
+    console.log(error);
+    return {
+      EM: "Lỗi thêm giáo viên phụ trách!!",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+const filterClassByTeacherID = async (data) => {
+  try {
+    const classes = await db.Class.findAll({
       attributes: ["id", "className", "teacherID"],
+      where: { teacherID: data.teacherID }, // Thêm điều kiện lọc ở đây
       include: {
         model: db.User,
         attributes: [
@@ -205,91 +332,6 @@ const countStudentInClass = async () => {
   }
 };
 
-const addLecturerIntoClass = async (data) => {
-  let transaction;
-  try {
-    transaction = await db.sequelize.transaction();
-
-    // let isTeacherIdExist = await checkLecturerExistInclass(data.teacherID);
-    // if (isTeacherIdExist === true) {
-    //   return {
-    //     EM: "Lớp học này đã có giáo viên phụ trách",
-    //     EC: 2,
-    //     DT: [],
-    //   };
-    // }
-    const updatedClass = await db.Class.update({
-      teacherID: data.teacherID
-    }, {
-      where: { id: data.id },
-      transaction: transaction,
-    });
-    // const updateUser = await db.User.update(
-    //   {
-    //     classId: data.id,
-    //   },
-    //   {
-    //     where: { userId: data.teacherID },
-    //     transaction: transaction,
-    //   }
-    // );
-    await transaction.commit();
-    if (updatedClass) {
-      return {
-        EM: "Thêm giáo viên phụ trách thành công",
-        EC: 0,
-        DT: updatedClass,
-      };
-    } else if (updatedClass) {
-      return {
-        EM: "Lỗi thêm giáo viên phụ trách",
-        EC: 0,
-        DT: updatedClass,
-      };
-    }
-  } catch (error) {
-    // Nếu có lỗi, rollback transaction
-    if (transaction) await transaction.rollback();
-
-    console.log(error);
-    return {
-      EM: "Lỗi thêm giáo viên phụ trách!!",
-      EC: 1,
-      DT: [],
-    };
-  }
-};
-
-const filterClassByTeacherID = async (data) => {
-  try {
-    const users = await db.Class.findAll({
-      where: { teacherID: data.teacherID},
-      attributes: ["id", "className", "teacherID"],
-    });
-    if (users) {
-      return {
-        EM: "get data success",
-        EC: 0,
-        DT: users,
-      };
-    } else {
-      return {
-        EM: "get data failed",
-        EC: 0,
-        DT: [],
-      };
-    }
-  } catch (e) {
-    console.log(e);
-    return {
-      EM: "error from server",
-      EC: 1,
-      DT: [],
-    };
-  }
-};
-
-
 module.exports = {
   getClass,
   createNewClass,
@@ -297,5 +339,5 @@ module.exports = {
   deleteClass,
   countStudentInClass,
   addLecturerIntoClass,
-  filterClassByTeacherID
+  filterClassByTeacherID,
 };

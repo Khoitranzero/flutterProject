@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_doan/component/button.dart';
 import 'package:flutter_doan/component/homeItem.dart';
+import 'package:flutter_doan/screens/Lecturer/classListForLecturer_screen.dart';
 import 'package:flutter_doan/screens/Subject/subjectList_page.dart';
 import 'package:flutter_doan/screens/action_page.dart';
 import 'package:flutter_doan/screens/classList_page.dart';
 import 'package:flutter_doan/screens/listUser_page.dart';
 import 'package:flutter_doan/screens/projectInfo_page.dart';
+import 'package:flutter_doan/screens/userDetail_page.dart';
 import 'package:flutter_doan/screens/user_page.dart';
 import 'package:flutter_doan/utils/services.dart';
 import 'package:flutter_doan/utils/tokenService.dart';
@@ -19,18 +21,23 @@ class LecturerHomePage extends StatefulWidget {
 
 class _LecturerHomePageState extends State<LecturerHomePage> {
   late String teacherID;
-  bool isGv = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _getRole();
+  }
+
   Future<void> _getRole() async {
     final tokenAndRole = await TokenService.getTokenAndRole();
-    String? role = tokenAndRole['role'] ?? '';
-    if (role.contains("gv")) {
+    String? _role = tokenAndRole['role'] ?? '';
+    if (_role.contains("gv")) {
       setState(() {
-        isGv = true;
-        teacherID = role;
+        teacherID = _role;
+        print(teacherID);
       });
     } else {
       setState(() {
-        isGv = false;
         teacherID = '';
       });
     }
@@ -107,7 +114,9 @@ class _LecturerHomePageState extends State<LecturerHomePage> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ClassList()))
+                                      builder: (context) =>
+                                          ClassListForLecturer(
+                                              teacherID: teacherID)))
                             }),
                     HomeItem(
                         title: "Thông tin GV",
@@ -116,7 +125,8 @@ class _LecturerHomePageState extends State<LecturerHomePage> {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const UserPage()))
+                                      builder: (context) =>
+                                          UserDetail(userId: teacherID)))
                             })
                   ],
                 ),

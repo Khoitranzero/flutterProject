@@ -161,15 +161,19 @@ class _UserPageState extends State<UserPage> {
                       const SizedBox(
                         height: 10,
                       ),
-                      Text("Lớp hoạt động",
-                          style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                              fontWeight: FontWeight.bold)),
-                      CustomTextField(
-                          isReadOnly: _role == 'admin' ? false : true,
-                          isPassword: false,
-                          hintText: "Lớp hoạt động",
-                          controller: _classController),
+                      isGV!.isNotEmpty
+                          ? const SizedBox()
+                          : Text("Lớp hoạt động",
+                              style: TextStyle(
+                                  fontStyle: FontStyle.italic,
+                                  fontWeight: FontWeight.bold)),
+                      isGV!.isNotEmpty
+                          ? const SizedBox()
+                          : CustomTextField(
+                              isReadOnly: _role == 'admin' ? false : true,
+                              isPassword: false,
+                              hintText: "Lớp hoạt động",
+                              controller: _classController),
                       const SizedBox(
                         height: 10,
                       ),

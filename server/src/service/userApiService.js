@@ -249,26 +249,27 @@ const updateUser = async (data) => {
   try {
     transaction = await db.sequelize.transaction();
     if (data.userId.includes("gv")) {
-      //bỏ cái này để không cập nhật bên classId bên user
-      // const updatedUser = await db.User.update(
-      //   {
-      //     username: data.username,
-      //     address: data.address,
-      //     sex: data.sex,
-      //   },
-      //   { where: { userId: data.userId }, transaction }
-      // );
-      const updatedClass = await db.Class.update(
+      // bỏ cái này để không cập nhật bên classId bên user
+      const updatedUser = await db.User.update(
         {
-          teacherID: data.userId,
+          username: data.username,
+          address: data.address,
+          sex: data.sex,
+          // Password ở đây
         },
-        {
-          where: { className: data.className },
-          transaction: transaction,
-        }
+        { where: { userId: data.userId }, transaction }
       );
+      // const updatedClass = await db.Class.update(
+      //   {
+      //     teacherID: data.userId,
+      //   },
+      //   {
+      //     where: { className: data.className },
+      //     transaction: transaction,
+      //   }
+      // );
 
-      if (!updatedClass) {
+      if (!updatedUser) {
         throw new Error("User not found");
       }
 
@@ -276,20 +277,21 @@ const updateUser = async (data) => {
       return {
         EM: "Cập nhật thông tin của sinh viên và lớp thành công !!!",
         EC: 0,
-        DT: updatedClass,
+        DT: updatedUser,
       };
     } else {
-      let classInfo = await db.Class.findOne({
-        where: { className: data.className },
-        transaction,
-      });
+      // let classInfo = await db.Class.findOne({
+      //   where: { className: data.className },
+      //   transaction,
+      // });
 
-      if (!classInfo) {
-        classInfo = await db.Class.create(
-          { className: data.className },
-          { transaction }
-        );
-      }
+      // if (!classInfo) {
+      //   classInfo = await db.Class.create(
+      //     { className: data.className },
+      //     { transaction }
+      //   );
+      // }
+
       const updatedUser = await db.User.update(
         {
           username: data.username,
@@ -306,7 +308,7 @@ const updateUser = async (data) => {
 
       await transaction.commit();
       return {
-        EM: "Cập nhật thông tin của sinh viên thành công !!!",
+        EM: "Cập nhật thông tin của người dùng thành công !!!",
         EC: 0,
         DT: updatedUser,
       };

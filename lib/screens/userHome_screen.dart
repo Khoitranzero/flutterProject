@@ -5,6 +5,7 @@ import 'package:flutter_doan/screens/Subject/subjectList_page.dart';
 import 'package:flutter_doan/screens/action_page.dart';
 import 'package:flutter_doan/screens/classList_page.dart';
 import 'package:flutter_doan/screens/listUser_page.dart';
+import 'package:flutter_doan/screens/userDetail_page.dart';
 import 'package:flutter_doan/screens/userPoin_page.dart';
 import 'package:flutter_doan/screens/user_page.dart';
 import 'package:flutter_doan/utils/services.dart';
@@ -19,6 +20,7 @@ class UserHomeScreen extends StatefulWidget {
 
 class _UserHomeScreenState extends State<UserHomeScreen> {
   String? _role;
+  late String userId;
   @override
   void initState() {
     super.initState();
@@ -29,6 +31,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     final tokenAndRole = await TokenService.getTokenAndRole();
     setState(() {
       _role = tokenAndRole['role'];
+      userId = _role!;
     });
   }
 
@@ -79,12 +82,11 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const UserPage(),
+                            builder: (context) => UserDetail(userId: userId),
                           ),
                         );
                       },
                     ),
-
                     HomeItem(
                       title: "Bảng Điểm",
                       backgroundColor: Colors.redAccent,
@@ -97,7 +99,6 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         );
                       },
                     ),
-                 
                   ],
                 ),
               ),

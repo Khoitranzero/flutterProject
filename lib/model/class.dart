@@ -2,12 +2,14 @@ import 'package:flutter_doan/model/user.dart';
 
 class ClassInfo {
   int id;
+  String subjectName;
   String className;
   User teacherInfo;
   List<User> users;
   int count;
   ClassInfo({
     required this.id,
+    required this.subjectName,
     required this.className,
     required this.teacherInfo,
     required this.users,
@@ -20,6 +22,7 @@ class ClassInfo {
           .toList();
       return ClassInfo(
         id: json['id'] ?? 'Chưa cập nhật',
+        subjectName: json['subjectInfo']['subjectName'] ?? "Chưa cập nhật",
         className: json['className'] ?? 'Chưa cập nhật',
         teacherInfo: User.fromJson(json['teacherInfo'] ?? {}),
         users: users,
@@ -29,6 +32,7 @@ class ClassInfo {
 
     return ClassInfo(
       id: 0,
+      subjectName: '',
       className: 'Chưa cập nhật',
       teacherInfo: User.fromJson({}),
       users: [],
