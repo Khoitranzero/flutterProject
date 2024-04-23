@@ -246,33 +246,33 @@ class __FormContentState extends State<_FormContent> {
             //   ),
             // ),
             // _gap(),
-            Container(
-              width: 400,
-              height: 50,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black),
-              ),
-              child: DropdownButton<String>(
-                value: _selectedRole,
-                icon: Icon(Icons.arrow_drop_down),
-                iconSize: 24,
-                elevation: 16,
-                style: const TextStyle(color: Colors.black),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedRole = newValue!;
-                  });
-                },
-                items: <String>['Sinh viên', 'Giảng viên']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
-            ),
+            // Container(
+            //   width: 400,
+            //   height: 50,
+            //   padding: const EdgeInsets.all(10),
+            //   decoration: BoxDecoration(
+            //     border: Border.all(color: Colors.black),
+            //   ),
+            //   // child: DropdownButton<String>(
+            //   //   value: _selectedRole,
+            //   //   icon: Icon(Icons.arrow_drop_down),
+            //   //   iconSize: 24,
+            //   //   elevation: 16,
+            //   //   style: const TextStyle(color: Colors.black),
+            //   //   onChanged: (String? newValue) {
+            //   //     setState(() {
+            //   //       _selectedRole = newValue!;
+            //   //     });
+            //   //   },
+            //   //   items: <String>['Sinh viên', 'Giảng viên']
+            //   //       .map<DropdownMenuItem<String>>((String value) {
+            //   //     return DropdownMenuItem<String>(
+            //   //       value: value,
+            //   //       child: Text(value),
+            //   //     );
+            //   //   }).toList(),
+            //   // ),
+            // ),
             _gap(),
             SizedBox(
               width: double.infinity,
@@ -306,7 +306,7 @@ class __FormContentState extends State<_FormContent> {
                     } else {
                       try {
                         final response = await AppUtils.registerUser(
-                            username, phoneNum, address, sex, _selectedRole);
+                            username, phoneNum, address, sex);
                         if (response['EM'].toString().isNotEmpty &&
                             response['DT'].toString().isNotEmpty) {
                           String? token =

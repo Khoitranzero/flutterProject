@@ -35,23 +35,23 @@ const checkPhoneExist = async (userPhone) => {
 const registerNewUser = async (rawUserData) => {
   
   try {
-    console.log("register",rawUserData)
-    let prefix;
-    if(rawUserData.role === "Giảng viên") {
-      prefix = "gv";
-    } else if (rawUserData.role === "Sinh viên") {
-      prefix = "dh";
-    }
-    const randomNumber = Math.floor(10000000 + Math.random() * 90000000);
-    const generatedUserId = `${prefix}${randomNumber}`;
+    // console.log("register",rawUserData)
+    // let prefix;
+    // if(rawUserData.role === "Giảng viên") {
+    //   prefix = "gv";
+    // } else if (rawUserData.role === "Sinh viên") {
+    //   prefix = "dh";
+    // }
+    // const randomNumber = Math.floor(10000000 + Math.random() * 90000000);
+    // const generatedUserId = `${prefix}${randomNumber}`;
 
-    let isUserIdExist = await checkUserIdExist(generatedUserId);
-    if (isUserIdExist === true) {
-      return {
-        EM: "MSSV này đã được sử dụng, vui lòng nhập đúng MSSV đã được cấp",
-        EC: 1,
-      };
-    }
+    // let isUserIdExist = await checkUserIdExist(generatedUserId);
+    // if (isUserIdExist === true) {
+    //   return {
+    //     EM: "MSSV này đã được sử dụng, vui lòng nhập đúng MSSV đã được cấp",
+    //     EC: 1,
+    //   };
+    // }
     let isPhoneExist = await checkPhoneExist(rawUserData.phone);
     if (isPhoneExist === true) {
       return {
@@ -59,15 +59,17 @@ const registerNewUser = async (rawUserData) => {
         EC: 1,
       };
     }
-
-    // let hashPassword = hashUserPassword(rawUserData.password);
+    // rawUserData.password='admin';
+    //  let hashPassword = hashUserPassword(rawUserData.password);
 
     await db.User.create({
-      userId: generatedUserId,
+      // userId: generatedUserId,
       username: rawUserData.username,
       address: rawUserData.address,
       phone: rawUserData.phone,
       sex: rawUserData.sex,
+      approval: 0
+      // password: hashPassword
     });
     return {
       EM: "Đăng ký thành công",

@@ -92,25 +92,25 @@ class _RegisterFormState extends State<RegisterForm> {
                         borderRadius: BorderRadius.circular(10),
                         border: Border.all(color: Colors.black),
                       ),
-                      child: DropdownButton<String>(
-                        value: _selectedRole,
-                        icon: Icon(Icons.arrow_drop_down),
-                        iconSize: 24,
-                        elevation: 16,
-                        style: const TextStyle(color: Colors.black),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedRole = newValue!;
-                          });
-                        },
-                        items: <String>['Giảng viên', 'Sinh viên']
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
+                      // child: DropdownButton<String>(
+                      //   value: _selectedRole,
+                      //   icon: Icon(Icons.arrow_drop_down),
+                      //   iconSize: 24,
+                      //   elevation: 16,
+                      //   style: const TextStyle(color: Colors.black),
+                      //   onChanged: (String? newValue) {
+                      //     setState(() {
+                      //       _selectedRole = newValue!;
+                      //     });
+                      //   },
+                      //   items: <String>['Giảng viên', 'Sinh viên']
+                      //       .map<DropdownMenuItem<String>>((String value) {
+                      //     return DropdownMenuItem<String>(
+                      //       value: value,
+                      //       child: Text(value),
+                      //     );
+                      //   }).toList(),
+                      // ),
                     ),
                     const SizedBox(height: 10),
                     CustomButton(
@@ -140,8 +140,7 @@ class _RegisterFormState extends State<RegisterForm> {
                                   userName,
                                   userPhoneNumber,
                                   address,
-                                  sex,
-                                  _selectedRole);
+                                  sex);
                               clearTextField();
                               if (mounted) {
                                 print(response['EM']);

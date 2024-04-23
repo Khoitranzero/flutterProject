@@ -1,3 +1,4 @@
+//server/src/routers/api.js
 import express from "express";
 import apiController from '../controller/apiController';
 import userController from '../controller/userController';
@@ -41,7 +42,7 @@ router.delete("/user/delete", userController.deleteFunc);
 router.get("/user/getTeacherNotInClass", userController.getTeacherNotInClass);
 router.put("/user/removeTeacherOutOfClass", userController.removeTeacerOutClass);
 router.get("/user/getStudentApprovedList", userController.getStudentApprovedList);
-
+router.post("/user/sendUserInformation", userController.sendUserInformation);
 router.get("/user/getLecturer", userController.getListLecturer);
 
 

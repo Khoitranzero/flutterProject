@@ -1,14 +1,20 @@
 //src/service/userApiService.js
-import { where } from "sequelize";
+// import { where } from "sequelize";
+const { Vonage } = require('@vonage/server-sdk')
+// import Nexmo from "nexmo";
 const { Op } = require("sequelize");
 import db from "../models";
+require("dotenv").config();
 import {
   checkUserIdExist,
   checkPhoneExist,
-  hashUserPassword,
 } from "../service/loginRegisterService";
 import bcrypt from "bcryptjs";
 const salt = bcrypt.genSaltSync(10);
+const hashUserPassword = (userPassword) => {
+  let hashPassword = bcrypt.hashSync(userPassword, salt);
+  return hashPassword;
+};
 const getOneUser = async (userId) => {
   try {
     let user = await db.User.findOne({
@@ -70,14 +76,11 @@ const getAllUser = async () => {
 const getStudentApprovedList = async () => {
   try {
     const users = await db.User.findAll({
-      attributes: ["userId", "username", "address", "phone", "sex", "classId","password"],
+      attributes: ["userId", "username", "address", "phone", "sex", "classId","password","approval"],
       include: { model: db.Class, attributes: ["className"] },
       where: {
-        userId: {
-          [Op.like]: '%dh%'
-        },
-        password: {
-          [Op.or]: ['', null] 
+        approval: {
+          [Op.or]: ['', null,0] 
         }
       }
     });
@@ -245,16 +248,36 @@ const createNewUser = async (data) => {
 };
 
 const updateUser = async (data) => {
+  console.log("data",data)
   let transaction;
+  let hashPassword = hashUserPassword(data.password);
+   let prefix;
+    if(data.role === "Giảng viên") {
+      prefix = "gv";
+    } else if (data.role === "Sinh viên") {
+      prefix = "dh";
+    }
+    const randomNumber = Math.floor(10000000 + Math.random() * 90000000);
+    const generatedUserId = `${prefix}${randomNumber}`;
+
+    let isUserIdExist = await checkUserIdExist(generatedUserId);
+    if (isUserIdExist === true) {
+      return {
+        EM: "MSSV này đã được sử dụng, vui lòng nhập đúng MSSV đã được cấp",
+        EC: 1,
+      };
+    }
   try {
     transaction = await db.sequelize.transaction();
     if (data.userId.includes("gv")) {
       // bỏ cái này để không cập nhật bên classId bên user
       const updatedUser = await db.User.update(
         {
+          userId: generatedUserId,
           username: data.username,
           address: data.address,
           sex: data.sex,
+          password:hashPassword
           // Password ở đây
         },
         { where: { userId: data.userId }, transaction }
@@ -572,6 +595,35 @@ const getOneUserByID = async (userId) => {
     };
   }
 };
+
+const vonage = new Vonage({
+  apiKey: '7dc3bdee',
+  apiSecret: 'FG17czoyB1pzXseD'
+});
+const sendSMS = async (to, message) => {
+  const from = "84907267362"
+  // to = "84334323968"
+  to = "84907267362"
+
+  try {
+   
+    const text=message;
+    console.log("text message", text)
+    const response = await vonage.sms.send({ to, from, text });
+    console.log('Message sent successfully');
+    console.log(response);
+  } catch (error) {
+    console.error('There was an error sending the message:');
+    console.error(error);
+
+    // If available, log the response from Vonage
+    if (error.response) {
+      console.error('Response from Vonage:');
+      console.error(error.response);
+    }
+  }
+};
+
 module.exports = {
   getAllUser,
   createNewUser,
@@ -588,5 +640,6 @@ module.exports = {
   filterTeacherNotInClass,
   removeTeacherOutOfClass,
   getLecturerApprovedList,
-  getStudentApprovedList
+  getStudentApprovedList,
+  sendSMS
 };

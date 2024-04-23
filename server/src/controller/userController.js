@@ -265,7 +265,34 @@ const getStudentApprovedList = async (req,res) => {
     });
   }
 }
+const sendUserInformation = async (req, res) => {
+  try {
+  
+    const userId = req.body.userId;
+    // const password = req.body.password;
+    const password = "123456";
+    const phone = req.body.phone;
 
+    const message = `Thông tin đăng nhập:\nUser ID: ${userId}\nPassword: ${password}`;
+    // console.log("phone",phone)
+    // console.log("mesage",message)
+    await userApiService.sendSMS(phone, message);
+
+
+    return res.status(200).json({
+      EM: "Xử lý thông tin người dùng thành công",
+      EC: 0,
+      DT: {}, 
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      EM: "Lỗi từ máy chủ",
+      EC: "-1",
+      DT: {},
+    });
+  }
+}; 
 module.exports = {
   readFunc,
   createFunc,
@@ -281,5 +308,6 @@ module.exports = {
   getListLecturer,
   getTeacherNotInClass,
   removeTeacerOutClass,
-  getStudentApprovedList
+  getStudentApprovedList,
+  sendUserInformation
 };

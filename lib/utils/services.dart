@@ -3,10 +3,10 @@ import "dart:convert";
 import "package:http/http.dart" as http;
 
 class AppUtils {
-  static const String baseApi = "http://192.168.238.1:8080/api/v1";
+  static const String baseApi = "http://localhost:8080/api/v1";
 
   static Future<Map<String, dynamic>> registerUser(String username,
-      String phoneNumber, String address, String sex, String role) async {
+      String phoneNumber, String address, String sex) async {
     final response = await http
         .post(Uri.parse("$baseApi/register"), headers: <String, String>{
       'ContentType': 'application/json'
@@ -15,7 +15,7 @@ class AppUtils {
       'phone': phoneNumber,
       'address': address,
       'sex': sex,
-      'role': role
+
     });
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
@@ -88,7 +88,7 @@ class AppUtils {
   }
 
   static Future<Map<String, dynamic>> HandleUpdate(String userId,
-      String username, String address, String sex, String className) async {
+      String username, String address, String sex,String password ,String className, String role) async {
     final response = await http.put(
       Uri.parse("$baseApi/user/update"),
       headers: <String, String>{
@@ -100,6 +100,8 @@ class AppUtils {
         'address': address,
         'sex': sex,
         'className': className,
+        'password':password,
+        'role': role
       },
     );
     // print(response.body);
@@ -555,4 +557,28 @@ class AppUtils {
       throw Exception("Lấy dữ liệu thất bại!!");
     }
   }
+
+
+  static Future<void> sendUserInformation(String phoneNumber, String userId, String password) async {
+    try {
+      final response = await http.post(
+        Uri.parse('$baseApi/user/sendUserInformation'),
+        body: {
+          'phone': phoneNumber,
+          'userId': userId,
+          'password': password,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        print('Đã gửi thông tin thành công cho $phoneNumber');
+      } else {
+        throw Exception('Gửi thông tin thất bại: ${response.reasonPhrase}');
+      }
+    } catch (e) {
+      print('Lỗi khi gửi thông tin: $e');
+      throw Exception('Lỗi khi gửi thông tin: $e');
+    }
+  }
+
 }

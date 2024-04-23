@@ -35,21 +35,23 @@ class _UserDetailState extends State<UserDetail> {
   final TextEditingController _sexController = TextEditingController();
   final TextEditingController _classController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  String _selectedRole = 'Sinh viên'; // Đã thêm khai báo cho biến _selectedRole
   List<dynamic> _classList = [];
+
   @override
   void initState() {
     super.initState();
     _getRole();
-    _getClassList;
-    _getClassList
+    _getClassList();
+    _getClassList()
         .then((data) => {
               setState(() {
                 _classList = data['DT'];
               })
             })
         .catchError((e) {
-      print("Lỗi gán dữ liệu!!");
-    });
+          print("Lỗi gán dữ liệu!!");
+        });
     _getUserById();
   }
 
@@ -67,7 +69,10 @@ class _UserDetailState extends State<UserDetail> {
     }
   }
 
-  Future<Map<String, dynamic>> _getClassList = AppUtils.getClassInfo();
+  Future<Map<String, dynamic>> _getClassList() async {
+    return await AppUtils.getClassInfo(); // Đã thêm từ khóa await
+  }
+
   Future<void> _getUserById() async {
     final response = await AppUtils.getUserByID(widget.userId);
     setState(() {
@@ -86,6 +91,7 @@ class _UserDetailState extends State<UserDetail> {
   }
 
   String? _selectedClassName;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -147,8 +153,8 @@ class _UserDetailState extends State<UserDetail> {
             controller: _sexController,
           ),
           const SizedBox(height: 10),
-          if (_passwordController.text != null &&
-              _passwordController.text != " ")
+          // if (_passwordController.text != null &&
+          //     _passwordController.text != " ")
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -209,6 +215,33 @@ class _UserDetailState extends State<UserDetail> {
                   controller: _classController,
                 ),
           const SizedBox(height: 10),
+          Container(
+              width: 400,
+              height: 50,
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                border: Border.all(color: Colors.black),
+              ),
+              child: DropdownButton<String>(
+                value: _selectedRole,
+                icon: Icon(Icons.arrow_drop_down),
+                iconSize: 24,
+                elevation: 16,
+                style: const TextStyle(color: Colors.black),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedRole = newValue!;
+                  });
+                },
+                items: <String>['Sinh viên', 'Giảng viên']
+                    .map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ),
         ],
       ),
       bottomNavigationBar: BottomAppBar(
@@ -228,6 +261,7 @@ class _UserDetailState extends State<UserDetail> {
                 if (username.isEmpty ||
                     address.isEmpty ||
                     gender.isEmpty ||
+                         password.isEmpty ||
                     className.isEmpty) {
                   showDialog(
                     context: context,
@@ -243,7 +277,7 @@ class _UserDetailState extends State<UserDetail> {
                 } else {
                   try {
                     final response = await AppUtils.HandleUpdate(
-                        userId, username, address, gender, className);
+                        userId, username, address,gender, password,className,_selectedRole);
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {

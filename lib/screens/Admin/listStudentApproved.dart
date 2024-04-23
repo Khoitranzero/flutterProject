@@ -15,6 +15,7 @@ class ListStudentApproved extends StatefulWidget {
 }
 
 class _ListStudentApprovedState extends State<ListStudentApproved> {
+  List<User> userList = [];
   Future<Map<String, dynamic>> _userListFuture = AppUtils.getListStudentApproved();
 
   Future<void> refreshData() async {
@@ -55,8 +56,7 @@ List<String> selectedUser = [];
             return Center(child: Text('Đã xảy ra lỗi: ${snapshot.error}'));
           } else {
             final userDataList = snapshot.data!['DT'] as List<dynamic>;
-            final userList =
-                userDataList.map((item) => User.fromJson(item)).toList();
+           userList = userDataList.map((item) => User.fromJson(item)).toList();
 
             return RefreshIndicator(
                 child: ListView.builder(
@@ -117,15 +117,15 @@ List<String> selectedUser = [];
       ),
    floatingActionButton: FloatingActionButton(
         onPressed: () async {
-        //   try {
-        //     for (String userId in selectedUser) {
-        //       final user = userList.firstWhere((element) => element.userId == userId);
-        //       // Send userId and password to user via phone
-        //       await AppUtils.sendUserInformation(user.phone, user.userId, user.password);
-        //     }
-        //   } catch (e) {
-        //     print('Error: $e');
-        //   }
+          try {
+            for (String userId in selectedUser) {
+              final user = userList.firstWhere((element) => element.userId == userId);
+              // Send userId and password to user via phone
+              await AppUtils.sendUserInformation(user.phone, user.userId, user.password);
+            }
+          } catch (e) {
+            print('Error: $e');
+          }
          },
         child: const Icon(Icons.add),
       ),

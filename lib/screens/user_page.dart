@@ -20,6 +20,7 @@ class _UserPageState extends State<UserPage> {
   final TextEditingController _userIdController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _sexController = TextEditingController();
   final TextEditingController _classController = TextEditingController();
   @override
@@ -55,7 +56,7 @@ class _UserPageState extends State<UserPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Thông tin của sinh viên"),
+        title: Text("Thông tin của sinh viên 123r"),
       ),
       body: _userData == null
           ? Center(child: CircularProgressIndicator())
@@ -93,6 +94,7 @@ class _UserPageState extends State<UserPage> {
                   _phoneController.text = user['phone'];
                   _addressController.text = user['address'] ?? '';
                   _sexController.text = user['sex'] ?? '';
+                  _passwordController.text = user['password'] ?? '';
                   _classController.text = user['Class'] != null &&
                           user['Class']['className'] != null
                       ? user['Class']['className']
@@ -229,6 +231,8 @@ class _UserPageState extends State<UserPage> {
                                                     username,
                                                     address,
                                                     gender,
+                                                    className,
+                                                    className,
                                                     className);
                                             // print(response);
                                             showDialog(
