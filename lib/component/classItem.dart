@@ -40,14 +40,6 @@ class ClassItem extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Môn học: ${classInfoItem.subjectName}',
-                style: TextStyle(
-                    fontSize: 20.0,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 8.0),
-              Text(
                 'Tên lớp: ${classInfoItem.className}',
                 style: TextStyle(
                     fontSize: 20.0,

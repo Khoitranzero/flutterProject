@@ -1,7 +1,5 @@
 "use strict";
 const { Model } = require("sequelize");
-const Subject = require("./subject"); // Import model Subject
-const Class = require("./class");
 module.exports = (sequelize, DataTypes) => {
   class SubjectClass extends Model {
     /**
@@ -10,8 +8,8 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      Subject.belongsToMany(models.Class, { through: SubjectClass });
-      Class.belongsToMany(models.Subject, { through: SubjectClass });
+        SubjectClass.belongsTo(models.Subject, {foreignKey: 'subjectId'})
+        SubjectClass.belongsTo(models.Class, {foreignKey: 'classId'})
     }
   }
   SubjectClass.init(

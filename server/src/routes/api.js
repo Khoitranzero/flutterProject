@@ -3,9 +3,10 @@ import apiController from '../controller/apiController';
 import userController from '../controller/userController';
 import classController from '../controller/classController';
 import pointController from '../controller/pointController';
-import subjectController from '../controller/subjectController'
+import subjectController from '../controller/subjectController';
+import classSubjectController from '../controller/classSubjectController';
 import {checkUserJWT,checkUserPermission} from '../middleware/JWTAction';
-
+import roomController from '../controller/roomController'
 const router = express.Router();
 
 /**
@@ -43,6 +44,10 @@ router.get("/user/getStudentApprovedList", userController.getStudentApprovedList
 
 router.get("/user/getLecturer", userController.getListLecturer);
 
+
+router.get("/classSubject/read", classSubjectController.readFunc);
+
+router.get("/room/read", roomController.readFunc);
 
 router.get("/point/read", pointController.readFunc);
 router.post("/point/create",pointController.createFunc);

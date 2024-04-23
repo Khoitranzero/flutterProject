@@ -12,14 +12,11 @@ module.exports = (sequelize, DataTypes) => {
     static associate(models) {
       // define association here
       Class.hasMany(models.User);
-      Class.hasMany(models.Subject);
-      Class.hasMany(models.Room, { foreignKey: 'classId' });
     }
   }
   Class.init({
     className: DataTypes.STRING,
     teacherID: DataTypes.STRING,
-    subjectID: DataTypes.STRING,
     roomName: DataTypes.STRING
   }, {
     sequelize,

@@ -32,7 +32,7 @@ class ClassInfo {
 
     return ClassInfo(
       id: 0,
-      subjectName: '',
+      subjectName: 'Chưa cập nhật',
       className: 'Chưa cập nhật',
       teacherInfo: User.fromJson({}),
       users: [],

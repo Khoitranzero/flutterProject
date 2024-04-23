@@ -118,10 +118,7 @@ const updateClass = async (data) => {
 
 const deleteClass = async (data) => {
   try {
-    console.log("classID", data);
     let isUserInClassExist = await checkUserInClassExist(data.id);
-    console.log("first", isUserInClassExist);
-
     const deletedClass = await db.Class.destroy({
       where: { id: data.id },
     });
@@ -147,70 +144,63 @@ const deleteClass = async (data) => {
 
 const countStudentInClass = async () => {
   try {
-    const classes = await db.Class.findAll({
-      attributes: ["id", "className", "teacherID", "subjectID"],
-      include: {
-        model: db.User,
-        attributes: [
-          "userId",
-          "username",
-          "address",
-          "sex",
-          "phone",
-          "classId",
-        ],
-      },
+    // Lấy danh sách tất cả các lớp từ bảng Class
+    const classData = await db.Class.findAll({
+      attributes: ["id", "className", "teacherID", "roomName"],
     });
 
-    const classesWithTeacherInfo = [];
+    // Mảng để lưu thông tin về các lớp học và sinh viên
+    const classInfoList = [];
 
-    for (let i = 0; i < classes.length; i++) {
-      const classObj = classes[i];
-      const id = classObj.dataValues.id;
-      const className = classObj.dataValues.className;
-      const teacherID = classObj.dataValues.teacherID;
-      const subjectID = classObj.dataValues.subjectID;
+    // Lặp qua từng lớp học từ bảng Class
+    for (const classRow of classData) {
+      const classId = classRow.id;
 
-      const subjectInfo = await db.Subject.findOne({
-        where: { subjectId: subjectID },
-        attributes: ["subjectName"],
+      // Lấy danh sách các userId của sinh viên trong lớp từ bảng Room
+      const roomData = await db.Room.findAll({
+        where: { classId: classId },
+        attributes: ["userId"],
       });
-      const teacherInfo = await db.User.findOne({
-        attributes: ["userId", "username", "address", "phone", "sex"],
-        where: { userId: teacherID },
-      });
-      const students = classObj.Users.map((user) => ({
-        userId: user.userId,
-        username: user.username,
-        address: user.address,
-        sex: user.sex,
-        phone: user.phone,
-        classId: user.classId,
-      }));
-      const classWithTeacher = {
-        id: id,
-        className: className,
-        subjectInfo: subjectInfo ? subjectInfo.toJSON() : null,
-        teacherInfo: teacherInfo ? teacherInfo.toJSON() : null,
-        Users: students,
+
+      // Lấy thông tin chi tiết của từng sinh viên từ bảng User
+      const studentInfoList = [];
+      for (const roomRow of roomData) {
+        const userId = roomRow.userId;
+        const userInfo = await db.User.findOne({
+          where: { userId: userId },
+          attributes: ["userId", "username", "address", "sex", "phone"],
+        });
+        if (userInfo) {
+          studentInfoList.push(userInfo.toJSON());
+        }
+      }
+
+      // Tạo đối tượng lớp học và thêm vào mảng kết quả
+      const classInfo = {
+        classId: classId,
+        className: classRow.className,
+        teacherID: classRow.teacherID,
+        roomName: classRow.roomName,
+        students: studentInfoList,
       };
-      classesWithTeacherInfo.push(classWithTeacher);
+      classInfoList.push(classInfo);
     }
 
     return {
-      EM: "Get classes success",
+      EM: "Get class and student info from room success",
       EC: 0,
-      DT: classesWithTeacherInfo,
+      DT: classInfoList,
     };
   } catch (error) {
     console.log(error);
     return {
-      EM: "Error fetching classes",
+      EM: "Error fetching class and student info from room",
       EC: 1,
       DT: [],
     };
   }
 };
+
 
 const addLecturerIntoClass = async (data) => {
   let transaction;

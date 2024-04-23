@@ -8,6 +8,8 @@ const nonSecurePaths = ['/logout', '/login','/register','/',
 '/class/read','/class/get','/class/create','/class/delete','/class/addTeacher',"/class/getClassByTeacherID","/class/update",
 '/user/getLecturer','/user/getStudentApprovedList',
 '/point/read','/point/create','/point/update', '/point/delete',
+"/classSubject/read",
+"/room/read",
 '/subject/read','/subject/create','/subject/update', '/subject/delete'];
 const createJWT = (payload)=> {
 

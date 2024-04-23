@@ -8,15 +8,13 @@ module.exports = (sequelize, DataTypes) => {
      * The `models/index` file will call this method automatically.
      */
     static associate(models) {
-      // Quan hệ với bảng User
       Room.belongsTo(models.User, { foreignKey: "userId" });
-      // Quan hệ với bảng Class
       Room.belongsTo(models.Class, { foreignKey: "classId" });
     }
   }
   Room.init(
     {
-      userId: DataTypes.STRING,
+      userId: DataTypes.INTEGER,
       classId: DataTypes.STRING,
     },
     {

@@ -70,9 +70,9 @@ const getClassListAndStudent = async (req, res) => {
   try {
     let data = await classService.countStudentInClass();
     let newDataWithCount = data.DT.map((classItem) => {
-      let count = classItem.Users.length;
+      let count = classItem.students.length;
       // Kiểm tra xem classItem.Users.userId có chứa chuỗi "gv" không
-      if (classItem.Users.some((user) => user.userId.includes("gv"))) {
+      if (classItem.students.some((user) => user.userId.includes("gv"))) {
         count -= 1; // Giảm count đi một đơn vị
       }
       return { ...classItem, count: count };

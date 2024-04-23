@@ -65,6 +65,7 @@ class _ClassListState extends State<ClassList> {
                   child: Text("Something went wrong ${snapshot.error}"));
             } else {
               final classListData = snapshot.data!['DT'] as List<dynamic>;
+
               final classList = classListData
                   .map((item) => ClassInfo.fromJson(item))
                   .toList();
@@ -74,6 +75,7 @@ class _ClassListState extends State<ClassList> {
                       itemCount: classList.length,
                       itemBuilder: (context, index) {
                         final classInfoItem = classList[index];
+                        print(classInfoItem.className);
                         return ClassItem(
                           classInfoItem: classInfoItem,
                           onPressed: () {
