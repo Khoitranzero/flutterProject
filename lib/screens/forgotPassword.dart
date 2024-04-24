@@ -8,14 +8,14 @@ import 'package:flutter_doan/screens/userHome_screen.dart';
 import 'package:flutter_doan/utils/services.dart';
 import 'package:flutter_doan/utils/tokenService.dart';
 
-class LoginScreen extends StatelessWidget {
-  const LoginScreen({Key? key}) : super(key: key);
+class forgotPassword extends StatelessWidget {
+  const forgotPassword({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Đăng nhập"),
+        title: const Text("Lấy lại password"),
       ),
       body: const LoginForm(),
     );
@@ -31,7 +31,7 @@ class LoginForm extends StatefulWidget {
 
 class _LoginFormState extends State<LoginForm> {
   final TextEditingController _valueLoginController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _newpasswordController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +49,7 @@ class _LoginFormState extends State<LoginForm> {
                     const SizedBox(height: 20),
                     _FormContent(
                       valueLoginController: _valueLoginController,
-                      passwordController: _passwordController,
+                      newpasswordController: _newpasswordController,
                     ),
                   ],
                 )
@@ -60,7 +60,7 @@ class _LoginFormState extends State<LoginForm> {
                     Expanded(
                       child: _FormContent(
                         valueLoginController: _valueLoginController,
-                        passwordController: _passwordController,
+                        newpasswordController: _newpasswordController,
                       ),
                     ),
                   ],
@@ -86,7 +86,7 @@ class _Logo extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(8.0),
           child: Text(
-            "Đăng nhập vào hệ thống",
+            "Quên mật khẩu",
             textAlign: TextAlign.center,
             style: isSmallScreen
                 ? Theme.of(context).textTheme.headline5
@@ -103,12 +103,12 @@ class _Logo extends StatelessWidget {
 
 class _FormContent extends StatefulWidget {
   final TextEditingController valueLoginController;
-  final TextEditingController passwordController;
+  final TextEditingController newpasswordController;
 
   const _FormContent({
     Key? key,
     required this.valueLoginController,
-    required this.passwordController,
+    required this.newpasswordController,
   }) : super(key: key);
 
   @override
@@ -143,15 +143,15 @@ class __FormContentState extends State<_FormContent> {
                 return null;
               },
               decoration: InputDecoration(
-                labelText: 'Số điện thoại',
-                hintText: 'Nhập số điện thoại',
+                labelText: 'Số điện thoại hoặc ID',
+                hintText: 'Nhập số điện thoại hoặc ID',
                 prefixIcon: const Icon(Icons.person),
                 border: const OutlineInputBorder(),
               ),
             ),
             _gap(),
             TextFormField(
-              controller: widget.passwordController,
+              controller: widget.newpasswordController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
                   return 'Nhập vào ô thông tin!!!';
@@ -164,7 +164,7 @@ class __FormContentState extends State<_FormContent> {
               obscureText: !_isPasswordVisible,
               decoration: InputDecoration(
                 labelText: 'Mật khẩu',
-                hintText: 'Nhập mật khẩu của bạn',
+                hintText: 'Nhập mật khẩu mới của bạn',
                 prefixIcon: const Icon(Icons.lock_outline_rounded),
                 border: const OutlineInputBorder(),
                 suffixIcon: IconButton(
@@ -193,7 +193,7 @@ class __FormContentState extends State<_FormContent> {
                 onPressed: () async {
                   if (_formKey.currentState?.validate() ?? false) {
                     String valueLogin = widget.valueLoginController.text.trim();
-                    String password = widget.passwordController.text.trim();
+                    String password = widget.newpasswordController.text.trim();
                     if (valueLogin.isEmpty || password.isEmpty) {
                       showDialog(
                         context: context,

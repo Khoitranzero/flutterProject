@@ -33,25 +33,7 @@ const checkPhoneExist = async (userPhone) => {
 };
 
 const registerNewUser = async (rawUserData) => {
-  
   try {
-    // console.log("register",rawUserData)
-    // let prefix;
-    // if(rawUserData.role === "Giảng viên") {
-    //   prefix = "gv";
-    // } else if (rawUserData.role === "Sinh viên") {
-    //   prefix = "dh";
-    // }
-    // const randomNumber = Math.floor(10000000 + Math.random() * 90000000);
-    // const generatedUserId = `${prefix}${randomNumber}`;
-
-    // let isUserIdExist = await checkUserIdExist(generatedUserId);
-    // if (isUserIdExist === true) {
-    //   return {
-    //     EM: "MSSV này đã được sử dụng, vui lòng nhập đúng MSSV đã được cấp",
-    //     EC: 1,
-    //   };
-    // }
     let isPhoneExist = await checkPhoneExist(rawUserData.phone);
     if (isPhoneExist === true) {
       return {
@@ -59,18 +41,19 @@ const registerNewUser = async (rawUserData) => {
         EC: 1,
       };
     }
-    // rawUserData.password='admin';
-    //  let hashPassword = hashUserPassword(rawUserData.password);
+
+    // Sử dụng số điện thoại làm mật khẩu
+    let hashPassword = hashUserPassword(rawUserData.phone);
 
     await db.User.create({
-      // userId: generatedUserId,
       username: rawUserData.username,
       address: rawUserData.address,
       phone: rawUserData.phone,
       sex: rawUserData.sex,
-      approval: 0
-      // password: hashPassword
+      password: hashPassword,
+      approval: 0,
     });
+
     return {
       EM: "Đăng ký thành công",
       EC: 0,
@@ -89,7 +72,6 @@ const chekPassword = (inputPassword, hashPassword) => {
 };
 const handleUserLogin = async (rawData) => {
   try {
-    // console.log("rawData",rawData)
     let user = await db.User.findOne({
       where: {
         [Op.or]: [
@@ -98,14 +80,16 @@ const handleUserLogin = async (rawData) => {
         ],
       },
     });
-    // console.log("user",user)
+
     if (user) {
+      console.log("first",rawData.password)
+      console.log("first",user.password)
       let isCorrectPassword = chekPassword(rawData.password, user.password);
+
       if (isCorrectPassword === true) {
-        //let getclass = await getClassName(user);
+        // Tạo JWT và trả về kết quả đăng nhập thành công
         let payload = {
           userId: user.userId,
-          //getclass,
           username: user.username,
         };
         let token = createJWT(payload);
@@ -114,19 +98,14 @@ const handleUserLogin = async (rawData) => {
           EC: 0,
           DT: {
             access_token: token,
-            //getclass,
             userId: user.userId,
             username: user.username,
           },
         };
       }
     }
-    console.log(
-      "not found student with masv/phone  ",
-      rawData.valueLogin,
-      "pasword",
-      rawData.password
-    );
+
+    console.log("Thông tin đăng nhập không đúng");
     return {
       EM: "Thông tin đăng nhập chưa đúng, xin vui lòng nhập lại!",
       EC: 1,
@@ -140,10 +119,66 @@ const handleUserLogin = async (rawData) => {
     };
   }
 };
+const changePassword = async (rawUserData) => {
+  try {
+    let user = await db.User.findOne({
+      where: {
+        userId: rawUserData.userId,
+      },
+    });
+console.log("first",rawUserData)
+    if (user) {
+      // Compare the provided current password with the stored hashed password
+      let isCorrectPassword = chekPassword(
+      
+        rawUserData.password,
+        user.password,
+      );
+console.log("isCorrectPassword",isCorrectPassword)
+      if (isCorrectPassword) {
+        // If the current password matches, proceed with updating the password
+        let hashPassword = hashUserPassword(rawUserData.newpassword);
+
+        const updatedUser = await db.User.update(
+          {
+            password: hashPassword,
+          },
+          { where: { userId: rawUserData.userId } }
+        );
+
+        return {
+          EM: "Đổi mật khẩu thành công",
+          EC: 0,
+          DT: updatedUser,
+        };
+      } else {
+        // If the current password doesn't match, return an error
+        return {
+          EM: "Mật khẩu cũ không chính xác",
+          EC: -1,
+        };
+      }
+    } else {
+      // If the user doesn't exist, return an error
+      return {
+        EM: "Người dùng không tồn tại",
+        EC: -2,
+      };
+    }
+  } catch (e) {
+    console.log("Error:", e);
+    return {
+      EM: "Lỗi từ máy chủ",
+      EC: -3,
+    };
+  }
+};
+
 module.exports = {
   registerNewUser,
   checkUserIdExist,
   checkPhoneExist,
   handleUserLogin,
   hashUserPassword,
+  changePassword
 };

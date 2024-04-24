@@ -255,7 +255,6 @@ const createNewUser = async (data) => {
 const updateUser = async (data) => {
   console.log("data", data);
   let transaction;
-  let hashPassword = data.password ? hashUserPassword(data.password) : null;
   let prefix;
   if (data.role === "Giảng viên") {
     prefix = "gv";
@@ -282,32 +281,6 @@ const updateUser = async (data) => {
 
       // Cập nhật userId vào data
       data.userId = generatedUserId;
-    } else {
-      // Kiểm tra xem userId hiện tại có phải là mã sinh viên không
-      const isCurrentUserIdStudent = data.userId.startsWith("dh");
-      // Kiểm tra xem role mới có phải là Sinh viên không
-      const isNewRoleStudent = data.role === "Sinh viên";
-      // Kiểm tra xem userId hiện tại có phải là mã giảng viên không
-      const isCurrentUserIdLecturer = data.userId.startsWith("gv");
-      // Kiểm tra xem role mới có phải là Giảng viên không
-      const isNewRoleLecturer = data.role === "Giảng viên";
-
-      if (
-        (isCurrentUserIdStudent && isNewRoleStudent) ||
-        (isCurrentUserIdLecturer && isNewRoleLecturer)
-      ) {
-        // Không thay đổi userId
-      } else {
-        // Cập nhật lại userId
-        data.userId = `${prefix}${data.userId.substring(2)}`;
-      }
-    }
-
-    // Kiểm tra nếu password mới không được truyền vào
-    if (!data.password) {
-      // Lấy lại password từ cơ sở dữ liệu
-      const user = await db.User.findOne({ where: { phone: data.phone } });
-      hashPassword = user.password;
     }
 
     // Cập nhật thông tin người dùng
@@ -317,7 +290,6 @@ const updateUser = async (data) => {
         username: data.username,
         address: data.address,
         sex: data.sex,
-        password: hashPassword,
       },
       { where: { phone: data.phone }, transaction }
     );
@@ -343,7 +315,6 @@ const updateUser = async (data) => {
     };
   }
 };
-
 
 // const updateUser = async (data) => {
 //   console.log("data",data)

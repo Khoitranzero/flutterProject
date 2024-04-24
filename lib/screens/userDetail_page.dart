@@ -159,29 +159,29 @@ class _UserDetailState extends State<UserDetail> {
           const SizedBox(height: 10),
           // if (_passwordController.text != null &&
           //     _passwordController.text != " ")
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text("Password",
-                    style: TextStyle(
-                        fontStyle: FontStyle.italic,
-                        fontWeight: FontWeight.bold)),
-                CustomTextField(
-                  isReadOnly: false,
-                  isPassword: true,
-                  hintText: "Password",
-                  controller: _passwordController,
-                ),
-                const SizedBox(height: 10),
-              ],
-            ),
-          isLecturerUser == true
+            // Column(
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     Text("Password",
+            //         style: TextStyle(
+            //             fontStyle: FontStyle.italic,
+            //             fontWeight: FontWeight.bold)),
+            //     CustomTextField(
+            //       isReadOnly: false,
+            //       isPassword: true,
+            //       hintText: "Password",
+            //       controller: _passwordController,
+            //     ),
+            //     const SizedBox(height: 10),
+            //   ],
+            // ),
+          isLecturerUser == true || _selectedRole == 'Giảng viên'
               ? const SizedBox()
               : Text("Lớp học",
                   style: TextStyle(
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.bold)),
-          isLecturerUser == true || isGv == true
+          isLecturerUser == true || _selectedRole == 'Giảng viên'
               ? const SizedBox()
               : Container(
                   padding: const EdgeInsets.all(10),
@@ -210,7 +210,7 @@ class _UserDetailState extends State<UserDetail> {
                     }).toList(),
                   ),
                 ),
-          isLecturerUser == true
+          isLecturerUser == true ||  _selectedRole == 'Giảng viên'
               ? const SizedBox()
               : CustomTextField(
                   isReadOnly: true,
@@ -261,7 +261,7 @@ class _UserDetailState extends State<UserDetail> {
                 String address = _addressController.text.trim();
                 String gender = _sexController.text.trim();
                 String className = _classController.text.trim();
-                String password = _passwordController.text.trim();
+                //String password = _passwordController.text.trim();
                 String phoneNum = _phoneController.text.trim();
                 if (username.isEmpty ||
                     address.isEmpty ||
@@ -281,7 +281,7 @@ class _UserDetailState extends State<UserDetail> {
                 } else {
                   try {
                     final response = await AppUtils.HandleUpdate(
-                        userId, username, phoneNum, address,gender, password,className,_selectedRole);
+                        userId, username, phoneNum, address,gender,className,_selectedRole);
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {

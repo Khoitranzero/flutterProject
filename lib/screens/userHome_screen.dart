@@ -3,6 +3,7 @@ import 'package:flutter_doan/component/button.dart';
 import 'package:flutter_doan/component/homeItem.dart';
 import 'package:flutter_doan/screens/Subject/subjectList_page.dart';
 import 'package:flutter_doan/screens/action_page.dart';
+import 'package:flutter_doan/screens/changePassword.dart';
 import 'package:flutter_doan/screens/classList_page.dart';
 import 'package:flutter_doan/screens/listUser_page.dart';
 import 'package:flutter_doan/screens/userDetail_page.dart';
@@ -107,7 +108,15 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          CustomButton(buttonText: "Đăng xuất", onPressed: () => handleLogout())
+          CustomButton(buttonText: "Đăng xuất", onPressed: () => handleLogout()),
+           const SizedBox(height: 10),
+          CustomButton(buttonText: "ChangePassword", onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            // builder: (context) => UserDetail(phone: phone),
+                            builder: (context) => ChangePassword(userId:userId),
+                          ),
+                        ))
         ],
       ),
     );

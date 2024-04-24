@@ -1,5 +1,6 @@
 //lib/service.dart
 import "dart:convert";
+import "package:flutter_doan/screens/changePassword.dart";
 import "package:http/http.dart" as http;
 
 class AppUtils {
@@ -80,7 +81,22 @@ class AppUtils {
       throw Exception('Đăng nhập thất bại');
     }
   }
-
+  static Future<Map<String, dynamic>> changePassword(
+      String userId, String password, String newpassword) async {
+    final response =
+        await http.put(Uri.parse("$baseApi/changePassword"), headers: <String, String>{
+      'ContentType': 'application/json',
+    }, body: <String, String>{
+      'userId': userId,
+      'password': password,
+       'newpassword': newpassword
+    });
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Đổi mật khẩu thất bại');
+    }
+  }
   static Future<Map<String, dynamic>> handleLogout() async {
     final response = await http.post(Uri.parse("$baseApi/logout"));
     if (response.statusCode == 200) {
@@ -100,7 +116,7 @@ class AppUtils {
   }
 
   static Future<Map<String, dynamic>> HandleUpdate(String userId,
-      String username, String phone,String address, String sex,String password ,String className, String role) async {
+      String username, String phone,String address, String sex,String className, String role) async {
     final response = await http.put(
       Uri.parse("$baseApi/user/update"),
       headers: <String, String>{
@@ -113,7 +129,6 @@ class AppUtils {
         'address': address,
         'sex': sex,
         'className': className,
-        'password':password,
         'role': role
       },
     );

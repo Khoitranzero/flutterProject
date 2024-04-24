@@ -11,6 +11,7 @@ module.exports = (sequelize, DataTypes) => {
         SubjectClass.belongsTo(models.Subject, {foreignKey: 'subjectId'})
         SubjectClass.belongsTo(models.Class, {foreignKey: 'classId'})
     }
+    
   }
   SubjectClass.init(
     {

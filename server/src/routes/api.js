@@ -28,6 +28,7 @@ router.post("/register",apiController.handleRegister);
 router.post("/logout",apiController.handleLogout);
 router.post("/login",apiController.handleLogin);
 router.get("/account", userController.getUserAccount);
+router.put("/changePassword", apiController.changePassword);
 
 router.get("/user/read", userController.readFunc);
 router.post("/user/getById", userController.findOneFunc);
