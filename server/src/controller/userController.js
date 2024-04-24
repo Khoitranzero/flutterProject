@@ -211,6 +211,25 @@ const getUserByID = async (req, res) => {
     });
   }
 };
+const getUserByPhone = async (req, res) => {
+  try {
+
+    let data = await userApiService.getOneUserByPhone(req.body);
+    if (data) {
+      return res.status(200).json({
+        EM: data.EM,
+        EC: data.EC,
+        DT: data.DT,
+      });
+    }
+  } catch (e) {
+    return res.status(500).json({
+      EM: "error from server",
+      EC: "-1",
+      DT: "",
+    });
+  }
+};
 const getListLecturer = async (req,res) => {
   try {
     let data = await userApiService.getListAllLecturer();
@@ -305,6 +324,7 @@ module.exports = {
   updateClassForMultipleUsers,
   moveUserFromClassController,
   getUserByID,
+  getUserByPhone,
   getListLecturer,
   getTeacherNotInClass,
   removeTeacerOutClass,

@@ -52,7 +52,19 @@ class AppUtils {
       throw Exception('Tìm người thất bại');
     }
   }
-
+  static Future<Map<String, dynamic>> getUserByPhone(String? phone) async {
+    final response = await http
+        .post(Uri.parse("$baseApi/user/getByPhone"), headers: <String, String>{
+      'ContentType': 'application/json',
+    }, body: <String, String>{
+      'phone': phone!,
+    });
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Tìm người thất bại');
+    }
+  }
   static Future<Map<String, dynamic>> hanldeLogin(
       String valueLogin, String password) async {
     final response =
@@ -88,7 +100,7 @@ class AppUtils {
   }
 
   static Future<Map<String, dynamic>> HandleUpdate(String userId,
-      String username, String address, String sex,String password ,String className, String role) async {
+      String username, String phone,String address, String sex,String password ,String className, String role) async {
     final response = await http.put(
       Uri.parse("$baseApi/user/update"),
       headers: <String, String>{
@@ -97,6 +109,7 @@ class AppUtils {
       body: {
         'userId': userId,
         'username': username,
+          'phone': phone,
         'address': address,
         'sex': sex,
         'className': className,

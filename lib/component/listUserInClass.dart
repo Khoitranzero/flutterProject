@@ -164,7 +164,8 @@ class _ListUserInClassState extends State<ListUserInClass> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  UserDetail(userId: user.userId),
+                                  // UserDetail(phone: user.phone),
+                                   UserDetail(phone: user.phone),
                             ),
                           ),
                           onPressedButton2: () => Navigator.push(

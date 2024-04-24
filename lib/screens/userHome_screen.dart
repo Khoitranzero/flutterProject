@@ -20,7 +20,8 @@ class UserHomeScreen extends StatefulWidget {
 
 class _UserHomeScreenState extends State<UserHomeScreen> {
   String? _role;
-  late String userId;
+  late String phone;
+    // late String userId;
   @override
   void initState() {
     super.initState();
@@ -31,7 +32,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
     final tokenAndRole = await TokenService.getTokenAndRole();
     setState(() {
       _role = tokenAndRole['role'];
-      userId = _role!;
+      phone = _role!;
     });
   }
 
@@ -82,7 +83,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => UserDetail(userId: userId),
+                            builder: (context) => UserDetail(phone: phone),
+                                      // builder: (context) => UserDetail(userId:userId),
                           ),
                         );
                       },

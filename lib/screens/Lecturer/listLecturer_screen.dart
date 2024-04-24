@@ -64,7 +64,8 @@ class _ListLecturerPageState extends State<ListLecturerPage> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  UserDetail(userId: user.userId),
+                                  // UserDetail(userId: user.userId),
+                                   UserDetail(phone: user.phone),
                             ),
                           );
                         },

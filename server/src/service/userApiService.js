@@ -2,7 +2,7 @@
 // import { where } from "sequelize";
 const { Vonage } = require('@vonage/server-sdk')
 // import Nexmo from "nexmo";
-const { Op } = require("sequelize");
+const { Op, where } = require("sequelize");
 import db from "../models";
 require("dotenv").config();
 import {
@@ -18,7 +18,9 @@ const hashUserPassword = (userPassword) => {
 const getOneUser = async (userId) => {
   try {
     let user = await db.User.findOne({
-      where: { userId: userId },
+      where: { userId: userId }, approval: {
+        [Op.or]: [1] 
+      },
       attributes: ["userId", "username", "address", "sex", "phone", "classId"],
       include: { model: db.Class, attributes: ["className"] },
     });
@@ -47,6 +49,9 @@ const getOneUser = async (userId) => {
 const getAllUser = async () => {
   try {
     const users = await db.User.findAll({
+      where: { approval: {
+        [Op.or]: [1] 
+      }, }, 
       attributes: ["userId", "username", "address", "phone", "sex", "classId"],
       include: { model: db.Class, attributes: ["className"] },
     });
@@ -80,7 +85,7 @@ const getStudentApprovedList = async () => {
       include: { model: db.Class, attributes: ["className"] },
       where: {
         approval: {
-          [Op.or]: ['', null,0] 
+          [Op.or]: [0] 
         }
       }
     });
@@ -109,14 +114,11 @@ const getStudentApprovedList = async () => {
 const getLecturerApprovedList = async () => {
   try {
     const users = await db.User.findAll({
-      attributes: ["userId", "username", "address", "phone", "sex", "classId","password"],
+      attributes: ["userId", "username", "address", "phone", "sex", "classId","password","approval"],
       include: { model: db.Class, attributes: ["className"] },
       where: {
-        userId: {
-          [Op.like]: '%gv%'
-        },
-        password: {
-          [Op.or]: ['', null]
+        approval: {
+          [Op.or]: [0] 
         }
       }
     });
@@ -150,6 +152,10 @@ const getListAllLecturer = async () => {
       where: {
         userId: {
           [Op.like]: "%gv%",
+         
+        },
+        approval: {
+          [Op.or]: [1] 
         },
       },
     });
@@ -269,7 +275,8 @@ const updateUser = async (data) => {
     }
   try {
     transaction = await db.sequelize.transaction();
-    if (data.userId.includes("gv")) {
+    if (data.phone) {
+    // if (data.userId.includes("gv")) {
       // bỏ cái này để không cập nhật bên classId bên user
       const updatedUser = await db.User.update(
         {
@@ -280,7 +287,7 @@ const updateUser = async (data) => {
           password:hashPassword
           // Password ở đây
         },
-        { where: { userId: data.userId }, transaction }
+        { where: { phone: data.phone }, transaction }
       );
       // const updatedClass = await db.Class.update(
       //   {
@@ -322,7 +329,7 @@ const updateUser = async (data) => {
           sex: data.sex,
           classId: classInfo.id,
         },
-        { where: { userId: data.userId }, transaction }
+        { where: { phone: data.phone }, transaction }
       );
 
       if (updatedUser[0] === 0) {
@@ -481,6 +488,10 @@ const deleteUser = async (userId) => {
 const getListUserFromClass = async () => {
   try {
     let userCount = await db.User.findAll({
+      where : { approval: {
+        [Op.or]: [1] 
+      },},
+
       attributes: ["userId", "username", "address", "sex", "phone", "classId"],
       include: { model: db.Class, attributes: ["className"] },
     });
@@ -512,7 +523,9 @@ const getListUserFromClass = async () => {
 const filterStudentNotInClass = async () => {
   try {
     const users = await db.User.findAll({
-      where: { userId: { [Op.like]: "%dh%" }, classId: null },
+      where: { userId: { [Op.like]: "%dh%" }, classId: null , approval: {
+        [Op.or]: [1] 
+      },},
       attributes: ["userId", "username", "address", "phone", "sex"],
     });
     if (users) {
@@ -541,7 +554,9 @@ const filterStudentNotInClass = async () => {
 const filterTeacherNotInClass = async () => {
   try {
     const users = await db.User.findAll({
-      where: { userId: { [Op.like]: "%gv%" } },
+      where: { userId: { [Op.like]: "%gv%" } , approval: {
+        [Op.or]: [1] 
+      },},
       attributes: ["userId", "username", "address", "phone", "sex"],
     });
     if (users) {
@@ -571,9 +586,12 @@ const getOneUserByID = async (userId) => {
     const user = await db.User.findOne({
       where: {
         userId: userId,
+        approval: {
+          [Op.or]: [1] 
+        },
       },
     });
-    console.log(user);
+    console.log("use check : ",user);
     if (user) {
       return {
         EM: "get data success",
@@ -595,6 +613,37 @@ const getOneUserByID = async (userId) => {
     };
   }
 };
+const getOneUserByPhone = async (data) => {
+  try {
+    console.log("phone",data.phone)
+
+    const user = await db.User.findOne({
+      where: {
+        phone: data.phone,
+      },
+    });
+// console.log("user by phone",user)
+    if (user) {
+      return {
+        EM: "Lấy dữ liệu thành công",
+        EC: 0,
+        DT: user,
+      };
+    } else {
+      return {
+        EM: "Không tìm thấy người dùng với số điện thoại này",
+        EC: 0,
+        DT: [],
+      };
+    }
+  } catch (e) {
+    return {
+      EM: "Lỗi từ máy chủ",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
 
 const vonage = new Vonage({
   apiKey: '7dc3bdee',
@@ -602,14 +651,20 @@ const vonage = new Vonage({
 });
 const sendSMS = async (to, message) => {
   const from = "84907267362"
-  // to = "84334323968"
-  to = "84907267362"
+   //to = "84334323968"
+  //to = "84907267362"
 
   try {
-   
+    const updatedUser = await db.User.update(
+      {
+        approval: 1,
+      },
+      { where: { phone: to } }
+    );
     const text=message;
     console.log("text message", text)
-    const response = await vonage.sms.send({ to, from, text });
+    const response = 1
+    //await vonage.sms.send({ to, from, text });
     console.log('Message sent successfully');
     console.log(response);
   } catch (error) {
@@ -636,6 +691,7 @@ module.exports = {
   updateClassForUser,
   MoveUserFromClass,
   getOneUserByID,
+  getOneUserByPhone,
   getListAllLecturer,
   filterTeacherNotInClass,
   removeTeacherOutOfClass,

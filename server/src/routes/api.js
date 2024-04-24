@@ -34,6 +34,7 @@ router.post("/user/getById", userController.findOneFunc);
 router.get('/user/getClassList', userController.getUserInClass);
 router.get('/user/getUserNotInClass', userController.getUserNotInClass);
 router.post('/user/getByID', userController.getUserByID);
+router.post('/user/getByPhone', userController.getUserByPhone);
 router.post("/user/create", userController.createFunc);
 router.put("/user/update", userController.updateFunc);
 router.put("/user/updateMultiClass", userController.updateClassForMultipleUsers);

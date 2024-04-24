@@ -7,9 +7,10 @@ import 'package:flutter_doan/utils/services.dart';
 import 'package:flutter_doan/utils/tokenService.dart';
 
 class UserDetail extends StatefulWidget {
-  final String userId;
+  final String phone;
+  //  final String userId;
 
-  const UserDetail({Key? key, required this.userId}) : super(key: key);
+  const UserDetail({Key? key, required this.phone}) : super(key: key);
 
   @override
   _UserDetailState createState() => _UserDetailState();
@@ -36,6 +37,7 @@ class _UserDetailState extends State<UserDetail> {
   final TextEditingController _classController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _selectedRole = 'Sinh viên'; // Đã thêm khai báo cho biến _selectedRole
+  
   List<dynamic> _classList = [];
 
   @override
@@ -53,6 +55,8 @@ class _UserDetailState extends State<UserDetail> {
           print("Lỗi gán dữ liệu!!");
         });
     _getUserById();
+        print("object");
+      print(user);
   }
 
   Future<void> _getRole() async {
@@ -74,9 +78,13 @@ class _UserDetailState extends State<UserDetail> {
   }
 
   Future<void> _getUserById() async {
-    final response = await AppUtils.getUserByID(widget.userId);
+    // print('phone');
+    //  print(widget.phone);
+    final response = await AppUtils.getUserByPhone(widget.phone);
     setState(() {
       user = User.fromJson(response['DT']);
+      print("object");
+      print(user);
       if (user.userId.contains("gv")) {
         isLecturerUser = true;
       }
@@ -258,6 +266,7 @@ class _UserDetailState extends State<UserDetail> {
                 String gender = _sexController.text.trim();
                 String className = _classController.text.trim();
                 String password = _passwordController.text.trim();
+                String phoneNum = _phoneController.text.trim();
                 if (username.isEmpty ||
                     address.isEmpty ||
                     gender.isEmpty ||
@@ -277,7 +286,7 @@ class _UserDetailState extends State<UserDetail> {
                 } else {
                   try {
                     final response = await AppUtils.HandleUpdate(
-                        userId, username, address,gender, password,className,_selectedRole);
+                        userId, username, phoneNum, address,gender, password,className,_selectedRole);
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {

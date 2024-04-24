@@ -4,7 +4,7 @@ require("dotenv").config();
 //const nonSecurePaths = ['/*'];
 const nonSecurePaths = ['/logout', '/login','/register','/',
 '/user/getById','/user/read','/user/create','/user/update','/user/delete', '/user/getClassList','/user/getUserNotInClass','/user/updateMultiClass'
-,'/user/moveUserFromClass','/user/getByID','/user/getTeacherNotInClass', '/user/removeTeacherOutOfClass',
+,'/user/moveUserFromClass','/user/getByID','/user/getTeacherNotInClass', '/user/removeTeacherOutOfClass','/user/getByPhone',
 '/class/read','/class/get','/class/create','/class/delete','/class/addTeacher',"/class/getClassByTeacherID","/class/update",
 '/user/getLecturer','/user/getStudentApprovedList','/user/sendUserInformation',
 '/point/read','/point/create','/point/update', '/point/delete',

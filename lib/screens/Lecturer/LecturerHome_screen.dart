@@ -126,7 +126,8 @@ class _LecturerHomePageState extends State<LecturerHomePage> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) =>
-                                          UserDetail(userId: teacherID)))
+                                          UserDetail(phone: teacherID)))
+                                          //  UserDetail(userId: teacherID)))
                             })
                   ],
                 ),

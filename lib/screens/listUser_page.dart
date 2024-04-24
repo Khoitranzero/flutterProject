@@ -66,7 +66,8 @@ class _ListUserState extends State<ListUser> {
                             context,
                             MaterialPageRoute(
                               builder: (context) =>
-                                  UserDetail(userId: user.userId),
+                                  UserDetail(phone: user.phone),
+                                    // UserDetail(userId: user.userId),
                             ),
                           );
                         },

@@ -27,7 +27,7 @@ const checkUserInClassExist = async (classId) => {
 const getClass = async () => {
   try {
     const classes = await db.Class.findAll({
-      attributes: ["id", "className", "teacherID", "subjectID"],
+      attributes: ["id", "className", "teacherID", "roomName"],
       include: { model: db.User, attributes: ["username"] },
     });
     const classesWithTeacherInfo = [];
