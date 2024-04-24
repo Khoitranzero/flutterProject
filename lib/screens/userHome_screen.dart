@@ -21,7 +21,7 @@ class UserHomeScreen extends StatefulWidget {
 class _UserHomeScreenState extends State<UserHomeScreen> {
   String? _role;
   late String phone;
-    // late String userId;
+  late String userId;
   @override
   void initState() {
     super.initState();
@@ -31,8 +31,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
   Future<void> _getRole() async {
     final tokenAndRole = await TokenService.getTokenAndRole();
     setState(() {
-      _role = tokenAndRole['role'];
-      phone = _role!;
+      _role = tokenAndRole['role']!;
+      userId = _role!;
     });
   }
 
@@ -83,8 +83,8 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => UserDetail(phone: phone),
-                                      // builder: (context) => UserDetail(userId:userId),
+                            // builder: (context) => UserDetail(phone: phone),
+                            builder: (context) => UserDetail(phone:userId),
                           ),
                         );
                       },
@@ -96,7 +96,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => UserPointPage(userId: _role!),
+                            builder: (context) => UserPointPage(userId:userId),
                           ),
                         );
                       },

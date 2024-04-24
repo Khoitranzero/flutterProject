@@ -118,6 +118,7 @@ class _ListStudentApprovedState extends State<ListStudentApproved> {
                     final user = userList.firstWhere((element) => element.userId == userId);
                     // Send userId and password to user via phone
                     await AppUtils.sendUserInformation(user.phone, user.userId, user.password);
+                      refreshData();
                   }
                 } catch (e) {
                   print('Error: $e');

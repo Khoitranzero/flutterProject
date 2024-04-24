@@ -252,108 +252,200 @@ const createNewUser = async (data) => {
     };
   }
 };
-
 const updateUser = async (data) => {
-  console.log("data",data)
+  console.log("data", data);
   let transaction;
-  let hashPassword = hashUserPassword(data.password);
-   let prefix;
-    if(data.role === "Giảng viên") {
-      prefix = "gv";
-    } else if (data.role === "Sinh viên") {
-      prefix = "dh";
-    }
-    const randomNumber = Math.floor(10000000 + Math.random() * 90000000);
-    const generatedUserId = `${prefix}${randomNumber}`;
-
-    let isUserIdExist = await checkUserIdExist(generatedUserId);
-    if (isUserIdExist === true) {
-      return {
-        EM: "MSSV này đã được sử dụng, vui lòng nhập đúng MSSV đã được cấp",
-        EC: 1,
-      };
-    }
+  let hashPassword = data.password ? hashUserPassword(data.password) : null;
+  let prefix;
+  if (data.role === "Giảng viên") {
+    prefix = "gv";
+  } else if (data.role === "Sinh viên") {
+    prefix = "dh";
+  }
   try {
     transaction = await db.sequelize.transaction();
-    if (data.phone) {
-    // if (data.userId.includes("gv")) {
-      // bỏ cái này để không cập nhật bên classId bên user
-      const updatedUser = await db.User.update(
-        {
-          userId: generatedUserId,
-          username: data.username,
-          address: data.address,
-          sex: data.sex,
-          password:hashPassword
-          // Password ở đây
-        },
-        { where: { phone: data.phone }, transaction }
-      );
-      // const updatedClass = await db.Class.update(
-      //   {
-      //     teacherID: data.userId,
-      //   },
-      //   {
-      //     where: { className: data.className },
-      //     transaction: transaction,
-      //   }
-      // );
 
-      if (!updatedUser) {
-        throw new Error("User not found");
+    // Kiểm tra xem data đã có userId hay chưa
+    if (!data.userId) {
+      // Tạo userId ngẫu nhiên dựa trên role
+      const randomNumber = Math.floor(10000000 + Math.random() * 90000000);
+      const generatedUserId = `${prefix}${randomNumber}`;
+
+      // Kiểm tra xem userId đã tồn tại hay chưa
+      let isUserIdExist = await checkUserIdExist(generatedUserId);
+      if (isUserIdExist === true) {
+        return {
+          EM: "MSSV này đã được sử dụng, vui lòng nhập đúng MSSV đã được cấp",
+          EC: 1,
+        };
       }
 
-      await transaction.commit();
-      return {
-        EM: "Cập nhật thông tin của sinh viên và lớp thành công !!!",
-        EC: 0,
-        DT: updatedUser,
-      };
+      // Cập nhật userId vào data
+      data.userId = generatedUserId;
     } else {
-      // let classInfo = await db.Class.findOne({
-      //   where: { className: data.className },
-      //   transaction,
-      // });
+      // Kiểm tra xem userId hiện tại có phải là mã sinh viên không
+      const isCurrentUserIdStudent = data.userId.startsWith("dh");
+      // Kiểm tra xem role mới có phải là Sinh viên không
+      const isNewRoleStudent = data.role === "Sinh viên";
+      // Kiểm tra xem userId hiện tại có phải là mã giảng viên không
+      const isCurrentUserIdLecturer = data.userId.startsWith("gv");
+      // Kiểm tra xem role mới có phải là Giảng viên không
+      const isNewRoleLecturer = data.role === "Giảng viên";
 
-      // if (!classInfo) {
-      //   classInfo = await db.Class.create(
-      //     { className: data.className },
-      //     { transaction }
-      //   );
-      // }
-
-      const updatedUser = await db.User.update(
-        {
-          username: data.username,
-          address: data.address,
-          sex: data.sex,
-          classId: classInfo.id,
-        },
-        { where: { phone: data.phone }, transaction }
-      );
-
-      if (updatedUser[0] === 0) {
-        throw new Error("User not found");
+      if (
+        (isCurrentUserIdStudent && isNewRoleStudent) ||
+        (isCurrentUserIdLecturer && isNewRoleLecturer)
+      ) {
+        // Không thay đổi userId
+      } else {
+        // Cập nhật lại userId
+        data.userId = `${prefix}${data.userId.substring(2)}`;
       }
-
-      await transaction.commit();
-      return {
-        EM: "Cập nhật thông tin của người dùng thành công !!!",
-        EC: 0,
-        DT: updatedUser,
-      };
     }
+
+    // Kiểm tra nếu password mới không được truyền vào
+    if (!data.password) {
+      // Lấy lại password từ cơ sở dữ liệu
+      const user = await db.User.findOne({ where: { phone: data.phone } });
+      hashPassword = user.password;
+    }
+
+    // Cập nhật thông tin người dùng
+    const updatedUser = await db.User.update(
+      {
+        userId: data.userId, // userId sẽ không thay đổi nếu đã tồn tại
+        username: data.username,
+        address: data.address,
+        sex: data.sex,
+        password: hashPassword,
+      },
+      { where: { phone: data.phone }, transaction }
+    );
+
+    if (!updatedUser) {
+      throw new Error("User not found");
+    }
+
+    await transaction.commit();
+    return {
+      EM: "Cập nhật thông tin người dùng thành công !!!",
+      EC: 0,
+      DT: updatedUser,
+    };
   } catch (error) {
     if (transaction) await transaction.rollback();
 
     console.error(error);
     return {
-      EM: "Error updating user and class",
+      EM: "Error updating user",
       EC: 1,
       DT: [],
     };
   }
 };
+
+
+// const updateUser = async (data) => {
+//   console.log("data",data)
+//   let transaction;
+//   let hashPassword = hashUserPassword(data.password);
+//    let prefix;
+//     if(data.role === "Giảng viên") {
+//       prefix = "gv";
+//     } else if (data.role === "Sinh viên") {
+//       prefix = "dh";
+//     }
+//     const randomNumber = Math.floor(10000000 + Math.random() * 90000000);
+//     const generatedUserId = `${prefix}${randomNumber}`;
+
+//     let isUserIdExist = await checkUserIdExist(generatedUserId);
+//     if (isUserIdExist === true) {
+//       return {
+//         EM: "MSSV này đã được sử dụng, vui lòng nhập đúng MSSV đã được cấp",
+//         EC: 1,
+//       };
+//     }
+//   try {
+//     transaction = await db.sequelize.transaction();
+//     if (data.userId) {
+//     // if (data.userId.includes("gv")) {
+//       // bỏ cái này để không cập nhật bên classId bên user
+//       const updatedUser = await db.User.update(
+//         {
+//           userId: generatedUserId,
+//           username: data.username,
+//           address: data.address,
+//           sex: data.sex,
+//           password:hashPassword
+//           // Password ở đây
+//         },
+//         { where: { phone: data.phone }, transaction }
+//       );
+//       // const updatedClass = await db.Class.update(
+//       //   {
+//       //     teacherID: data.userId,
+//       //   },
+//       //   {
+//       //     where: { className: data.className },
+//       //     transaction: transaction,
+//       //   }
+//       // );
+
+//       if (!updatedUser) {
+//         throw new Error("User not found");
+//       }
+
+//       await transaction.commit();
+//       return {
+//         EM: "Cập nhật thông tin của sinh viên và lớp thành công !!!",
+//         EC: 0,
+//         DT: updatedUser,
+//       };
+//     } else {
+//       // let classInfo = await db.Class.findOne({
+//       //   where: { className: data.className },
+//       //   transaction,
+//       // });
+
+//       // if (!classInfo) {
+//       //   classInfo = await db.Class.create(
+//       //     { className: data.className },
+//       //     { transaction }
+//       //   );
+//       // }
+
+//       const updatedUser = await db.User.update(
+//         {
+//           username: data.username,
+//           address: data.address,
+//           sex: data.sex,
+//           password:hashPassword
+//           // Password ở đây
+//         },
+//         { where: { phone: data.phone }, transaction }
+//       );
+//       if (updatedUser[0] === 0) {
+//         throw new Error("User not found");
+//       }
+
+//       await transaction.commit();
+//       return {
+//         EM: "Cập nhật thông tin của người dùng thành công !!!",
+//         EC: 0,
+//         DT: updatedUser,
+//       };
+//     }
+//   } catch (error) {
+//     if (transaction) await transaction.rollback();
+
+//     console.error(error);
+//     return {
+//       EM: "Error updating user and class",
+//       EC: 1,
+//       DT: [],
+//     };
+//   }
+// };
 
 const removeTeacherOutOfClass = async (data) => {
   let transaction;
@@ -619,7 +711,10 @@ const getOneUserByPhone = async (data) => {
 
     const user = await db.User.findOne({
       where: {
-        phone: data.phone,
+        [Op.or]: [
+           { userId: data.phone },
+          { phone: data.phone },
+        ],
       },
     });
 // console.log("user by phone",user)

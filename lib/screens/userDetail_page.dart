@@ -55,8 +55,6 @@ class _UserDetailState extends State<UserDetail> {
           print("Lỗi gán dữ liệu!!");
         });
     _getUserById();
-        print("object");
-      print(user);
   }
 
   Future<void> _getRole() async {
@@ -78,13 +76,11 @@ class _UserDetailState extends State<UserDetail> {
   }
 
   Future<void> _getUserById() async {
-    // print('phone');
-    //  print(widget.phone);
+
     final response = await AppUtils.getUserByPhone(widget.phone);
     setState(() {
       user = User.fromJson(response['DT']);
-      print("object");
-      print(user);
+
       if (user.userId.contains("gv")) {
         isLecturerUser = true;
       }
@@ -94,7 +90,7 @@ class _UserDetailState extends State<UserDetail> {
       _addressController.text = user.address == null ? "" : user.address;
       _sexController.text = user.sex == null ? "" : user.sex;
       _classController.text = user.className == null ? "" : user.className;
-      _passwordController.text = user.password == null ? "" : user.password;
+      //_passwordController.text = user.password == null ? "" : user.password;
     });
   }
 
@@ -270,7 +266,6 @@ class _UserDetailState extends State<UserDetail> {
                 if (username.isEmpty ||
                     address.isEmpty ||
                     gender.isEmpty ||
-                         password.isEmpty ||
                     className.isEmpty) {
                   showDialog(
                     context: context,

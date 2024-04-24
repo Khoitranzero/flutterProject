@@ -18,7 +18,7 @@ class UserPointPage extends StatefulWidget {
 
 class _UserPointPageState extends State<UserPointPage> {
   Future<List<dynamic>>? _pointData;
-  String? _role;
+ late String _role;
   String _selectedSemester = "Học kỳ 1";
 
   @override
@@ -30,7 +30,7 @@ class _UserPointPageState extends State<UserPointPage> {
   Future<void> _getTablePoint(String semester) async {
     final tokenAndRole = await TokenService.getTokenAndRole();
     setState(() {
-      _role = tokenAndRole['role'];
+      _role = tokenAndRole['role']!;
     });
     final data = await AppUtils.getTablePoint(widget.userId);
     setState(() {
