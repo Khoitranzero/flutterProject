@@ -30,6 +30,7 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _newpasswordController = TextEditingController();
+    final TextEditingController _repasswordController = TextEditingController();
 
   bool _isPasswordVisible = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -51,6 +52,7 @@ class _LoginFormState extends State<LoginForm> {
                     _FormContent(
                       passwordController: _passwordController,
                       newpasswordController: _newpasswordController,
+                      repasswordController: _repasswordController,
                       isPasswordVisible: _isPasswordVisible,
                       formKey: _formKey,
                       userId: widget.userId, // Pass userId to _FormContent
@@ -65,6 +67,7 @@ class _LoginFormState extends State<LoginForm> {
                       child: _FormContent(
                         passwordController: _passwordController,
                         newpasswordController: _newpasswordController,
+                         repasswordController: _repasswordController,
                         isPasswordVisible: _isPasswordVisible,
                         formKey: _formKey,
                         userId: widget.userId, // Pass userId to _FormContent
@@ -112,6 +115,7 @@ class _Logo extends StatelessWidget {
 class _FormContent extends StatefulWidget {
   final TextEditingController passwordController;
   final TextEditingController newpasswordController;
+    final TextEditingController repasswordController;
   bool isPasswordVisible;
   final GlobalKey<FormState> formKey;
   final String userId;
@@ -121,6 +125,7 @@ class _FormContent extends StatefulWidget {
     Key? key,
     required this.passwordController,
     required this.newpasswordController,
+       required this.repasswordController,
     required this.isPasswordVisible,
     required this.formKey,
     required this.userId,
@@ -190,6 +195,38 @@ class __FormContentState extends State<_FormContent> {
                 ),
               ),
             ),
+                const SizedBox(height: 16),
+              TextFormField(
+              controller: widget.repasswordController,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Nhập vào ô thông tin!!!';
+                }
+                if (value.length < 5) {
+                  return 'Mật khẩu phải từ 5 ký tự';
+                }
+                return null;
+              },
+              obscureText: !widget.isPasswordVisible,
+              decoration: InputDecoration(
+                labelText: 'Re - Password',
+                hintText: 'Nhập lại mật khẩu mới của bạn',
+                prefixIcon: const Icon(Icons.lock_outline_rounded),
+                border: const OutlineInputBorder(),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    widget.isPasswordVisible
+                        ? Icons.visibility_off
+                        : Icons.visibility,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      widget.isPasswordVisible = !widget.isPasswordVisible;
+                    });
+                  },
+                ),
+              ),
+            ),
             const SizedBox(height: 16),
             SizedBox(
               width: double.infinity,
@@ -221,13 +258,15 @@ class __FormContentState extends State<_FormContent> {
   void _changePassword() async {
     String password = widget.passwordController.text.trim();
     String newpassword = widget.newpasswordController.text.trim();
+        String repassword = widget.repasswordController.text.trim();
     try {
-      print('widget.userId');
-      print(widget.userId);
-      print('password');
-      print(password);
-      print('newpassword');
-      print(newpassword);
+      // print('widget.userId');
+      // print(widget.userId);
+      // print('password');
+      // print(password);
+      // print('newpassword');
+      // print(newpassword);
+      if(newpassword==repassword){
       final response = await AppUtils.changePassword(
         widget.userId,
         password,
@@ -243,7 +282,20 @@ class __FormContentState extends State<_FormContent> {
             onPressed: () => Navigator.of(context).pop(),
           );
         },
+      );}
+      else {
+         showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return CustomDialogAlert(
+            title: "Thông báo",
+            message: 'Mật khẩu mới và mật khẩu xác nhận không giống nhau',
+            closeButtonText: "Đóng",
+            onPressed: () => Navigator.of(context).pop(),
+          );
+        },
       );
+      }
     } catch (e) {
       print("Lỗi: $e");
     }

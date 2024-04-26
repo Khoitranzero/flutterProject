@@ -18,7 +18,7 @@ class UserPointPage extends StatefulWidget {
 
 class _UserPointPageState extends State<UserPointPage> {
   Future<List<dynamic>>? _pointData;
- late String _role;
+ String? _role;
   String _selectedSemester = "Học kỳ 1";
 
   @override

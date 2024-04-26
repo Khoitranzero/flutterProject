@@ -4,6 +4,7 @@ import 'package:flutter_doan/component/homeItem.dart';
 import 'package:flutter_doan/screens/Lecturer/classListForLecturer_screen.dart';
 import 'package:flutter_doan/screens/Subject/subjectList_page.dart';
 import 'package:flutter_doan/screens/action_page.dart';
+import 'package:flutter_doan/screens/changePassword.dart';
 import 'package:flutter_doan/screens/classList_page.dart';
 import 'package:flutter_doan/screens/listUser_page.dart';
 import 'package:flutter_doan/screens/projectInfo_page.dart';
@@ -134,7 +135,15 @@ class _LecturerHomePageState extends State<LecturerHomePage> {
             ),
           ),
           const SizedBox(height: 10),
-          CustomButton(buttonText: "Đăng xuất", onPressed: () => handleLogout())
+          CustomButton(buttonText: "Đăng xuất", onPressed: () => handleLogout()),
+           const SizedBox(height: 10),
+          CustomButton(buttonText: "ChangePassword", onPressed: () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            // builder: (context) => UserDetail(phone: phone),
+                            builder: (context) => ChangePassword(userId:teacherID),
+                          ),
+                        ))
         ],
       ),
     );
