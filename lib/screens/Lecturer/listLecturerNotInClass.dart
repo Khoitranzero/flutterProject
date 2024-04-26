@@ -5,8 +5,8 @@ import 'package:flutter_doan/model/user.dart';
 import 'package:flutter_doan/utils/services.dart';
 
 class getTeacherNotInClass extends StatefulWidget {
-  final int classId;
-  const getTeacherNotInClass({super.key, required this.classId});
+  final String subjectId;
+  const getTeacherNotInClass({super.key, required this.subjectId});
 
   @override
   State<getTeacherNotInClass> createState() => _getTeacherNotInClassState();
@@ -119,10 +119,8 @@ class _getTeacherNotInClassState extends State<getTeacherNotInClass> {
               RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
           onPressed: () async {
             try {
-              print(widget.classId);
-              print(selectedUser.first);
               final response = await AppUtils.addTeacherInClass(
-                  widget.classId, selectedUser.first);
+                  widget.subjectId, selectedUser.first);
               if (response.isNotEmpty) {
                 showDialog(
                   context: context,

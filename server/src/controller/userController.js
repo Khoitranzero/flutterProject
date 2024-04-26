@@ -151,6 +151,7 @@ const removeTeacerOutClass = async (req, res) => {
       DT: data.DT,
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       EM: "error from server",
       EC: "-1",

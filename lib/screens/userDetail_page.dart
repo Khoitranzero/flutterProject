@@ -37,23 +37,23 @@ class _UserDetailState extends State<UserDetail> {
   final TextEditingController _classController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   String _selectedRole = 'Sinh viên'; // Đã thêm khai báo cho biến _selectedRole
-  
+
   List<dynamic> _classList = [];
 
   @override
   void initState() {
     super.initState();
-    _getRole();
-    _getClassList();
-    _getClassList()
+    _getRole;
+    _getClassList;
+    _getClassList
         .then((data) => {
               setState(() {
                 _classList = data['DT'];
               })
             })
         .catchError((e) {
-          print("Lỗi gán dữ liệu!!");
-        });
+      print("Lỗi gán dữ liệu $e!!");
+    });
     _getUserById();
   }
 
@@ -71,12 +71,9 @@ class _UserDetailState extends State<UserDetail> {
     }
   }
 
-  Future<Map<String, dynamic>> _getClassList() async {
-    return await AppUtils.getClassInfo(); // Đã thêm từ khóa await
-  }
+  final Future<Map<String, dynamic>> _getClassList = AppUtils.getClassInfo();
 
   Future<void> _getUserById() async {
-
     final response = await AppUtils.getUserByPhone(widget.phone);
     setState(() {
       user = User.fromJson(response['DT']);
@@ -159,58 +156,58 @@ class _UserDetailState extends State<UserDetail> {
           const SizedBox(height: 10),
           // if (_passwordController.text != null &&
           //     _passwordController.text != " ")
-            // Column(
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   children: [
-            //     Text("Password",
-            //         style: TextStyle(
-            //             fontStyle: FontStyle.italic,
-            //             fontWeight: FontWeight.bold)),
-            //     CustomTextField(
-            //       isReadOnly: false,
-            //       isPassword: true,
-            //       hintText: "Password",
-            //       controller: _passwordController,
-            //     ),
-            //     const SizedBox(height: 10),
-            //   ],
-            // ),
+          // Column(
+          //   crossAxisAlignment: CrossAxisAlignment.start,
+          //   children: [
+          //     Text("Password",
+          //         style: TextStyle(
+          //             fontStyle: FontStyle.italic,
+          //             fontWeight: FontWeight.bold)),
+          //     CustomTextField(
+          //       isReadOnly: false,
+          //       isPassword: true,
+          //       hintText: "Password",
+          //       controller: _passwordController,
+          //     ),
+          //     const SizedBox(height: 10),
+          //   ],
+          // ),
           isLecturerUser == true || _selectedRole == 'Giảng viên'
               ? const SizedBox()
               : Text("Lớp học",
                   style: TextStyle(
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.bold)),
+          // isLecturerUser == true || _selectedRole == 'Giảng viên'
+          //     ? const SizedBox()
+          //     : Container(
+          //         padding: const EdgeInsets.all(10),
+          //         decoration: BoxDecoration(
+          //             borderRadius: BorderRadius.circular(10),
+          //             border: Border.all(color: Colors.black)),
+          //         height: 50,
+          //         margin: const EdgeInsets.only(bottom: 15),
+          //         child: DropdownButton<String>(
+          //           value: _selectedClassName,
+          //           icon: const Icon(Icons.keyboard_arrow_down),
+          //           hint: const Text("Chọn lớp học"),
+          //           onChanged: (String? newValue) {
+          //             setState(() {
+          //               _selectedClassName = newValue;
+          //               _classController.text = _selectedClassName!;
+          //             });
+          //           },
+          //           items: _classList
+          //               .map<DropdownMenuItem<String>>((dynamic item) {
+          //             String className = item['className'];
+          //             return DropdownMenuItem<String>(
+          //               value: className,
+          //               child: Text(className),
+          //             );
+          //           }).toList(),
+          //         ),
+          //       ),
           isLecturerUser == true || _selectedRole == 'Giảng viên'
-              ? const SizedBox()
-              : Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      border: Border.all(color: Colors.black)),
-                  height: 50,
-                  margin: const EdgeInsets.only(bottom: 15),
-                  child: DropdownButton<String>(
-                    value: _selectedClassName,
-                    icon: const Icon(Icons.keyboard_arrow_down),
-                    hint: const Text("Chọn lớp học"),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        _selectedClassName = newValue;
-                        _classController.text = _selectedClassName!;
-                      });
-                    },
-                    items: _classList
-                        .map<DropdownMenuItem<String>>((dynamic item) {
-                      String className = item['className'];
-                      return DropdownMenuItem<String>(
-                        value: className,
-                        child: Text(className),
-                      );
-                    }).toList(),
-                  ),
-                ),
-          isLecturerUser == true ||  _selectedRole == 'Giảng viên'
               ? const SizedBox()
               : CustomTextField(
                   isReadOnly: true,
@@ -219,33 +216,36 @@ class _UserDetailState extends State<UserDetail> {
                   controller: _classController,
                 ),
           const SizedBox(height: 10),
+          Text("Phân quyền",
+              style: TextStyle(
+                  fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
           Container(
-              width: 400,
-              height: 50,
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.black),
-              ),
-              child: DropdownButton<String>(
-                value: _selectedRole,
-                icon: Icon(Icons.arrow_drop_down),
-                iconSize: 24,
-                elevation: 16,
-                style: const TextStyle(color: Colors.black),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedRole = newValue!;
-                  });
-                },
-                items: <String>['Sinh viên', 'Giảng viên']
-                    .map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
+            width: 400,
+            height: 50,
+            padding: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
             ),
+            child: DropdownButton<String>(
+              value: _selectedRole,
+              icon: Icon(Icons.arrow_drop_down),
+              iconSize: 24,
+              elevation: 16,
+              style: const TextStyle(color: Colors.black),
+              onChanged: (String? newValue) {
+                setState(() {
+                  _selectedRole = newValue!;
+                });
+              },
+              items: <String>['Sinh viên', 'Giảng viên']
+                  .map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(value),
+                );
+              }).toList(),
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: BottomAppBar(
@@ -281,7 +281,13 @@ class _UserDetailState extends State<UserDetail> {
                 } else {
                   try {
                     final response = await AppUtils.HandleUpdate(
-                        userId, username, phoneNum, address,gender,className,_selectedRole);
+                        userId,
+                        username,
+                        phoneNum,
+                        address,
+                        gender,
+                        className,
+                        _selectedRole);
                     showDialog(
                       context: context,
                       builder: (BuildContext context) {

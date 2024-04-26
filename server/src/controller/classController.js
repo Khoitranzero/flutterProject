@@ -131,6 +131,31 @@ const getClassByTeacherID = async (req, res) => {
     });
   }
 };
+const getClassById = async (req, res) => {
+  try {
+    let data = await classService.getClassInfoById(req.body);
+    // let newDataWithCount = data.DT.map((classItem) => {
+    //   let count = classItem.Users.length;
+    //   // Kiểm tra xem classItem.Users.userId có chứa chuỗi "gv" không
+    //   if (classItem.Users.some((user) => user.userId.includes("gv"))) {
+    //     count -= 1; // Giảm count đi một đơn vị
+    //   }
+    //   return { ...classItem, count: count };
+    // });
+    return res.status(200).json({
+      EM: data.EM,
+      EC: data.EC,
+      DT: data.DT,
+    });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({
+      EM: "error from server",
+      EC: "-1",
+      DT: "",
+    });
+  }
+};
 module.exports = {
   readFunc,
   createFunc,
@@ -139,4 +164,5 @@ module.exports = {
   getClassListAndStudent,
   addTeacherIntoClass,
   getClassByTeacherID,
+  getClassById
 };

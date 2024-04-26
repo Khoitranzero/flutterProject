@@ -18,8 +18,9 @@ const hashUserPassword = (userPassword) => {
 const getOneUser = async (userId) => {
   try {
     let user = await db.User.findOne({
-      where: { userId: userId }, approval: {
-        [Op.or]: [1] 
+      where: { userId: userId },
+      approval: {
+        [Op.or]: [1],
       },
       attributes: ["userId", "username", "address", "sex", "phone", "classId"],
       include: { model: db.Class, attributes: ["className"] },
@@ -49,9 +50,11 @@ const getOneUser = async (userId) => {
 const getAllUser = async () => {
   try {
     const users = await db.User.findAll({
-      where: { approval: {
-        [Op.or]: [1] 
-      }, }, 
+      where: {
+        approval: {
+          [Op.or]: [1],
+        },
+      },
       attributes: ["userId", "username", "address", "phone", "sex", "classId"],
       include: { model: db.Class, attributes: ["className"] },
     });
@@ -81,13 +84,22 @@ const getAllUser = async () => {
 const getStudentApprovedList = async () => {
   try {
     const users = await db.User.findAll({
-      attributes: ["userId", "username", "address", "phone", "sex", "classId","password","approval"],
+      attributes: [
+        "userId",
+        "username",
+        "address",
+        "phone",
+        "sex",
+        "classId",
+        "password",
+        "approval",
+      ],
       include: { model: db.Class, attributes: ["className"] },
       where: {
         approval: {
-          [Op.or]: [0] 
-        }
-      }
+          [Op.or]: [0],
+        },
+      },
     });
     if (users) {
       return {
@@ -114,13 +126,22 @@ const getStudentApprovedList = async () => {
 const getLecturerApprovedList = async () => {
   try {
     const users = await db.User.findAll({
-      attributes: ["userId", "username", "address", "phone", "sex", "classId","password","approval"],
+      attributes: [
+        "userId",
+        "username",
+        "address",
+        "phone",
+        "sex",
+        "classId",
+        "password",
+        "approval",
+      ],
       include: { model: db.Class, attributes: ["className"] },
       where: {
         approval: {
-          [Op.or]: [0] 
-        }
-      }
+          [Op.or]: [0],
+        },
+      },
     });
     if (users) {
       return {
@@ -152,10 +173,9 @@ const getListAllLecturer = async () => {
       where: {
         userId: {
           [Op.like]: "%gv%",
-         
         },
         approval: {
-          [Op.or]: [1] 
+          [Op.or]: [1],
         },
       },
     });
@@ -264,9 +284,7 @@ const updateUser = async (data) => {
   try {
     transaction = await db.sequelize.transaction();
 
-   
-    if (!data.userId || data.userId=='Chưa cập nhật') {
-   
+    if (!data.userId || data.userId == "Chưa cập nhật") {
       const randomNumber = Math.floor(10000000 + Math.random() * 90000000);
       const generatedUserId = `${prefix}${randomNumber}`;
 
@@ -279,14 +297,12 @@ const updateUser = async (data) => {
         };
       }
 
-
       data.userId = generatedUserId;
     }
 
-
     const updatedUser = await db.User.update(
       {
-        userId: data.userId, 
+        userId: data.userId,
         username: data.username,
         address: data.address,
         sex: data.sex,
@@ -419,40 +435,26 @@ const updateUser = async (data) => {
 // };
 
 const removeTeacherOutOfClass = async (data) => {
-  let transaction;
   try {
-    transaction = await db.sequelize.transaction();
-
-    const updatedUser = await db.User.update(
+    console.log(data);
+    const updatedUser = await db.SubjectClass.update(
       {
-        classId: null,
+        teacherId: null,
       },
-      { where: { userId: data.userId }, transaction }
-    );
-    const updatedClass = await db.Class.update(
-      {
-        teacherID: null,
-      },
-      {
-        where: { id: data.id },
-        transaction: transaction,
-      }
+      { where: { subjectId: data.subjectId } }
     );
 
-    if (updatedUser[0] === 0 || !updatedClass) {
+    if (updatedUser[0] === 0) {
       throw new Error("User not found");
     }
 
-    await transaction.commit();
     return {
       EM: "Cập nhật giáo viên phụ trách thành công !!!",
       EC: 0,
       DT: updatedUser,
     };
   } catch (error) {
-    if (transaction) await transaction.rollback();
-
-    console.error(error);
+    console.log(error);
     return {
       EM: "Error updating user and class",
       EC: 1,
@@ -482,11 +484,68 @@ const updateOneUser = async (userId, classId) => {
     };
   }
 };
+const deleteOneUser = async (userId) => {
+  try {
+    const updatedUser = await db.Room.destroy({
+      where: {
+        userId: userId,
+      },
+    });
+    return {
+      EM: "Cập nhật lớp của sinh viên thành công !!!",
+      EC: 0,
+      DT: updatedUser,
+    };
+  } catch (error) {
+    return {
+      EM: "Error updating user and class 1",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
+
+const updateOneUserInRoom = async (userId, classId) => {
+  try {
+    // Kiểm tra xem userId có tồn tại trong classId không
+    const existingUser = await db.Room.findOne({
+      where: {
+        userId: userId,
+        classId: classId,
+      },
+    });
+
+    if (existingUser) {
+      return {
+        EM: "User đã tồn tại trong lớp học!",
+        EC: 1,
+        DT: [],
+      };
+    }
+
+    const updatedUser = await db.Room.create({
+      userId: userId,
+      classId: classId,
+    });
+
+    return {
+      EM: "Thêm sinh viên vào lớp thành công!",
+      EC: 0,
+      DT: updatedUser,
+    };
+  } catch (error) {
+    return {
+      EM: "Lỗi khi cập nhật user và class",
+      EC: 1,
+      DT: [],
+    };
+  }
+};
 
 const updateClassForUser = async (listUserId, classId) => {
   try {
     for (const userItem of listUserId) {
-      await updateOneUser(userItem, classId);
+      await updateOneUserInRoom(userItem, classId);
     }
     return {
       EM: "Cập nhật thông tin cho lớp thành công",
@@ -504,7 +563,7 @@ const updateClassForUser = async (listUserId, classId) => {
 const MoveUserFromClass = async (listUserId) => {
   try {
     for (const userItem of listUserId) {
-      await updateOneUser(userItem, null);
+      await deleteOneUser(userItem);
     }
     return {
       EM: "Xóa sinh viên ra khỏi lớp thành công",
@@ -551,9 +610,11 @@ const deleteUser = async (userId) => {
 const getListUserFromClass = async () => {
   try {
     let userCount = await db.User.findAll({
-      where : { approval: {
-        [Op.or]: [1] 
-      },},
+      where: {
+        approval: {
+          [Op.or]: [1],
+        },
+      },
 
       attributes: ["userId", "username", "address", "sex", "phone", "classId"],
       include: { model: db.Class, attributes: ["className"] },
@@ -586,9 +647,12 @@ const getListUserFromClass = async () => {
 const filterStudentNotInClass = async () => {
   try {
     const users = await db.User.findAll({
-      where: { userId: { [Op.like]: "%dh%" }, classId: null , approval: {
-        [Op.or]: [1] 
-      },},
+      where: {
+        userId: { [Op.like]: "%dh%" },
+        approval: {
+          [Op.or]: [1],
+        },
+      },
       attributes: ["userId", "username", "address", "phone", "sex"],
     });
     if (users) {
@@ -617,9 +681,12 @@ const filterStudentNotInClass = async () => {
 const filterTeacherNotInClass = async () => {
   try {
     const users = await db.User.findAll({
-      where: { userId: { [Op.like]: "%gv%" } , approval: {
-        [Op.or]: [1] 
-      },},
+      where: {
+        userId: { [Op.like]: "%gv%" },
+        approval: {
+          [Op.or]: [1],
+        },
+      },
       attributes: ["userId", "username", "address", "phone", "sex"],
     });
     if (users) {
@@ -650,11 +717,11 @@ const getOneUserByID = async (userId) => {
       where: {
         userId: userId,
         approval: {
-          [Op.or]: [1] 
+          [Op.or]: [1],
         },
       },
     });
-    console.log("use check : ",user);
+    console.log("use check : ", user);
     if (user) {
       return {
         EM: "get data success",
@@ -678,17 +745,14 @@ const getOneUserByID = async (userId) => {
 };
 const getOneUserByPhone = async (data) => {
   try {
-    console.log("phone",data.phone)
+    console.log("phone", data.phone);
 
     const user = await db.User.findOne({
       where: {
-        [Op.or]: [
-           { userId: data.phone },
-          { phone: data.phone },
-        ],
+        [Op.or]: [{ userId: data.phone }, { phone: data.phone }],
       },
     });
-// console.log("user by phone",user)
+    // console.log("user by phone",user)
     if (user) {
       return {
         EM: "Lấy dữ liệu thành công",
@@ -716,8 +780,8 @@ const getOneUserByPhone = async (data) => {
 //   apiSecret: 'FG17czoyB1pzXseD'
 // });
 const sendSMS = async (to, message) => {
-  const from = "84907267362"
-   //to = "84334323968"
+  const from = "84907267362";
+  //to = "84334323968"
   //to = "84907267362"
 
   try {
@@ -727,19 +791,19 @@ const sendSMS = async (to, message) => {
       },
       { where: { phone: to } }
     );
-    const text=message;
-    console.log("text message", text)
-    const response = 1
+    const text = message;
+    console.log("text message", text);
+    const response = 1;
     //await vonage.sms.send({ to, from, text });
-    console.log('Message sent successfully');
+    console.log("Message sent successfully");
     console.log(response);
   } catch (error) {
-    console.error('There was an error sending the message:');
+    console.error("There was an error sending the message:");
     console.error(error);
 
     // If available, log the response from Vonage
     if (error.response) {
-      console.error('Response from Vonage:');
+      console.error("Response from Vonage:");
       console.error(error.response);
     }
   }
@@ -763,5 +827,5 @@ module.exports = {
   removeTeacherOutOfClass,
   getLecturerApprovedList,
   getStudentApprovedList,
-  sendSMS
+  sendSMS,
 };

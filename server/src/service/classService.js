@@ -69,21 +69,19 @@ const getClass = async () => {
 
 const createNewClass = async (data) => {
   try {
-    console.log("classanme", data);
-    let isClassNameExist = await checkClassNameExist(data.className);
-    console.log("first", isClassNameExist);
-    if (isClassNameExist === true) {
-      return {
-        EM: "Lớp học này đã tồn tại",
-        EC: 2,
-        DT: [],
-      };
-    }
-    const newClass = await db.Class.create(data);
+    const newClass = await db.Class.create({
+      className: data.className,
+      roomName: data.roomName,
+    });
+    const newClassId = newClass.id;
+    const newSubjectClass = await db.SubjectClass.create({
+      subjectId: data.subjectId,
+      classId: newClassId,
+    });
     return {
       EM: "Tạo lớp học thành công!!",
       EC: 0,
-      DT: newClass,
+      DT: newSubjectClass,
     };
   } catch (error) {
     console.log(error);
@@ -118,19 +116,29 @@ const updateClass = async (data) => {
 
 const deleteClass = async (data) => {
   try {
-    let isUserInClassExist = await checkUserInClassExist(data.id);
+    // let isUserInClassExist = await checkUserInClassExist(data.id);
+    const deletedClassSubject = await db.SubjectClass.destroy({
+      where: { classId: data.id },
+    });
     const deletedClass = await db.Class.destroy({
       where: { id: data.id },
     });
+    const deletedUserInRoom = await db.Room.destroy({
+      where: { classId: data.id },
+    });
 
-    if (isUserInClassExist === true) {
-      await db.User.update({ classId: null }, { where: { classId: data.id } });
-    }
+    // if (isUserInClassExist === true) {
+    //   await db.User.update({ classId: null }, { where: { classId: data.id } });
+    // }
 
     return {
       EM: "Xóa lớp học thành công!",
       EC: 0,
-      DT: deletedClass,
+      DT: {
+        deletedClassSubject,
+        deletedClass,
+        deletedUserInRoom,
+      },
     };
   } catch (error) {
     console.log(error);
@@ -201,12 +209,8 @@ const countStudentInClass = async () => {
   }
 };
 
-
 const addLecturerIntoClass = async (data) => {
-  let transaction;
   try {
-    transaction = await db.sequelize.transaction();
-
     // let isTeacherIdExist = await checkLecturerExistInclass(data.teacherID);
     // if (isTeacherIdExist === true) {
     //   return {
@@ -215,13 +219,13 @@ const addLecturerIntoClass = async (data) => {
     //     DT: [],
     //   };
     // }
-    const updatedClass = await db.Class.update(
+    console.log(data);
+    const updatedClass = await db.SubjectClass.update(
       {
-        teacherID: data.teacherID,
+        teacherId: data.teacherId,
       },
       {
-        where: { id: data.id },
-        transaction: transaction,
+        where: { subjectId: data.subjectId },
       }
     );
     // const updateUser = await db.User.update(
@@ -233,7 +237,6 @@ const addLecturerIntoClass = async (data) => {
     //     transaction: transaction,
     //   }
     // );
-    await transaction.commit();
     if (updatedClass) {
       return {
         EM: "Thêm giáo viên phụ trách thành công",
@@ -322,6 +325,64 @@ const filterClassByTeacherID = async (data) => {
   }
 };
 
+const getClassInfoById = async (data) => {
+  try {
+    // 1. Lấy thông tin của lớp từ bảng Class dựa trên id của lớp
+    const classData = await db.Class.findOne({
+      where: { id: data.id },
+      attributes: ["id", "className", "teacherID", "roomName"],
+    });
+
+    const classSubjectData = await db.SubjectClass.findOne({
+      where: { classId: data.id },
+      attributes: ["teacherId"],
+    });
+    const teacherData = await db.User.findOne({
+      where: { userId: classSubjectData.teacherId },
+      attributes: ["userId", "username", "sex"],
+    });
+    const roomData = await db.Room.findAll({
+      where: { classId: data.id },
+      attributes: ["userId"],
+    });
+    const studentInfoList = [];
+    for (const roomRow of roomData) {
+      const userId = roomRow.userId;
+      const userInfo = await db.User.findOne({
+        where: { userId: userId },
+        attributes: ["userId", "username", "address", "sex", "phone"],
+      });
+      if (userInfo) {
+        studentInfoList.push(userInfo.toJSON());
+      }
+    }
+
+    // 5. Tạo đối tượng lớp học và danh sách sinh viên
+    const classInfo = {
+      id: classData.id,
+      className: classData.className,
+      teacherID: classData.teacherID,
+      teacherName: teacherData, // Thêm thông tin của giáo viên
+      roomName: classData.roomName,
+      students: studentInfoList,
+      count: studentInfoList.length,
+    };
+
+    return {
+      EM: "Get class and student info from room success",
+      EC: 0,
+      DT: classInfo,
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      EM: "Error fetching class and student info from room",
+      EC: 1,
+      DT: null,
+    };
+  }
+};
+
 module.exports = {
   getClass,
   createNewClass,
@@ -330,4 +391,5 @@ module.exports = {
   countStudentInClass,
   addLecturerIntoClass,
   filterClassByTeacherID,
+  getClassInfoById,
 };

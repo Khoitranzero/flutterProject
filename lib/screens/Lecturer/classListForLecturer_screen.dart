@@ -3,6 +3,7 @@ import 'package:flutter_doan/component/classItem.dart';
 import 'package:flutter_doan/component/dialog.dart';
 import 'package:flutter_doan/component/listUserInClass.dart';
 import 'package:flutter_doan/model/class.dart';
+import 'package:flutter_doan/screens/Lecturer/ListUserInClassForTeacher_screen.dart';
 import 'package:flutter_doan/utils/services.dart';
 import 'package:flutter_doan/utils/tokenService.dart';
 
@@ -78,17 +79,19 @@ class _ClassListForLecturerState extends State<ClassListForLecturer> {
                             Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) => ListUserInClass(
-                                            haveTeacher: classInfoItem
-                                                        .teacherInfo.userId ==
-                                                    "Chưa cập nhật"
-                                                ? false
-                                                : true,
-                                            teacherID: classInfoItem
-                                                .teacherInfo.userId,
-                                            listUser: classInfoItem.users,
-                                            classId: classInfoItem.id,
-                                            isGv: isGv)))
+                                        builder: (context) =>
+                                            ListUserInClassForTeacher(
+                                                haveTeacher:
+                                                    classInfoItem.teacherInfo
+                                                                .userId ==
+                                                            "Chưa cập nhật"
+                                                        ? false
+                                                        : true,
+                                                teacherID: classInfoItem
+                                                    .teacherInfo.userId,
+                                                listUser: classInfoItem.users,
+                                                classId: classInfoItem.id,
+                                                isGv: isGv)))
                                 .then((value) => refreshData());
                           },
                           onLongPressed: () async {

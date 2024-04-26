@@ -2,41 +2,42 @@ import 'package:flutter_doan/model/user.dart';
 
 class ClassInfo {
   int id;
-  String subjectName;
   String className;
   User teacherInfo;
+  String roomName;
   List<User> users;
   int count;
+
   ClassInfo({
     required this.id,
-    required this.subjectName,
     required this.className,
     required this.teacherInfo,
+    required this.roomName,
     required this.users,
     required this.count,
   });
+
   factory ClassInfo.fromJson(Map<String, dynamic> json) {
-    if (json.containsKey('Users') && json['Users'] is List) {
-      final List<User> users = (json['Users'] as List)
+    int id = json['id'] ?? 0;
+    String className = json['className'] ?? 'Chưa cập nhật';
+    User teacherInfo = User.fromJson(
+        json['teacherName'] ?? {}); // Lấy thông tin từ teacherName
+    String roomName = json['roomName'] ?? 'Chưa cập nhật';
+    List<User> students = [];
+    if (json['students'] is List) {
+      students = (json['students'] as List)
           .map((userData) => User.fromJson(userData))
           .toList();
-      return ClassInfo(
-        id: json['id'] ?? 'Chưa cập nhật',
-        subjectName: json['subjectInfo']['subjectName'] ?? "Chưa cập nhật",
-        className: json['className'] ?? 'Chưa cập nhật',
-        teacherInfo: User.fromJson(json['teacherInfo'] ?? {}),
-        users: users,
-        count: json['count'] ?? 0,
-      );
     }
+    int count = json['count'] ?? 0;
 
     return ClassInfo(
-      id: 0,
-      subjectName: 'Chưa cập nhật',
-      className: 'Chưa cập nhật',
-      teacherInfo: User.fromJson({}),
-      users: [],
-      count: 0,
+      id: id,
+      className: className,
+      teacherInfo: teacherInfo,
+      roomName: roomName,
+      users: students,
+      count: count,
     );
   }
 }

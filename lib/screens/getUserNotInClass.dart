@@ -48,7 +48,7 @@ class _ListUserNoClassState extends State<ListUserNoClass> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Danh sách sinh viên chưa có lớp"),
+        title: Text("Danh sách sinh viên"),
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _userListFuture,

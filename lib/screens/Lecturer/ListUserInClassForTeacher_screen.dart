@@ -12,27 +12,26 @@ import 'package:flutter_doan/screens/userPoin_page.dart';
 import 'package:flutter_doan/utils/services.dart';
 import 'package:flutter_doan/utils/tokenService.dart';
 
-class ListUserInClass extends StatefulWidget {
+class ListUserInClassForTeacher extends StatefulWidget {
   final bool haveTeacher;
   final List<User> listUser;
   final int classId;
   final String teacherID;
   final bool isGv;
-  final subjectId;
-  const ListUserInClass(
+  const ListUserInClassForTeacher(
       {super.key,
       required this.haveTeacher,
       required this.listUser,
       required this.classId,
       required this.teacherID,
-      required this.subjectId,
       required this.isGv});
 
   @override
-  State<ListUserInClass> createState() => _ListUserInClassState();
+  State<ListUserInClassForTeacher> createState() =>
+      _ListUserInClassForTeacherState();
 }
 
-class _ListUserInClassState extends State<ListUserInClass> {
+class _ListUserInClassForTeacherState extends State<ListUserInClassForTeacher> {
   List<String> selectedUser = [];
   late List<bool> isCheckedList;
   String? _role;
@@ -67,64 +66,6 @@ class _ListUserInClassState extends State<ListUserInClass> {
     return Scaffold(
         appBar: AppBar(
           title: Text('Danh sách lớp ${widget.classId}'),
-          actions: [
-            PopupMenuButton<String>(
-              itemBuilder: (BuildContext context) {
-                List<PopupMenuEntry<String>> menuItems = [];
-
-                if (isTeacher == null) {
-                  if (!widget.haveTeacher) {
-                    // Nếu không có giáo viên
-                    menuItems.add(
-                      PopupMenuItem<String>(
-                        value: 'addTeacher',
-                        child: Text('Thêm giáo viên phụ trách'),
-                      ),
-                    );
-                  } else {
-                    menuItems.add(
-                      PopupMenuItem<String>(
-                        value: 'removeTeacher',
-                        child: Text('Xóa giáo viên phụ trách'),
-                      ),
-                    );
-                  }
-                  menuItems.add(
-                    PopupMenuItem<String>(
-                      value: 'addStudents',
-                      child: Text('Thêm sinh viên vào lớp'),
-                    ),
-                  );
-                } else {
-                  menuItems = [];
-                }
-
-                return menuItems;
-              },
-              onSelected: (String value) async {
-                switch (value) {
-                  case 'addTeacher':
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => getTeacherNotInClass(
-                                subjectId: widget.subjectId)));
-                    break;
-                  case 'removeTeacher':
-                    await _confirmRemoveTeacher(
-                        context, widget.subjectId, widget.teacherID);
-                    break;
-                  case 'addStudents':
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) =>
-                                ListUserNoClass(classId: widget.classId)));
-                    break;
-                }
-              },
-            ),
-          ],
         ),
         body: widget.listUser.isEmpty
             ? const Center(
@@ -244,50 +185,6 @@ class _ListUserInClassState extends State<ListUserInClass> {
     if (shouldDelete != null && shouldDelete) {
       try {
         final response = await AppUtils.deleteUser(user.userId);
-        showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return CustomDialogAlert(
-                title: "Thông báo",
-                message: response['EM'],
-                closeButtonText: "Đóng",
-                onPressed: () =>
-                    {Navigator.of(context).pop(), Navigator.of(context).pop()});
-          },
-        );
-        return true;
-      } catch (e) {
-        print('Lỗi khi xóa người dùng: $e');
-      }
-    }
-    return false;
-  }
-
-  Future<bool> _confirmRemoveTeacher(
-      BuildContext context, String subjectId, String userId) async {
-    final shouldDelete = await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Xác nhận'),
-          content: const Text('Bạn có muốn xóa giáo viên này không?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('Không'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Có'),
-            ),
-          ],
-        );
-      },
-    );
-
-    if (shouldDelete != null && shouldDelete) {
-      try {
-        final response = await AppUtils.removeTeacher(subjectId, userId);
         showDialog(
           context: context,
           builder: (BuildContext context) {

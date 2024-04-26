@@ -9,26 +9,47 @@ import 'package:flutter_doan/component/userItem.dart';
 import 'package:flutter_doan/model/class.dart';
 import 'package:flutter_doan/model/classSubject.dart';
 import 'package:flutter_doan/screens/Class/classAdd.dart';
-import 'package:flutter_doan/screens/Class/classListItem.dart';
 import 'package:flutter_doan/utils/services.dart';
 import 'package:flutter_doan/utils/tokenService.dart';
 import 'package:http/http.dart';
 
-class ClassList extends StatefulWidget {
-  const ClassList({super.key});
+class ClassListItem extends StatefulWidget {
+  final String subjectName;
+  final String subjectId;
+  final List<dynamic> classIds;
+  const ClassListItem(
+      {super.key,
+      required this.subjectId,
+      required this.classIds,
+      required this.subjectName});
 
   @override
-  State<ClassList> createState() => _ClassListState();
+  State<ClassListItem> createState() => _ClassListItemState();
 }
 
-class _ClassListState extends State<ClassList> {
+class _ClassListItemState extends State<ClassListItem> {
   bool isGv = false;
-  Future<Map<String, dynamic>> _classListFuture = AppUtils.getClassList();
+
+  Future<List<ClassInfo>> _fetchClasses() async {
+    List<ClassInfo> classes = [];
+    try {
+      for (var id in widget.classIds) {
+        final classId = id['id'];
+        final classData = await AppUtils.getClassByID(classId);
+        final classInfo = ClassInfo.fromJson(classData['DT']);
+        classes.add(classInfo);
+      }
+    } catch (e) {
+      print('Error fetching classes: $e');
+    }
+    return classes;
+  }
+
   Future<void> refreshData() async {
     await Future.delayed(const Duration(microseconds: 100));
     setState(() {
       _getRole();
-      _classListFuture = AppUtils.getClassList();
+      _fetchClasses;
     });
   }
 
@@ -56,71 +77,67 @@ class _ClassListState extends State<ClassList> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Danh sách lớp học"),
+          title: Text("${widget.subjectName}"),
         ),
-        body: FutureBuilder<Map<String, dynamic>>(
-          future: _classListFuture,
-          builder: (context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+        body: FutureBuilder<List<ClassInfo>>(
+          future: _fetchClasses(),
+          builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(
                   child: Text("Something went wrong ${snapshot.error}"));
             } else {
-              final classListData = snapshot.data!['DT'] as List<dynamic>;
-              final classList = classListData
-                  .map((item) => classSubject.fromJson(item))
-                  .toList();
+              final classes = snapshot.data!;
               return RefreshIndicator(
-                  child: ListView.builder(
-                      padding: const EdgeInsets.all(8),
-                      itemCount: classList.length,
-                      itemBuilder: (context, index) {
-                        final classInfoItem = classList[index];
-                        return ClassSubjectItem(
-                          classSubjectInfo: classInfoItem,
-                          onPressed: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => ClassListItem(
-                                          classIds: classInfoItem.classes,
-                                          subjectId: classInfoItem.subjectId,
-                                          subjectName:
-                                              classInfoItem.subjectName,
-                                        ))).then((value) => refreshData());
-                          },
-                          onLongPressed: () async {
-                            // final deleteAction = await _confirmDeleteClass(
-                            //     context, classInfoItem.id);
-                            // if (deleteAction) {
-                            //   refreshData();
-                            // }
-                          },
-                        );
-                      }),
-                  onRefresh: () async {
-                    refreshData();
+                onRefresh: () async {
+                  setState(() {
+                    _getRole();
                   });
-            }
-          },
-        ),
-        floatingActionButton: isGv
-            ? null
-            : Container(
-                width: 60,
-                height: 60,
-                child: FloatingActionButton.small(
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20)),
-                  onPressed: () => Navigator.push(
+                },
+                child: ListView.builder(
+                  itemCount: classes.length,
+                  itemBuilder: (context, index) {
+                    final classItem = classes[index];
+                    return ClassItem(
+                      classInfoItem: classItem,
+                      onPressed: () async {
+                        await Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const classAdd()))
-                      .then((value) => refreshData()),
-                  child: const Icon(Icons.add),
+                            builder: (context) => ListUserInClass(
+                              haveTeacher: classItem.teacherInfo.userId ==
+                                      "Chưa cập nhật"
+                                  ? false
+                                  : true,
+                              teacherID: classItem.teacherInfo.userId,
+                              subjectId: widget.subjectId,
+                              listUser: classItem.users,
+                              classId: classItem.id,
+                              isGv: isGv,
+                            ),
+                          ),
+                        );
+                        setState(() {
+                          _getRole();
+                        });
+                      },
+                      onLongPressed: () async {
+                        final deleteAction =
+                            await _confirmDeleteClass(context, classItem.id);
+                        if (deleteAction) {
+                          setState(() {
+                            _getRole();
+                          });
+                        }
+                      },
+                    );
+                  },
                 ),
-              ));
+              );
+            }
+          },
+        ));
   }
 
   Future<bool> _confirmDeleteClass(BuildContext context, int classId) async {
@@ -152,11 +169,13 @@ class _ClassListState extends State<ClassList> {
             context: context,
             builder: (BuildContext context) {
               return CustomDialogAlert(
-                title: "Thông báo",
-                message: response['EM'],
-                closeButtonText: "Đóng",
-                onPressed: () => Navigator.of(context).pop(),
-              );
+                  title: "Thông báo",
+                  message: response['EM'],
+                  closeButtonText: "Đóng",
+                  onPressed: () => {
+                        Navigator.of(context).pop(),
+                        Navigator.of(context).pop()
+                      });
             },
           );
         } else {
@@ -165,7 +184,7 @@ class _ClassListState extends State<ClassList> {
             builder: (BuildContext context) {
               return CustomDialogAlert(
                 title: "Thông báo",
-                message: "Xóa môn học thất bại",
+                message: "Xóa lớp học thất bại",
                 closeButtonText: "Đóng",
                 onPressed: () => Navigator.of(context).pop(),
               );

@@ -4,10 +4,10 @@ import "package:flutter_doan/screens/changePassword.dart";
 import "package:http/http.dart" as http;
 
 class AppUtils {
-  static const String baseApi = "http://localhost:8080/api/v1";
+  static const String baseApi = "http://192.168.238.1:8080/api/v1";
 
-  static Future<Map<String, dynamic>> registerUser(String username,
-      String phoneNumber, String address, String sex) async {
+  static Future<Map<String, dynamic>> registerUser(
+      String username, String phoneNumber, String address, String sex) async {
     final response = await http
         .post(Uri.parse("$baseApi/register"), headers: <String, String>{
       'ContentType': 'application/json'
@@ -16,7 +16,6 @@ class AppUtils {
       'phone': phoneNumber,
       'address': address,
       'sex': sex,
-
     });
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
@@ -53,6 +52,7 @@ class AppUtils {
       throw Exception('Tìm người thất bại');
     }
   }
+
   static Future<Map<String, dynamic>> getUserByPhone(String? phone) async {
     final response = await http
         .post(Uri.parse("$baseApi/user/getByPhone"), headers: <String, String>{
@@ -66,6 +66,7 @@ class AppUtils {
       throw Exception('Tìm người thất bại');
     }
   }
+
   static Future<Map<String, dynamic>> hanldeLogin(
       String valueLogin, String password) async {
     final response =
@@ -81,15 +82,16 @@ class AppUtils {
       throw Exception('Đăng nhập thất bại');
     }
   }
+
   static Future<Map<String, dynamic>> changePassword(
       String userId, String password, String newpassword) async {
-    final response =
-        await http.put(Uri.parse("$baseApi/changePassword"), headers: <String, String>{
+    final response = await http
+        .put(Uri.parse("$baseApi/changePassword"), headers: <String, String>{
       'ContentType': 'application/json',
     }, body: <String, String>{
       'userId': userId,
       'password': password,
-       'newpassword': newpassword
+      'newpassword': newpassword
     });
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
@@ -97,6 +99,7 @@ class AppUtils {
       throw Exception('Đổi mật khẩu thất bại');
     }
   }
+
   static Future<Map<String, dynamic>> handleLogout() async {
     final response = await http.post(Uri.parse("$baseApi/logout"));
     if (response.statusCode == 200) {
@@ -115,8 +118,14 @@ class AppUtils {
     }
   }
 
-  static Future<Map<String, dynamic>> HandleUpdate(String userId,
-      String username, String phone,String address, String sex,String className, String role) async {
+  static Future<Map<String, dynamic>> HandleUpdate(
+      String userId,
+      String username,
+      String phone,
+      String address,
+      String sex,
+      String className,
+      String role) async {
     final response = await http.put(
       Uri.parse("$baseApi/user/update"),
       headers: <String, String>{
@@ -125,7 +134,7 @@ class AppUtils {
       body: {
         'userId': userId,
         'username': username,
-          'phone': phone,
+        'phone': phone,
         'address': address,
         'sex': sex,
         'className': className,
@@ -141,14 +150,14 @@ class AppUtils {
   }
 
   static Future<Map<String, dynamic>> removeTeacher(
-      int id, String userId) async {
+      String subjectId, String userId) async {
     final response = await http.put(
       Uri.parse("$baseApi/user/removeTeacherOutOfClass"),
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       body: {
-        'id': id.toString(),
+        'subjectId': subjectId,
         'userId': userId,
       },
     );
@@ -315,7 +324,22 @@ class AppUtils {
   }
 
   static Future<Map<String, dynamic>> getClassList() async {
-    final response = await http.get(Uri.parse("$baseApi/class/get"));
+    final response = await http.get(Uri.parse("$baseApi/classSubject/read"));
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      throw Exception('Gọi dữ liệu thất bại');
+    }
+  }
+
+  static Future<Map<String, dynamic>> getClassByID(int id) async {
+    final response = await http.post(
+      Uri.parse("$baseApi/class/getById"),
+      headers: <String, String>{
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: {'id': id.toString()},
+    );
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -324,7 +348,7 @@ class AppUtils {
   }
 
   static Future<Map<String, dynamic>> getClassInfo() async {
-    final response = await http.get(Uri.parse("$baseApi/class/read"));
+    final response = await http.post(Uri.parse("$baseApi/class/read"));
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {
@@ -380,13 +404,13 @@ class AppUtils {
   }
 
   static Future<Map<String, dynamic>> addTeacherInClass(
-      int classId, String userId) async {
+      String subjectId, String userId) async {
     final responsePoint = await http.put(
       Uri.parse("$baseApi/class/addTeacher"),
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: {'id': classId.toString(), 'teacherID': userId},
+      body: {'subjectId': subjectId, 'teacherId': userId},
     );
 
     if (responsePoint.statusCode == 200) {
@@ -482,13 +506,18 @@ class AppUtils {
     }
   }
 
-  static Future<Map<String, dynamic>> addClass(String className) async {
+  static Future<Map<String, dynamic>> addClass(
+      String className, String roomName, String subjectId) async {
     final responsePoint = await http.post(
       Uri.parse("$baseApi/class/create"),
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: {'className': className},
+      body: {
+        'className': className,
+        'roomName': roomName,
+        'subjectId': subjectId
+      },
     );
     if (responsePoint.statusCode == 200) {
       return jsonDecode(responsePoint.body);
@@ -586,8 +615,8 @@ class AppUtils {
     }
   }
 
-
-  static Future<void> sendUserInformation(String phoneNumber, String userId, String password) async {
+  static Future<void> sendUserInformation(
+      String phoneNumber, String userId, String password) async {
     try {
       final response = await http.post(
         Uri.parse('$baseApi/user/sendUserInformation'),
@@ -608,5 +637,4 @@ class AppUtils {
       throw Exception('Lỗi khi gửi thông tin: $e');
     }
   }
-
 }
