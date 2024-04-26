@@ -1,6 +1,6 @@
 //src/service/userApiService.js
 // import { where } from "sequelize";
-const { Vonage } = require('@vonage/server-sdk')
+//const { Vonage } = require('@vonage/server-sdk')
 // import Nexmo from "nexmo";
 const { Op, where } = require("sequelize");
 import db from "../models";
@@ -264,9 +264,9 @@ const updateUser = async (data) => {
   try {
     transaction = await db.sequelize.transaction();
 
-    // Kiểm tra xem data đã có userId hay chưa
-    if (!data.userId) {
-      // Tạo userId ngẫu nhiên dựa trên role
+   
+    if (!data.userId || data.userId=='Chưa cập nhật') {
+   
       const randomNumber = Math.floor(10000000 + Math.random() * 90000000);
       const generatedUserId = `${prefix}${randomNumber}`;
 
@@ -279,14 +279,14 @@ const updateUser = async (data) => {
         };
       }
 
-      // Cập nhật userId vào data
+
       data.userId = generatedUserId;
     }
 
-    // Cập nhật thông tin người dùng
+
     const updatedUser = await db.User.update(
       {
-        userId: data.userId, // userId sẽ không thay đổi nếu đã tồn tại
+        userId: data.userId, 
         username: data.username,
         address: data.address,
         sex: data.sex,
@@ -711,10 +711,10 @@ const getOneUserByPhone = async (data) => {
   }
 };
 
-const vonage = new Vonage({
-  apiKey: '7dc3bdee',
-  apiSecret: 'FG17czoyB1pzXseD'
-});
+// const vonage = new Vonage({
+//   apiKey: '7dc3bdee',
+//   apiSecret: 'FG17czoyB1pzXseD'
+// });
 const sendSMS = async (to, message) => {
   const from = "84907267362"
    //to = "84334323968"
