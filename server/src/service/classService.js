@@ -265,65 +265,92 @@ const addLecturerIntoClass = async (data) => {
 
 const filterClassByTeacherID = async (data) => {
   try {
-    const classes = await db.Class.findAll({
-      attributes: ["id", "className", "teacherID"],
-      where: { teacherID: data.teacherID }, // Thêm điều kiện lọc ở đây
-      include: {
-        model: db.User,
-        attributes: [
-          "userId",
-          "username",
-          "address",
-          "sex",
-          "phone",
-          "classId",
-        ],
-      },
+    // Lấy thông tin lớp từ bảng SubjectClass
+    const classes = await db.SubjectClass.findAll({
+      attributes: ["id", "classId", "teacherId"],
+      where: { teacherId: data.teacherId },
     });
 
+    // Mảng để lưu thông tin của các lớp và số học sinh trong mỗi lớp
     const classesWithTeacherInfo = [];
 
+    // Lặp qua từng lớp
     for (let i = 0; i < classes.length; i++) {
       const classObj = classes[i];
-      const id = classObj.dataValues.id;
-      const className = classObj.dataValues.className;
-      const teacherID = classObj.dataValues.teacherID;
+      const classId = classObj.classId;
+      const teacherId = classObj.teacherId;
+
+      // Lấy thông tin của lớp từ bảng Class
+      const classInfo = await db.Class.findOne({
+        where: { id: classId },
+        attributes: ["className", "roomName"], // Thêm các trường khác nếu cần
+      });
+
+      // Lấy thông tin của giáo viên từ bảng User
       const teacherInfo = await db.User.findOne({
         attributes: ["userId", "username", "address", "phone", "sex"],
-        where: { userId: teacherID },
+        where: { userId: teacherId },
       });
-      const students = classObj.Users.map((user) => ({
-        userId: user.userId,
-        username: user.username,
-        address: user.address,
-        sex: user.sex,
-        phone: user.phone,
-        classId: user.classId,
-      }));
-      const classWithTeacher = {
-        id: id,
-        className: className,
-        teacherID: teacherID,
+
+      // Lấy danh sách người học từ bảng Room dựa vào classId
+      const roomData = await db.Room.findAll({
+        where: { classId: classId },
+        attributes: ["userId"], // Lấy danh sách userId trong lớp
+      });
+
+      // Mảng để lưu thông tin của người học
+      const students = [];
+
+      // Lặp qua danh sách người học và lấy thông tin từ bảng User
+      for (let j = 0; j < roomData.length; j++) {
+        const userId = roomData[j].userId;
+        const studentInfo = await db.User.findOne({
+          attributes: ["userId", "username", "address", "phone", "sex"],
+          where: { userId: userId },
+        });
+        // Kiểm tra nếu thông tin học sinh tồn tại thì thêm vào mảng
+        if (studentInfo) {
+          students.push(studentInfo.toJSON());
+        }
+      }
+
+      // Đếm số lượng sinh viên trong lớp
+      const numberOfStudents = students.length;
+
+      // Tạo đối tượng lớp với thông tin của giáo viên, lớp và danh sách học sinh
+      const classWithTeacherInfo = {
+        id: classObj.id,
+        classId: classId,
+        className: classInfo ? classInfo.className : null,
+        roomName: classInfo ? classInfo.roomName : null,
+        teacherId: teacherId,
         teacherInfo: teacherInfo ? teacherInfo.toJSON() : null,
-        Users: students,
+        students: students, // Danh sách học sinh
+        count: numberOfStudents, // Số lượng sinh viên
       };
-      classesWithTeacherInfo.push(classWithTeacher);
+
+      // Thêm đối tượng lớp vào mảng classesWithTeacherInfo
+      classesWithTeacherInfo.push(classWithTeacherInfo);
     }
 
+    // Trả về kết quả mà không cần bọc nó trong cấu trúc khác
     return {
       EM: "Get classes success",
       EC: 0,
-      DT: classesWithTeacherInfo,
+      DT: classesWithTeacherInfo, // Trả về mảng thông tin các lớp
     };
   } catch (error) {
     console.log(error);
     return {
       EM: "Error fetching classes",
       EC: 1,
-      DT: [],
+      DT: [], // Trả về mảng rỗng trong trường hợp có lỗi
     };
   }
 };
+
+
+
 
 const getClassInfoById = async (data) => {
   try {

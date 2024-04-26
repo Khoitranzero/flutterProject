@@ -8,8 +8,8 @@ import 'package:flutter_doan/utils/services.dart';
 import 'package:flutter_doan/utils/tokenService.dart';
 
 class ClassListForLecturer extends StatefulWidget {
-  final String teacherID;
-  const ClassListForLecturer({required this.teacherID, super.key});
+  final String teacherId;
+  const ClassListForLecturer({required this.teacherId, super.key});
 
   @override
   State<ClassListForLecturer> createState() => _ClassListForLecturerState();
@@ -22,15 +22,15 @@ class _ClassListForLecturerState extends State<ClassListForLecturer> {
   @override
   void initState() {
     super.initState();
-    teacherID = widget.teacherID;
-    _classListFuture = AppUtils.getClassByTeacherID(widget.teacherID);
+    teacherID = widget.teacherId;
+    _classListFuture = AppUtils.getClassByTeacherID(widget.teacherId);
   }
 
   Future<void> refreshData() async {
     await Future.delayed(const Duration(microseconds: 100));
     setState(() {
       _getRole();
-      _classListFuture = AppUtils.getClassByTeacherID(widget.teacherID);
+      _classListFuture = AppUtils.getClassByTeacherID(widget.teacherId);
     });
   }
 

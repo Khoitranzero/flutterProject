@@ -34,7 +34,6 @@ class _LecturerHomePageState extends State<LecturerHomePage> {
     if (_role.contains("gv")) {
       setState(() {
         teacherID = _role;
-        print(teacherID);
       });
     } else {
       setState(() {
@@ -116,7 +115,7 @@ class _LecturerHomePageState extends State<LecturerHomePage> {
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           ClassListForLecturer(
-                                              teacherID: teacherID)))
+                                              teacherId: teacherID)))
                             }),
                     HomeItem(
                         title: "Thông tin GV",
@@ -127,7 +126,7 @@ class _LecturerHomePageState extends State<LecturerHomePage> {
                                   MaterialPageRoute(
                                       builder: (context) =>
                                           UserDetail(phone: teacherID)))
-                                          //  UserDetail(userId: teacherID)))
+                              //  UserDetail(userId: teacherID)))
                             })
                   ],
                 ),

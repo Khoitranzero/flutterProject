@@ -357,13 +357,13 @@ class AppUtils {
   }
 
   static Future<Map<String, dynamic>> getClassByTeacherID(
-      String teacherID) async {
+      String teacherId) async {
     final response = await http.post(
       Uri.parse("$baseApi/class/getClassByTeacherID"),
       headers: <String, String>{
         'Content-Type': 'application/x-www-form-urlencoded',
       },
-      body: {'teacherID': teacherID},
+      body: {'teacherId': teacherId},
     );
     if (response.statusCode == 200) {
       return jsonDecode(response.body);

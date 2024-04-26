@@ -110,20 +110,13 @@ const addTeacherIntoClass = async (req, res) => {
 const getClassByTeacherID = async (req, res) => {
   try {
     let data = await classService.filterClassByTeacherID(req.body);
-    let newDataWithCount = data.DT.map((classItem) => {
-      let count = classItem.Users.length;
-      // Kiểm tra xem classItem.Users.userId có chứa chuỗi "gv" không
-      if (classItem.Users.some((user) => user.userId.includes("gv"))) {
-        count -= 1; // Giảm count đi một đơn vị
-      }
-      return { ...classItem, count: count };
-    });
     return res.status(200).json({
       EM: data.EM,
       EC: data.EC,
-      DT: newDataWithCount,
+      DT: data.DT,
     });
   } catch (error) {
+    console.log(error);
     return res.status(500).json({
       EM: "error from server",
       EC: "-1",

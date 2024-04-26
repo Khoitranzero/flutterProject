@@ -142,7 +142,6 @@ class _ListUserInClassState extends State<ListUserInClass> {
                   if (user.userId.contains("gv")) {
                     return Container();
                   }
-                  print(isTeacher);
                   return Row(
                     children: [
                       Expanded(

@@ -20,8 +20,7 @@ class ClassInfo {
   factory ClassInfo.fromJson(Map<String, dynamic> json) {
     int id = json['id'] ?? 0;
     String className = json['className'] ?? 'Chưa cập nhật';
-    User teacherInfo = User.fromJson(
-        json['teacherName'] ?? {}); // Lấy thông tin từ teacherName
+    User teacherInfo = User.fromJson(json['teacherInfo'] ?? {});
     String roomName = json['roomName'] ?? 'Chưa cập nhật';
     List<User> students = [];
     if (json['students'] is List) {
