@@ -85,7 +85,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                           context,
                           MaterialPageRoute(
                             // builder: (context) => UserDetail(phone: phone),
-                            builder: (context) => UserDetail(phone:userId),
+                            builder: (context) => UserDetail(phone: userId),
                           ),
                         );
                       },
@@ -97,7 +97,7 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => UserPointPage(userId:userId),
+                            builder: (context) => UserPointPage(userId: userId),
                           ),
                         );
                       },
@@ -108,15 +108,18 @@ class _UserHomeScreenState extends State<UserHomeScreen> {
             ),
           ),
           const SizedBox(height: 10),
-          CustomButton(buttonText: "Đăng xuất", onPressed: () => handleLogout()),
-           const SizedBox(height: 10),
-          CustomButton(buttonText: "ChangePassword", onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            // builder: (context) => UserDetail(phone: phone),
-                            builder: (context) => ChangePassword(userId:userId),
-                          ),
-                        ))
+          CustomButton(
+              buttonText: "Đổi mật khẩu",
+              onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      // builder: (context) => UserDetail(phone: phone),
+                      builder: (context) => ChangePassword(userId: userId),
+                    ),
+                  )),
+          const SizedBox(height: 10),
+          CustomButton(
+              buttonText: "Đăng xuất", onPressed: () => handleLogout()),
         ],
       ),
     );

@@ -102,15 +102,16 @@ class _AdminHomePageState extends State<AdminHomePage> {
                                   MaterialPageRoute(
                                       builder: (context) => ListLecturerPage()))
                             }),
-                            HomeItem(
+                    HomeItem(
                         title: "DS Duyệt",
                         backgroundColor:
-                            const Color.fromARGB(255, 200, 167, 156),
+                            const Color.fromARGB(255, 200, 167, 200),
                         onPress: () => {
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ListStudentApproved()))
+                                      builder: (context) =>
+                                          ListStudentApproved()))
                             }),
                   ],
                 ),

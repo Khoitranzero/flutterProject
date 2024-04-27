@@ -20,7 +20,7 @@ class ClassInfo {
   factory ClassInfo.fromJson(Map<String, dynamic> json) {
     int id = json['id'] ?? 0;
     String className = json['className'] ?? 'Chưa cập nhật';
-    User teacherInfo = User.fromJson(json['teacherInfo'] ?? {});
+    User teacherInfo = User.fromJson(json['teacherName'] ?? {});
     String roomName = json['roomName'] ?? 'Chưa cập nhật';
     List<User> students = [];
     if (json['students'] is List) {
@@ -29,7 +29,7 @@ class ClassInfo {
           .toList();
     }
     int count = json['count'] ?? 0;
-
+    print(teacherInfo);
     return ClassInfo(
       id: id,
       className: className,

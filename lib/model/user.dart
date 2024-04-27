@@ -19,15 +19,16 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-        userId: json['userId'] ?? 'Chưa cập nhật',
-        username: json['username'] ?? 'Chưa có',
-        address: json['address'] != null ? json['address'] : 'Chưa cập nhật',
-        password: json['password'] != null ? json['password'] : 'Chưa cập nhật',
-        sex: json['sex'] != null ? json['sex'] : 'Chưa cập nhật',
-        phone: json['phone'] != null ? json['phone'] : 'Chưa cập nhật',
-        className: json['Class'] != null && json['Class']['className'] != null
-            ? json['Class']['className']
-            : 'Chưa cập nhật');
+      userId: json['userId'] ?? 'Chưa cập nhật',
+      username: json['username'] ?? 'Chưa có',
+      address: json['address'] != null ? json['address'] : 'Chưa cập nhật',
+      password: json['password'] != null ? json['password'] : 'Chưa cập nhật',
+      sex: json['sex'] != null ? json['sex'] : 'Chưa cập nhật',
+      phone: json['phone'] != null ? json['phone'] : 'Chưa cập nhật',
+      className: json['className'] != null && json['className'] != null
+          ? json['className']
+          : 'Chưa cập nhật',
+    );
   }
 
   Map<String, dynamic> toJson() {
@@ -38,7 +39,7 @@ class User {
       'sex': sex,
       'phone': phone,
       'classId': className,
-        'password': password,
+      'password': password,
     };
   }
 

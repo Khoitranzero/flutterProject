@@ -270,7 +270,6 @@ const filterClassByTeacherID = async (data) => {
       attributes: ["id", "classId", "teacherId"],
       where: { teacherId: data.teacherId },
     });
-
     // Mảng để lưu thông tin của các lớp và số học sinh trong mỗi lớp
     const classesWithTeacherInfo = [];
 
@@ -359,11 +358,11 @@ const getClassInfoById = async (data) => {
       where: { id: data.id },
       attributes: ["id", "className", "teacherID", "roomName"],
     });
-
     const classSubjectData = await db.SubjectClass.findOne({
       where: { classId: data.id },
       attributes: ["teacherId"],
     });
+    console.log(classSubjectData);
     const teacherData = await db.User.findOne({
       where: { userId: classSubjectData.teacherId },
       attributes: ["userId", "username", "sex"],
@@ -388,7 +387,6 @@ const getClassInfoById = async (data) => {
     const classInfo = {
       id: classData.id,
       className: classData.className,
-      teacherID: classData.teacherID,
       teacherName: teacherData, // Thêm thông tin của giáo viên
       roomName: classData.roomName,
       students: studentInfoList,
