@@ -135,15 +135,18 @@ class _LecturerHomePageState extends State<LecturerHomePage> {
             ),
           ),
           const SizedBox(height: 10),
-          CustomButton(buttonText: "Đăng xuất", onPressed: () => handleLogout()),
-           const SizedBox(height: 10),
-          CustomButton(buttonText: "ChangePassword", onPressed: () => Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            // builder: (context) => UserDetail(phone: phone),
-                            builder: (context) => ChangePassword(userId:teacherID),
-                          ),
-                        ))
+          CustomButton(
+              buttonText: "Đăng xuất", onPressed: () => handleLogout()),
+          const SizedBox(height: 10),
+          CustomButton(
+              buttonText: "Đổi mật khẩu",
+              onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      // builder: (context) => UserDetail(phone: phone),
+                      builder: (context) => ChangePassword(userId: teacherID),
+                    ),
+                  ))
         ],
       ),
     );

@@ -713,39 +713,58 @@ const filterTeacherNotInClass = async () => {
 };
 const getOneUserByID = async (userId) => {
   try {
-    const user = await db.User.findOne({
+    // Tìm thông tin sinh viên từ bảng Room dựa vào userId
+    const userRoom = await db.Room.findOne({
       where: {
-        userId: userId,
-        approval: {
-          [Op.or]: [1],
-        },
+        userId: userId.userId,
       },
     });
-    console.log("use check : ", user);
-    if (user) {
-      return {
-        EM: "get data success",
-        EC: 0,
-        DT: user,
-      };
-    } else {
-      return {
-        EM: "get data failed",
-        EC: 0,
-        DT: [],
-      };
-    }
+    // Lấy thông tin classId từ bảng Room
+    const classId = userRoom.classId;
+
+    // Tìm thông tin của sinh viên từ bảng User dựa vào userId
+    const userInfo = await db.User.findOne({
+      where: {
+        userId: userId.userId,
+      },
+      attributes: ["userId", "username", "address", "sex", "phone"],
+    });
+
+    // Tìm thông tin của lớp từ bảng Class dựa vào classId
+    const classInfo = await db.Class.findOne({
+      where: {
+        id: classId,
+      },
+      attributes: ["className"],
+    });
+    // Thêm className vào userInfo
+    const data = {
+      userId: userInfo.userId,
+      username: userInfo.username,
+      address: userInfo.address,
+      sex: userInfo.sex,
+      phone: userInfo.phone,
+      className: classInfo ? classInfo.className : "Chưa cập nhật", // Nếu không tìm thấy thông tin lớp, trả về 'Chưa cập nhật'
+    };
+
+    // Trả về đối tượng chứa userInfo và classInfo
+    return {
+      EM: "get data success",
+      EC: 0,
+      DT: data,
+    };
   } catch (e) {
+    console.log(e);
     return {
       EM: "error from server",
       EC: 1,
-      DT: [],
+      DT: null,
     };
   }
 };
+
 const getOneUserByPhone = async (data) => {
   try {
-    console.log("phone", data.phone);
 
     const user = await db.User.findOne({
       where: {

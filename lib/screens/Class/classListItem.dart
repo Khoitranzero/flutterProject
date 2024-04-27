@@ -99,6 +99,7 @@ class _ClassListItemState extends State<ClassListItem> {
                   itemCount: classes.length,
                   itemBuilder: (context, index) {
                     final classItem = classes[index];
+                    print(classItem);
                     return ClassItem(
                       classInfoItem: classItem,
                       onPressed: () async {

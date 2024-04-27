@@ -65,9 +65,9 @@ class _ListLecturerPageState extends State<ListLecturerPage> {
                             MaterialPageRoute(
                               builder: (context) =>
                                   // UserDetail(userId: user.userId),
-                                   UserDetail(phone: user.phone),
+                                  UserDetail(phone: user.phone),
                             ),
-                          );
+                          ).then((value) => refreshData());
                         },
                         onPressedButton2: () {},
                         onPressedButton3: () async {

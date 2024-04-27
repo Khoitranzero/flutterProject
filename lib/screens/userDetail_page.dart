@@ -86,9 +86,6 @@ class _UserDetailState extends State<UserDetail> {
       _addressController.text = user.address ?? "";
       _sexController.text = user.sex ?? "";
       _classController.text = user.className ?? "";
-      if (admin != true) {
-        _showBottomNavBar = false;
-      }
     });
   }
 
@@ -98,13 +95,16 @@ class _UserDetailState extends State<UserDetail> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(isLecturerUser == true ? "Thông tin của giáo viên" : "Thông tin của sinh viên"),
+        title: Text(isLecturerUser == true
+            ? "Thông tin của giáo viên"
+            : "Thông tin của sinh viên"),
       ),
       body: ListView(
         padding: const EdgeInsets.all(16.0),
         children: [
           Text(isLecturerUser == true ? "MSGV" : "MSSV",
-              style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
+              style: TextStyle(
+                  fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
           CustomTextField(
             isReadOnly: true,
             isPassword: false,
@@ -113,7 +113,8 @@ class _UserDetailState extends State<UserDetail> {
           ),
           const SizedBox(height: 10),
           Text("Họ và tên",
-              style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
+              style: TextStyle(
+                  fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
           CustomTextField(
             isReadOnly: false,
             isPassword: false,
@@ -122,7 +123,8 @@ class _UserDetailState extends State<UserDetail> {
           ),
           const SizedBox(height: 10),
           Text("SĐT",
-              style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
+              style: TextStyle(
+                  fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
           CustomTextField(
             isReadOnly: true,
             isPassword: false,
@@ -131,7 +133,8 @@ class _UserDetailState extends State<UserDetail> {
           ),
           const SizedBox(height: 10),
           Text("Địa chỉ",
-              style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
+              style: TextStyle(
+                  fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
           CustomTextField(
             isReadOnly: false,
             isPassword: false,
@@ -140,7 +143,8 @@ class _UserDetailState extends State<UserDetail> {
           ),
           const SizedBox(height: 10),
           Text("Giới tính",
-              style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
+              style: TextStyle(
+                  fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
           Container(
             width: 400,
             height: 50,
@@ -159,7 +163,8 @@ class _UserDetailState extends State<UserDetail> {
                   _selectedSex = newValue!;
                 });
               },
-              items: <String>['Nam', 'Nữ'].map<DropdownMenuItem<String>>((String value) {
+              items: <String>['Nam', 'Nữ']
+                  .map<DropdownMenuItem<String>>((String value) {
                 return DropdownMenuItem<String>(
                   value: value,
                   child: Text(value),
@@ -173,36 +178,9 @@ class _UserDetailState extends State<UserDetail> {
                 ? const SizedBox(height: 10)
                 : Text(
                     "Lớp học",
-                    style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold),
-                  ),
-
-          if (!(user.userId.contains("gv")))
-            _selectedRole == 'Giảng viên'
-                ? const SizedBox(height: 10)
-                : Container(
-                    padding: const EdgeInsets.all(10),
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10), border: Border.all(color: Colors.black)),
-                    height: 50,
-                    margin: const EdgeInsets.only(bottom: 15),
-                    child: DropdownButton<String>(
-                      value: _selectedClassName,
-                      icon: const Icon(Icons.keyboard_arrow_down),
-                      hint: const Text("Chọn lớp học"),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          _selectedClassName = newValue;
-                          _classController.text = _selectedClassName!;
-                        });
-                      },
-                      items: _classList.map<DropdownMenuItem<String>>((dynamic item) {
-                        String className = item['className'];
-                        return DropdownMenuItem<String>(
-                          value: className,
-                          child: Text(className),
-                        );
-                      }).toList(),
-                    ),
+                    style: TextStyle(
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.bold),
                   ),
           if (!(user.userId.contains("gv")) || _selectedRole == 'Giảng viên')
             _selectedRole == 'Giảng viên'
@@ -214,10 +192,13 @@ class _UserDetailState extends State<UserDetail> {
                     controller: _classController,
                   ),
           const SizedBox(height: 10),
-          if (!(user.userId.contains("gv") || user.userId.contains("dh")) || _selectedRole == 'Giảng viên')
-             Text("Phân quyền",
-              style: TextStyle(fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
-          if (!(user.userId.contains("gv") || user.userId.contains("dh")) || _selectedRole == 'Giảng viên')
+          if (!(user.userId.contains("gv") || user.userId.contains("dh")) ||
+              _selectedRole == 'Giảng viên')
+            Text("Phân quyền",
+                style: TextStyle(
+                    fontStyle: FontStyle.italic, fontWeight: FontWeight.bold)),
+          if (!(user.userId.contains("gv") || user.userId.contains("dh")) ||
+              _selectedRole == 'Giảng viên')
             Container(
               width: 400,
               height: 50,
@@ -261,7 +242,10 @@ class _UserDetailState extends State<UserDetail> {
                       String gender = _sexController.text.trim();
                       String className = _classController.text.trim();
                       String phoneNum = _phoneController.text.trim();
-                      if (username.isEmpty || address.isEmpty || gender.isEmpty || className.isEmpty) {
+                      if (username.isEmpty ||
+                          address.isEmpty ||
+                          gender.isEmpty ||
+                          className.isEmpty) {
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
@@ -269,14 +253,23 @@ class _UserDetailState extends State<UserDetail> {
                               title: "Thông báo",
                               message: "Vui lòng nhập đầy đủ thông tin",
                               closeButtonText: "Đóng",
-                              onPressed: () => Navigator.of(context).pop(),
+                              onPressed: () => {
+                                Navigator.of(context).pop(),
+                                Navigator.of(context).pop()
+                              },
                             );
                           },
                         );
                       } else {
                         try {
                           final response = await AppUtils.HandleUpdate(
-                              userId, username, phoneNum, address, _selectedSex, className, _selectedRole);
+                              userId,
+                              username,
+                              phoneNum,
+                              address,
+                              _selectedSex,
+                              className,
+                              _selectedRole);
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -284,7 +277,10 @@ class _UserDetailState extends State<UserDetail> {
                                 title: "Thông báo",
                                 message: response['EM'],
                                 closeButtonText: "Đóng",
-                                onPressed: () => Navigator.of(context).pop(),
+                                onPressed: () => {
+                                  Navigator.of(context).pop(),
+                                  Navigator.of(context).pop()
+                                },
                               );
                             },
                           );
@@ -301,5 +297,3 @@ class _UserDetailState extends State<UserDetail> {
     );
   }
 }
-
-

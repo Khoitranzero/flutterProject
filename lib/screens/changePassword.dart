@@ -11,7 +11,7 @@ class ChangePassword extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Change password"),
+        title: const Text("Thiết lập"),
       ),
       body: LoginForm(userId: userId), // Pass userId to LoginForm
     );
@@ -30,7 +30,7 @@ class LoginForm extends StatefulWidget {
 class _LoginFormState extends State<LoginForm> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _newpasswordController = TextEditingController();
-    final TextEditingController _repasswordController = TextEditingController();
+  final TextEditingController _repasswordController = TextEditingController();
 
   bool _isPasswordVisible = false;
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -67,7 +67,7 @@ class _LoginFormState extends State<LoginForm> {
                       child: _FormContent(
                         passwordController: _passwordController,
                         newpasswordController: _newpasswordController,
-                         repasswordController: _repasswordController,
+                        repasswordController: _repasswordController,
                         isPasswordVisible: _isPasswordVisible,
                         formKey: _formKey,
                         userId: widget.userId, // Pass userId to _FormContent
@@ -80,7 +80,6 @@ class _LoginFormState extends State<LoginForm> {
     );
   }
 }
-
 
 class _Logo extends StatelessWidget {
   const _Logo({Key? key}) : super(key: key);
@@ -115,7 +114,7 @@ class _Logo extends StatelessWidget {
 class _FormContent extends StatefulWidget {
   final TextEditingController passwordController;
   final TextEditingController newpasswordController;
-    final TextEditingController repasswordController;
+  final TextEditingController repasswordController;
   bool isPasswordVisible;
   final GlobalKey<FormState> formKey;
   final String userId;
@@ -125,7 +124,7 @@ class _FormContent extends StatefulWidget {
     Key? key,
     required this.passwordController,
     required this.newpasswordController,
-       required this.repasswordController,
+    required this.repasswordController,
     required this.isPasswordVisible,
     required this.formKey,
     required this.userId,
@@ -134,7 +133,6 @@ class _FormContent extends StatefulWidget {
   @override
   State<_FormContent> createState() => __FormContentState();
 }
-
 
 class __FormContentState extends State<_FormContent> {
   @override
@@ -157,8 +155,8 @@ class __FormContentState extends State<_FormContent> {
                 return null;
               },
               decoration: InputDecoration(
-                labelText: 'Old Password',
-                hintText: 'Old Password',
+                labelText: 'Mật khẩu cũ',
+                hintText: 'Mật khẩu cũ',
                 prefixIcon: const Icon(Icons.person),
                 border: const OutlineInputBorder(),
               ),
@@ -177,7 +175,7 @@ class __FormContentState extends State<_FormContent> {
               },
               obscureText: !widget.isPasswordVisible,
               decoration: InputDecoration(
-                labelText: 'New Password',
+                labelText: 'Mật khẩu mới',
                 hintText: 'Nhập mật khẩu mới của bạn',
                 prefixIcon: const Icon(Icons.lock_outline_rounded),
                 border: const OutlineInputBorder(),
@@ -195,8 +193,8 @@ class __FormContentState extends State<_FormContent> {
                 ),
               ),
             ),
-                const SizedBox(height: 16),
-              TextFormField(
+            const SizedBox(height: 16),
+            TextFormField(
               controller: widget.repasswordController,
               validator: (value) {
                 if (value == null || value.isEmpty) {
@@ -209,7 +207,7 @@ class __FormContentState extends State<_FormContent> {
               },
               obscureText: !widget.isPasswordVisible,
               decoration: InputDecoration(
-                labelText: 'Re - Password',
+                labelText: 'Nhập lại',
                 hintText: 'Nhập lại mật khẩu mới của bạn',
                 prefixIcon: const Icon(Icons.lock_outline_rounded),
                 border: const OutlineInputBorder(),
@@ -240,7 +238,7 @@ class __FormContentState extends State<_FormContent> {
                 child: const Padding(
                   padding: EdgeInsets.all(10.0),
                   child: Text(
-                    'Change Password',
+                    'Đổi mật khẩu',
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -258,7 +256,7 @@ class __FormContentState extends State<_FormContent> {
   void _changePassword() async {
     String password = widget.passwordController.text.trim();
     String newpassword = widget.newpasswordController.text.trim();
-        String repassword = widget.repasswordController.text.trim();
+    String repassword = widget.repasswordController.text.trim();
     try {
       // print('widget.userId');
       // print(widget.userId);
@@ -266,35 +264,35 @@ class __FormContentState extends State<_FormContent> {
       // print(password);
       // print('newpassword');
       // print(newpassword);
-      if(newpassword==repassword){
-      final response = await AppUtils.changePassword(
-        widget.userId,
-        password,
-        newpassword,
-      );
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CustomDialogAlert(
-            title: "Thông báo",
-            message: response['EM'],
-            closeButtonText: "Đóng",
-            onPressed: () => Navigator.of(context).pop(),
-          );
-        },
-      );}
-      else {
-         showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return CustomDialogAlert(
-            title: "Thông báo",
-            message: 'Mật khẩu mới và mật khẩu xác nhận không giống nhau',
-            closeButtonText: "Đóng",
-            onPressed: () => Navigator.of(context).pop(),
-          );
-        },
-      );
+      if (newpassword == repassword) {
+        final response = await AppUtils.changePassword(
+          widget.userId,
+          password,
+          newpassword,
+        );
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomDialogAlert(
+              title: "Thông báo",
+              message: response['EM'],
+              closeButtonText: "Đóng",
+              onPressed: () => Navigator.of(context).pop(),
+            );
+          },
+        );
+      } else {
+        showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return CustomDialogAlert(
+              title: "Thông báo",
+              message: 'Mật khẩu mới và mật khẩu xác nhận không giống nhau',
+              closeButtonText: "Đóng",
+              onPressed: () => Navigator.of(context).pop(),
+            );
+          },
+        );
       }
     } catch (e) {
       print("Lỗi: $e");

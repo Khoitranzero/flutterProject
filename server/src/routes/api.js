@@ -27,7 +27,7 @@ const initApiRoutes = (app) => {
   router.put("/changePassword", apiController.changePassword);
 
   router.get("/user/read", userController.readFunc);
-  router.post("/user/getById", userController.findOneFunc);
+  router.post("/user/getById", userController.getUserByID);
   router.get("/user/getClassList", userController.getUserInClass);
   router.get("/user/getUserNotInClass", userController.getUserNotInClass);
   router.post("/user/getByID", userController.getUserByID);
