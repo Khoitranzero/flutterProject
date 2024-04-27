@@ -16,11 +16,12 @@ class UserPointPage extends StatefulWidget {
   State<UserPointPage> createState() => _UserPointPageState();
 }
 
+
 class _UserPointPageState extends State<UserPointPage> {
   Future<List<dynamic>>? _pointData;
  String? _role;
   String _selectedSemester = "Học kỳ 1";
-
+ String? studentName;
   @override
   void initState() {
     super.initState();
@@ -29,8 +30,14 @@ class _UserPointPageState extends State<UserPointPage> {
 
   Future<void> _getTablePoint(String semester) async {
     final tokenAndRole = await TokenService.getTokenAndRole();
+    final userData = await AppUtils.getUserByID(widget.userId);
+
     setState(() {
       _role = tokenAndRole['role']!;
+      studentName = userData['DT']['username'] as String;
+      print('studentName');
+       print(userData);
+      print(studentName);
     });
     final data = await AppUtils.getTablePoint(widget.userId);
     setState(() {
@@ -111,7 +118,36 @@ class _UserPointPageState extends State<UserPointPage> {
                   ),
                   SizedBox(
                       height:
-                          10), // Thêm khoảng cách giữa DropdownButton và DataTable
+                          10),
+                                              Container(
+  alignment: Alignment.topLeft,
+  child: Padding(
+    padding: const EdgeInsets.all(8.0),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          'Tên sinh viên: $studentName',
+          style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),
+        ),
+        SizedBox(height: 5),
+        Text(
+          'Điểm trung bình: ${calculateAverage(points)}',
+          style: TextStyle(fontSize: 16),
+        ),
+        SizedBox(height: 5),
+        Text(
+          'Xếp loại: ${calculateClassification(calculateAverage(points))}',
+          style: TextStyle(fontSize: 16),
+        ),
+      ],
+    ),
+  ),
+),
+
+    SizedBox(
+                      height:
+                          10),// Thêm khoảng cách giữa DropdownButton và DataTable
                   Container(
                     margin: EdgeInsets.symmetric(
                         horizontal: 10), // Điều chỉnh margin cho Container
@@ -499,16 +535,24 @@ class _UserPointPageState extends State<UserPointPage> {
                               );
                             }).toList(),
                           ),
+                          
                         ),
+                        
                       ),
                     ),
                   ),
+       
                 ],
               ),
+             
             );
           }
+          
         },
+
+        
       ),
+
       bottomNavigationBar: _role == 'admin' || _role!.substring(0, 2) == 'gv'
           ? BottomAppBar(
               surfaceTintColor: Colors.white,
@@ -528,6 +572,8 @@ class _UserPointPageState extends State<UserPointPage> {
               ),
             )
           : null,
+
+          
     );
   }
 
@@ -574,5 +620,29 @@ class _UserPointPageState extends State<UserPointPage> {
       }
     }
     return false;
+  }
+}
+double calculateAverage(List<dynamic>? points) {
+  if (points == null || points.isEmpty) return 0.0;
+  double total = 0.0;
+  for (var point in points) {
+    total += double.parse(point['point_qt'].toString()) * 0.1 +
+        double.parse(point['point_gk'].toString()) * 0.3 +
+        double.parse(point['point_ck'].toString()) * 0.6;
+  }
+  double average = total / points.length;
+  return double.parse(average.toStringAsFixed(1));
+}
+
+
+String calculateClassification(double average) {
+  if (average < 4) {
+    return 'Yếu';
+  } else if (average >= 4 && average < 6.5) {
+    return 'Trung bình';
+  } else if (average >= 6.5 && average < 8) {
+    return 'Khá';
+  } else {
+    return 'Giỏi';
   }
 }
