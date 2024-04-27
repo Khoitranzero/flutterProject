@@ -296,16 +296,26 @@ const updateUser = async (data) => {
           EC: 1,
         };
       }
-
+    
+      
       data.userId = generatedUserId;
     }
-
+    let findClassId;
+    if(data.className&&data.className!='Chưa cập nhật'){
+      findClassId=await db.Class.findOne({
+        where: { className: data.className },
+    
+      })
+    }
+   
+    // console.log("id class name", findClassId.id)
     const updatedUser = await db.User.update(
       {
         userId: data.userId,
         username: data.username,
         address: data.address,
         sex: data.sex,
+        classId: findClassId ? findClassId.id : null
       },
       { where: { phone: data.phone }, transaction }
     );
@@ -751,8 +761,12 @@ const getOneUserByPhone = async (data) => {
       where: {
         [Op.or]: [{ userId: data.phone }, { phone: data.phone }],
       },
+      include: {
+        model: db.Class,
+        attributes: ["className"],
+      },
     });
-    // console.log("user by phone",user)
+    console.log("user by phone",user)
     if (user) {
       return {
         EM: "Lấy dữ liệu thành công",

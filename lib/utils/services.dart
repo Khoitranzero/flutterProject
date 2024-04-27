@@ -348,7 +348,7 @@ class AppUtils {
   }
 
   static Future<Map<String, dynamic>> getClassInfo() async {
-    final response = await http.post(Uri.parse("$baseApi/class/read"));
+    final response = await http.get(Uri.parse("$baseApi/class/read"));
     if (response.statusCode == 200) {
       return jsonDecode(response.body);
     } else {

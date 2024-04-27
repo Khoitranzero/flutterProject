@@ -35,7 +35,6 @@ class _UserDetailState extends State<UserDetail> {
   final TextEditingController _addressController = TextEditingController();
   final TextEditingController _sexController = TextEditingController();
   final TextEditingController _classController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
   String _selectedRole = 'Sinh viên';
   String _selectedSex = 'Nam';
 
@@ -54,6 +53,10 @@ class _UserDetailState extends State<UserDetail> {
       print("Error setting data: $e");
     });
     _getUserById();
+      //   print("_classId");
+      // print(_classController);
+      //    print("user");
+      // print(user);
   }
 
   Future<void> _getRole() async {
@@ -61,12 +64,13 @@ class _UserDetailState extends State<UserDetail> {
     String? _role = tokenAndRole['role'] ?? '';
     if (_role == 'admin') {
       setState(() {
+        admin=true;
         _showBottomNavBar = true;
       });
     }
     setState(() {
-      print("_role");
-      print(_role);
+      // print("_role");
+      // print(_role);
       isGv = _role.contains("gv");
     });
   }
@@ -79,12 +83,14 @@ class _UserDetailState extends State<UserDetail> {
     final response = await AppUtils.getUserByPhone(widget.phone);
     setState(() {
       user = User.fromJson(response['DT']);
+      //       print("user");
+      // print(user);
       isLecturerUser = user.userId.contains("gv");
       _usernameController.text = user.username;
       _userIdController.text = user.userId;
       _phoneController.text = user.phone;
       _addressController.text = user.address ?? "";
-      _sexController.text = user.sex ?? "";
+      _selectedSex = user.sex ?? "Nam";
       _classController.text = user.className ?? "";
       if (admin != true) {
         _showBottomNavBar = false;
@@ -177,7 +183,7 @@ class _UserDetailState extends State<UserDetail> {
                   ),
 
           if (!(user.userId.contains("gv")))
-            _selectedRole == 'Giảng viên'
+          admin!=true || _selectedRole == 'Giảng viên'
                 ? const SizedBox(height: 10)
                 : Container(
                     padding: const EdgeInsets.all(10),
